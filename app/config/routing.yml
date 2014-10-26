@@ -1,0 +1,15 @@
+Frontend:
+    resource: "@FrontendBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+Backend:
+    resource: "@BackendBundle/Controller/"
+    type:     annotation
+    prefix:   /admin
+
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+elfinder:
+     resource: "@FMElfinderBundle/Resources/config/routing.yml"

@@ -1,0 +1,71 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{asset('css/fancybox/jquery.fancybox.css')}}"/>
+{% endblock %} 
+
+{% block contenido %}
+    <section class="padding columna-2">
+        <article class="list-noticias list-videos">
+            <header class="relative">
+                <h2 class="titulo rojo">
+                    videos
+                </h2>
+                <select name="cbCategoriasVideos" id="cbCategoriasVideos" class="categorias-videos">
+                    {% for publicacion in categoria.publicaciones %}
+                        <option value="{{ publicacion.id }}" id="galeria-{{publicacion.id}}" data-url="{{ path('frontend_heraldo_tv',{ 'slug': publicacion.slug }) }}">
+                            {{publicacion.titulo}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </header>
+            <img id="loader" src="{{asset('images/bx_loader.gif')}}" style="display: none;" />
+            {% for publicacion in categoria.publicaciones %}
+                {%  if loop.first == true %}            
+                    {% include 'FrontendBundle:Default:galeriaHeraldoTv.html.twig' with { 'publicacion': publicacion } %}
+                {% endif %}
+            {% endfor %}
+        </article>
+    </section>	
+    {# include 'FrontendBundle:Default:aside.html.twig' #}        
+    {{render(controller('FrontendBundle:Default:aside'))}}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+<script src="{{asset('js/fancybox/jquery.fancybox.js')}}"></script>
+<script src="{{asset('js/fancybox/jquery.fancybox-media.js')}}"></script>
+<script>
+    $(document).ready(function() {
+        $("#cbCategoriasVideos").on("change",function(){
+           //alert("Entro a cambio de videos");
+           var valor = $(this).val();
+           var url = $("#galeria-"+valor).data("url");
+           $("#loader").fadeIn();
+           $.ajax({
+               url: url,
+               type:'GET',
+               success: function(data){
+                   $("section.videos").html($(data).html());
+                   fancyboxActions();
+                   $("#loader").fadeOut();
+               },
+               
+           });
+        });
+        fancyboxActions();
+    });
+    function fancyboxActions(){
+        $("a.fancybox").fancybox();
+          
+        $("a.fancybox-media").fancybox({
+            helpers : {
+                media: true
+            },
+            youtube : {
+               autoplay: 0
+            }
+        });
+    }
+</script>
+{% endblock %}

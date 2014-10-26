@@ -1,0 +1,17 @@
+<section class="videos padding-left">
+    {% for galeria in publicacion.galerias %}
+        <article class="item-noticia item-video">
+            <figure class="thumbnail-mediana">
+                <a href="{{galeria.archivo}}" class="fancybox-media iframe">
+                    <img src="{{ galeria.thumbnailWebPath }}" width="191" height="121" alt="">
+                </a>
+            </figure>
+            {{ galeria.titulo }}
+            <div class="redes-sociales">
+                <span class="share"></span>
+                <span class="twitter"></span>
+                <span class="facebook"></span>
+            </div>
+        </article>
+    {% endfor %}
+</section>

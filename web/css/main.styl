@@ -1,0 +1,569 @@
+transition()
+	-webkit-transition arguments
+	-moz-transition arguments
+	-ms-transition arguments
+	-o-transition arguments
+	transition arguments
+
+box-sizing()
+	-webkit-box-sizing arguments
+	-moz-box-sizing arguments
+	box-sizing arguments
+
+border-radius()
+	-webkit-border-radius arguments
+	-moz-border-radius arguments
+	-ms-border-radius arguments
+	-o-border-radius arguments
+	border-radius arguments
+
+box-shadow()
+	-webkit-box-shadow arguments
+	-moz-box-shadow arguments
+	-ms-box-shadow arguments
+	-o-box-shadow arguments
+	box-shadow arguments
+
+transform()
+	-webkit-transform arguments
+	-moz-transform arguments
+	-ms-transform arguments
+	-o-transform arguments
+	transform arguments
+
+animation()
+	-webkit-animation arguments
+	-moz-animation arguments
+	-ms-animation arguments
+	-o-animation arguments
+	animation arguments
+
+opacity(n)
+	opacity n
+	if support-for-ie
+		filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
+
+color_azul = blue
+color_rojo = #e64f30
+color_verde = #1eb98f
+
+
+
+a:hover
+	text-decoration none
+
+body
+	font-size 16px
+	background-color white
+	font-family 'futura_lt_btlight'
+
+body.inicio
+	overflow hidden
+	
+.container
+	margin 0 auto
+	text-align center
+	max-width 100%
+	min-width 1024px
+	padding 0
+	z-index 1000
+	margin-bottom 10px
+	& > header
+		background-color #79004A
+		padding 10px
+		position relative
+		height 116px
+		width auto
+		font-family 'proxima_novasemibold'
+#logo
+	position absolute
+	top 10px
+	left 10px
+	z-index 1000
+#menu-toggle
+	display none
+	position absolute
+	top 50px
+	right 30px
+.lenguajes
+	position absolute
+	top 0px
+	right 10px
+	z-index 1000
+	padding 5px 10px
+	background-color #64003D
+	& .lenguaje
+		display inline-block
+		vertical-align top
+		margin 0px 10px
+		color white
+		font-size 14px
+		text-transform uppercase
+	& a.lenguaje
+		text-decoration none
+	& span.lenguaje
+		font-weight bold
+	
+nav
+	position absolute
+	right 0px
+	top 0px
+	left 0px
+	& #menu
+		width calc(100% - 281px)
+		float right
+		box-sizing border-box
+		z-index -1
+		& > li
+			float left
+			height 116px
+			width 20%
+			list-style none
+			box-sizing border-box
+			border-left 1px solid #934977
+		& > li > a
+			font-size 18px
+			font-weight bold
+			color white
+			text-transform uppercase
+			text-decoration none
+			text-align center
+			line-height 140px
+			height 116px
+			background url('../images/keyarts/menuback.png') repeat-x
+			display block
+			width 100%
+			transition border-bottom .5s ease
+		& > li:hover > a
+		& > li.active > a	
+			background url('../images/keyarts/menuback_over.png') repeat-x
+		& li
+			position relative
+			list-style none
+			& ul.submenu
+				display none
+				left 0px
+				bottom -40px
+				padding-top 10px
+				position absolute
+				width 100%
+				z-index 9999
+				margin 0px
+				padding-left 0px
+			& ul.submenu ul.submenu
+				margin-top -1px
+				padding-top 0
+				left 149px
+				top 0px
+			& ul.submenu > li > a
+				background-color #79004A
+				border-top none
+				color #bbb
+				display block
+				font-size 14px
+				line-height 15px
+				padding 10px 12px
+				transition background-color .5s ease
+				width 100%
+				text-align left
+				position relative
+			& ul.submenu > li > a:hover
+				color #fff
+			& ul.submenu > li > a:before
+				bottom 100%
+				right 20%
+				border solid transparent
+				content " "
+				height 0
+				width 0
+				position absolute
+				border-bottom-color #79004A
+				border-width 5px
+			& ul.submenu > li:last-child > a
+				border-radius 0 0 2px 2px
+			& ul.submenu > li > a.parent
+				background-image url(../images/arrow.png)
+				background-size 5px 9px
+				background-repeat no-repeat
+				background-position 95% center
+		& li:hover > ul.submenu
+			display block
+
+article.inicio
+	position absolute
+	bottom 10px
+	right 0px
+	width 100%
+	height 210px
+	& .mostrarServicios
+		float right
+		margin-top 20px
+		opacity 1
+		transition all 1s ease
+		background-color #79004A
+		margin-right 10px
+		padding 20px
+		text-align left
+		& a.flecha
+			font-size 24px
+			height 33px
+			width 300px
+			color white
+			font-weight bold
+			text-transform capitalize
+			background url('../images/keyarts/flecharesumen.png') no-repeat 264px center
+			padding 0px
+			font-family 'proxima_novasemibold'
+			display block
+	& ul.servicios
+		margin 0 auto
+		padding 0
+		text-align right 
+		position absolute
+		right -100%
+		transition all 1s ease-out
+		& .item
+			width 200px
+			height 215px
+			background-color rgba(0,0,0,0.8)
+			display inline-block
+			vertical-align top
+			box-sizing border-box
+			margin-left 10px
+			overflow hidden
+			& img
+				width 190px
+				height 150px
+				margin 5px
+			& figure
+				margin 0px
+				width 100%
+			& .titulo
+				background-color #79004A
+				color white
+				font-size 20px
+				height 50px
+				line-height 50px
+				text-align center
+				text-transform capitalize
+				margin 0px 5px 5px
+
+	&:hover
+		& ul.servicios
+			right 10px
+		& .mostrarServicios
+			opacity 0	
+
+article.nosotros
+	margin 40px 10px 10px
+	overflow hidden
+	color #535353
+	& .col-izquierda
+		width 350px
+		float left
+	& .col-derecha
+		width calc(100% - 350px)
+		float right
+		text-align left
+		box-sizing border-box
+		padding-right 10px
+		
+article.servicios
+	margin 0px 10px 10px
+	position relative
+	& ul.navegador
+		margin 0px 0px 10px
+		padding 20px 0px
+		position absolute
+		right 0px
+		top 0px
+		z-index 1000
+		overflow hidden
+		border-bottom 1px solid #fbd7b7
+		width 100%
+		text-align right
+		& li.item
+			list-style none
+			display inline-block
+			vertical-align top
+			padding 0px 10px
+			border-left 2px solid grey
+			height 20px
+			& a
+				text-transform uppercase
+				text-decoration none
+				color #d74934
+				transition all .5 ease-in
+				font-size 22px
+				line-height 22px
+				font-weight bold
+				font-family 'proxima_novasemibold'
+				&:hover 
+					color #f48624		
+		& li.active	a
+			color #f48624
+		& li.item:first-child
+			border-left none
+	& .servicios
+		width 100%
+		box-sizing border-box
+		padding 70px 10px 10px
+		position relative
+		& .servicio
+			display none
+			& .galeria
+				height 371px
+				width 987px
+				margin 0 auto
+				margin-bottom 20px
+				position relative
+				& > li
+					width 900px
+					height 350px
+					& img
+						width 100%
+						height 100%
+				& span.titulo-servicio
+					position absolute
+					top 10px
+					left 10px
+					font-size 24px
+					color white
+					background-color rgba(0,0,0,0.8)
+					padding 3px 10px
+					z-index 1000
+					text-transform uppercase
+					font-family 'proxima_novasemibold'
+			& .descripcion
+				text-align left
+		& .servicio.active
+			display block
+			
+article.clientes
+	margin 10px
+	box-sizing border-box
+	padding 0px 10px
+	& .listado
+		margin 0 auto
+		padding 0px
+		list-style none
+		width 
+		& .cliente
+			border 1px solid #d3d3d3
+			display inline-block
+			vertical-align top
+			height 123px
+			width 123px
+			margin 0px
+			padding 0px
+			& img
+				width 100%
+				max-height 100%
+
+article.contacto
+	box-sizing border-box
+	width 100%
+	margin 10px
+	text-align left
+	& h3.encabezadoInca
+		margin 30px 0px 10px
+		color #79004A
+		text-align left
+		font-size 24px
+		line-height 24px
+		text-transform capitalize
+	& #formulario_contacto
+		& label
+			text-transform capitalize
+		& .form-submit
+			background-color #79004a
+			color white
+			opacity 0.8
+			&:hover
+				opacity 1
+				
+
+article.mapas
+	position relative
+	& ul.mapas
+		margin 0 auto
+		padding 0
+		& > li 
+			position absolute
+			top 0px
+			left 0px
+			width -webkit-calc(100% - 300px)
+			width calc(100% - 300px)
+			& > img
+				opacity 0
+				max-width 100%
+				height 550px
+			&.show > img
+				opacity 1
+		& #mapa-fondo img
+			opacity 1
+	& .formulario
+		position absolute
+		top 10px
+		right 10px
+		width 300px
+		text-align left
+		border 1px solid #79004A
+		border-radius 5px
+		padding 5px
+		& h3
+			color #79004A
+		& input
+			padding 2px
+			font-size 16px
+			color #79004A
+		& .grupo-checkbox-icono input
+		& .grupo-checkbox-icono img
+		& .grupo-checkbox-icono span
+			display inline-block
+			vertical-align middle
+		& .grupo-checkbox-icono span
+			vertical-align top	
+		& span
+			width 230px
+			
+article.proyectos
+	padding 10px
+	& .contenedorProyectos
+		padding 10px 50px
+	& .controles
+		height 50px
+		padding 0px 50px 80px
+	& .controles .rango label
+		color color_rojo
+		text-transform uppercase
+		font-size 20px
+		font-family 'proxima_novasemibold'
+		display block
+		text-align left 
+	& .controles .combobox label
+		color color_verde
+		text-transform uppercase
+		font-size 20px
+		font-family 'proxima_novasemibold'		
+	& .controles .combobox select
+		width 300px
+	& .proyecto
+		height 400px
+		text-align left
+		transition all 2s ease-in
+		& figure.imagen img
+			box-shadow 0 0 1px 1px rgba(100,100,100,.8)
+			cursor pointer			
+		& h3.titulo
+			text-transform uppercase
+			font-size 20px
+			color color_rojo
+			margin 10px 0px 0px
+			font-weight bold
+			font-family 'proxima_novasemibold' 
+		& span.rango
+			font-size 18px
+			color color_verde
+			font-weight bold
+			font-family 'proxima_novasemibold'		
+		&.seleccionado
+			border 1px solid grey
+			border-radius 5px
+			box-shadow 0 2px 1px 0 rgba(100,100,100,.8)
+			padding 50px
+			position relative
+			& span.closeProyecto
+				height 18px
+				width 18px
+				position absolute
+				top -40px
+				right -200px
+				z-index 100
+				cursor pointer
+				background url("../images/keyarts/cerrarproyecto.png") no-repeat center center
+				display block
+			& h3.titulo
+				text-transform capitalize
+				margin 0px 0px 5px 0px
+				font-size 24px
+				font
+			& span.rango
+				font-size 20px
+				color color_rojo
+				margin 0px 0px 10px
+			& ul.detalles
+				margin 0px 0px 10px
+				padding 0
+				& li.detalle
+					color #79004A
+					font-size 16px
+					text-transform capitalize
+					list-style none
+					font-weight bold
+					& span
+						color grey
+						font-size 14px
+						width 100px
+						text-align right
+						display inline-block
+						vertical-align top
+						padding-right 5px
+			& .descripcion
+				color #666666
+				font-size 16px				
+
+			
+@media all and (max-width: 700px)
+	.container
+		& nav
+			position absolute
+			margin-top 120px
+			width 100%
+		& #menu-toggle
+			display block
+		& #menu
+			display none
+			float none
+			width 100%
+			padding-left 0
+		& #menu li
+			display block
+			width 100%
+			height 50px
+			margin 0
+			padding 0
+		& #menu > li
+			margin-top -1px
+		& #menu > li:first-child
+			margin-top 0
+		& #menu > li > a
+			background-color #333
+			color #bbb
+			display block
+			font-size 16px
+			line-height 25px
+			height 50px
+			border-bottom none
+			padding 12px !important
+			padding 0
+			text-align left
+		& #menu li:hover > a	
+		& #menu li.active > a
+			border-bottom none
+		& #menu li > a:hover
+			background-color #444 
+		& #menu > li.parent
+			background none !important
+			padding 0
+		& #menu > li:hover > a
+			color #fff !important
+		& ul.submenu
+			display block
+			margin-top -1px
+			margin-left 20px
+			position static
+			padding 0
+			width inherit
+		& ul.submenu > li > a.parent
+			background #333 !important
