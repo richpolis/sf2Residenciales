@@ -23,7 +23,6 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        
 
         return array();
     }

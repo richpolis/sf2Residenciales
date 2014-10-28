@@ -8,11 +8,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 class SecurityController extends Controller
 {
-	/**
+    /**
      * @Route("/login", name="login")
      * @Template()
      */
-    
     public function loginAction()
     {
         $request = $this->getRequest();
@@ -29,7 +28,7 @@ class SecurityController extends Controller
         }
 
         return $this->render(
-            'FrontendBundle:Default:login.html.twig',
+            'FrontendBundle:Security:login.html.twig',
             array(
                 // último nombre de usuario ingresado
                 'last_username' => $session->get(SecurityContext::LAST_USERNAME),

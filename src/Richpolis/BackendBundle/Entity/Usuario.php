@@ -5,7 +5,7 @@ namespace Richpolis\BackendBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use JMS\Serializer\Annotation as Serializer;
@@ -18,7 +18,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\Table(name="usuarios")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\UsuariosRepository")
  * @ORM\HasLifecycleCallbacks()
- * 
+ * @UniqueEntity("email")
  * @Serializer\ExclusionPolicy("all")
  */
 class Usuario implements UserInterface, \Serializable
@@ -43,7 +43,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("string")
-     * 
      */
     private $username;
 
@@ -83,7 +82,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("string")
-     * 
      */
     private $nombre;
     
@@ -105,7 +103,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("string")
-     * 
      */
     private $facebook;
     
@@ -116,7 +113,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("integer")
-     * 
      */
     private $grupo;
     
@@ -127,7 +123,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("string")
-     * 
      */
     private $imagen;
 
@@ -138,7 +133,6 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("DateTime")
-     * 
      */
     private $createdAt;
 
@@ -149,17 +143,8 @@ class Usuario implements UserInterface, \Serializable
      * 
      * @Serializer\Expose
      * @Serializer\Type("DateTime")
-     * 
      */
     private $updatedAt;
-    
-    /**
-     * @var integer
-     *
-     * @ORM\OneToMany(targetEntity="Richpolis\PublicacionesBundle\Entity\Publicacion", mappedBy="usuario")
-     */
-    private $publicaciones;
-    
     
     const GRUPO_USUARIOS=1;
     const GRUPO_ADMIN=2;
@@ -173,7 +158,6 @@ class Usuario implements UserInterface, \Serializable
     /**
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("stringGrupo")
-     * 
      */
     public function getStringTipoGrupo(){
         $arreglo = $this->getArrayTipoGrupo();
@@ -437,34 +421,6 @@ class Usuario implements UserInterface, \Serializable
     }
 
     /**
-     * @see \Serializable::serialize()
-     */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->twitter,
-            $this->facebook,
-            $this->email
-        ));
-    }
-
-    /**
-     * @see \Serializable::unserialize()
-     */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->twitter,
-            $this->facebook,
-            $this->email
-        ) = unserialize($serialized);
-    }
-
-    /**
      * Set twitter
      *
      * @param string $twitter
@@ -509,40 +465,29 @@ class Usuario implements UserInterface, \Serializable
     {
         return $this->facebook;
     }
-
+    
     /**
-     * Add publicaciones
+     * Set imagen
      *
-     * @param \Richpolis\PublicacionesBundle\Entity\Publicacion $publicaciones
+     * @param string $imagen
      * @return Usuario
      */
-    public function addPublicacione(\Richpolis\PublicacionesBundle\Entity\Publicacion $publicaciones)
+    public function setImagen($imagen)
     {
-        $this->publicaciones[] = $publicaciones;
-
+        $this->imagen = $imagen;
+    
         return $this;
     }
 
     /**
-     * Remove publicaciones
+     * Get imagen
      *
-     * @param \Richpolis\PublicacionesBundle\Entity\Publicacion $publicaciones
+     * @return string 
      */
-    public function removePublicacione(\Richpolis\PublicacionesBundle\Entity\Publicacion $publicaciones)
+    public function getImagen()
     {
-        $this->publicaciones->removeElement($publicaciones);
+        return $this->imagen;
     }
-
-    /**
-     * Get publicaciones
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getPublicaciones()
-    {
-        return $this->publicaciones;
-    }
-    
     
     /*** uploads ***/
     
@@ -655,27 +600,32 @@ class Usuario implements UserInterface, \Serializable
         return null === $this->imagen ? null : $this->getUploadRootDir().'/'.$this->imagen;
     }
     
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->username,
+            $this->twitter,
+            $this->facebook,
+            $this->email
+        ));
+    }
 
     /**
-     * Set imagen
-     *
-     * @param string $imagen
-     * @return Usuario
+     * @see \Serializable::unserialize()
      */
-    public function setImagen($imagen)
+    public function unserialize($serialized)
     {
-        $this->imagen = $imagen;
+        list (
+            $this->id,
+            $this->username,
+            $this->twitter,
+            $this->facebook,
+            $this->email
+        ) = unserialize($serialized);
+    }
     
-        return $this;
-    }
-
-    /**
-     * Get imagen
-     *
-     * @return string 
-     */
-    public function getImagen()
-    {
-        return $this->imagen;
-    }
 }

@@ -23,8 +23,7 @@ security:
         login:
             pattern:  ^/login$
             security: false
-
-        secured_area:
+        frontend:
             pattern:    ^/
             form_login:
                 check_path: login_check
