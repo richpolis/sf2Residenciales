@@ -3,12 +3,14 @@
 namespace Richpolis\BackendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Recurso
  *
  * @ORM\Table(name="recursos")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\RecursoRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Recurso
 {
@@ -25,22 +27,27 @@ class Recurso
      * @var string
      *
      * @ORM\Column(name="nombre", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa el nombre del recurso")
      */
     private $nombre;
 
     /**
-     * @var integer
+     * @var \Edificio
+     * @todo Edificio del recurso
      *
-     * @ORM\Column(name="edificio", type="integer")
+     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="recursos")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
+     * })
      */
     private $edificio;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="tipoAcceso", type="integer")
+     * @ORM\Column(name="tipoAcceso", type="boolean")
      */
-    private $tipoAcceso;
+    private $tipoAcceso; 
 
     /**
      * @var string
@@ -49,7 +56,10 @@ class Recurso
      */
     private $precio;
 
-
+    public function __toString() {
+        return $this->nombre;
+    }
+    
     /**
      * Get id
      *
@@ -59,6 +69,7 @@ class Recurso
     {
         return $this->id;
     }
+    
 
     /**
      * Set nombre
@@ -84,32 +95,9 @@ class Recurso
     }
 
     /**
-     * Set edificio
-     *
-     * @param integer $edificio
-     * @return Recurso
-     */
-    public function setEdificio($edificio)
-    {
-        $this->edificio = $edificio;
-
-        return $this;
-    }
-
-    /**
-     * Get edificio
-     *
-     * @return integer 
-     */
-    public function getEdificio()
-    {
-        return $this->edificio;
-    }
-
-    /**
      * Set tipoAcceso
      *
-     * @param integer $tipoAcceso
+     * @param boolean $tipoAcceso
      * @return Recurso
      */
     public function setTipoAcceso($tipoAcceso)
@@ -122,7 +110,7 @@ class Recurso
     /**
      * Get tipoAcceso
      *
-     * @return integer 
+     * @return boolean 
      */
     public function getTipoAcceso()
     {
@@ -150,5 +138,28 @@ class Recurso
     public function getPrecio()
     {
         return $this->precio;
+    }
+
+    /**
+     * Set edificio
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @return Recurso
+     */
+    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    {
+        $this->edificio = $edificio;
+
+        return $this;
+    }
+
+    /**
+     * Get edificio
+     *
+     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     */
+    public function getEdificio()
+    {
+        return $this->edificio;
     }
 }

@@ -22,15 +22,15 @@
     <div class="mainbar">
       <!-- Page heading -->
       <div class="page-head">
-        <h2 class="pull-left">Usuarios</h2>
+        <h2 class="pull-left">Residenciales</h2>
         <div class="clearfix"></div>
         <!-- Breadcrumb -->
         <div class="bread-crumb">
           <a href="{{path('backend_homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
           <Divider>
           <span class="divider">/</span> 
-          <a href="{{path('usuarios')}}" class="bread-current">Usuarios</a>
-          <a href="{{path('usuarios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear residencial</a>
+          <a href="{{path('residenciales')}}" class="bread-current">Residenciales</a>
+          <a href="{{path('residenciales_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear residencial</a>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -45,7 +45,7 @@
               <div class="col-md-12">
                 <div class="widget">
                 <div class="widget-head">
-                  <div class="pull-left">Registro de usuarios</div>
+                  <div class="pull-left">Registro de residenciales</div>
                   <div class="clearfix"></div>
                 </div>
                   <div class="widget-content">
@@ -53,22 +53,22 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Residencial</th>
-                               <th>Edificio</th>
-                               <th>Recurso</th>
+                               <th>Nombre</th>
+                               <th>Porcentaje</th>
+                               <th>Username</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
                        <tbody>
                        {% for entity in entities %}
                            <tr>
-                               <td><a href="{{ path('usuarios_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.edificio.residencial }}</td>
-                               <td>{{ entity.edificio }}</td>
+                               <td><a href="{{ path('residenciales_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                                <td>{{ entity.nombre }}</td>
+                               <td>{{ entity.porcentaje }}</td>
+                               <td>{{ entity.username }}</td>
                                <td>
-                                    <button onclick="javascript:editarRegistro('{{ path('usuarios_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                    <button onclick="javascript:editarRegistro('{{ path('usuarios_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('residenciales_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('residenciales_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
                                 </td>
                            </tr>
                        {% endfor %}

@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class UsuarioType extends AbstractType
+class EdificioType extends AbstractType
 {
         /**
      * @param FormBuilderInterface $builder
@@ -15,15 +15,8 @@ class UsuarioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username')
-            ->add('password','password')
-            ->add('salt','hidden')
             ->add('nombre')
-            ->add('email','email')
-            ->add('telefono')
-            ->add('imagen')
-            ->add('numero')
-            ->add('edificio')
+            ->add('residencial')
         ;
     }
     
@@ -33,7 +26,7 @@ class UsuarioType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Richpolis\BackendBundle\Entity\Usuario'
+            'data_class' => 'Richpolis\BackendBundle\Entity\Edificio'
         ));
     }
 
@@ -42,6 +35,6 @@ class UsuarioType extends AbstractType
      */
     public function getName()
     {
-        return 'richpolis_backendbundle_usuario';
+        return 'richpolis_backendbundle_edificio';
     }
 }

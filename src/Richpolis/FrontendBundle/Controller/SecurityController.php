@@ -34,6 +34,7 @@ class SecurityController extends Controller
                 // último nombre de usuario ingresado
                 'last_username' => $session->get(SecurityContext::LAST_USERNAME),
                 'error'         => $error,
+                'ruta'          => 'login_check',
             )
         );
     }

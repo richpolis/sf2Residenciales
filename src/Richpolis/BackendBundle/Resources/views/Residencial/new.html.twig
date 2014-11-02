@@ -23,14 +23,14 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Usuarios</h2>
+            <h2 class="pull-left">Configuraciones</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('backend_homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <a href="{{path('residenciales')}}"><i class="fa fa-home"></i>configuracions</a> 
                 <!-- Divider -->
                 <span class="divider">/</span> 
-                <a href="{{path('usuarios_edit',{'id':entity.id})}}" class="bread-current">Editar configuracion</a>
+                <a href="{{path('residenciales_new')}}" class="bread-current">Nueva configuracion</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -44,24 +44,20 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Editar perfil residencial "{{entity.edificio.residencial}}" edificio "{{entity.edificio}}"</div>
+                                <div class="pull-left">Nueva configuracion</div>
                                 <div class="clearfix"></div>
                             </div>
 
                             <div class="widget-content">
-                                <div class="padd contenido-formulario">
-                                    {{ form(edit_form) }}
+                                <div class="padd">
+                                    <!-- Form starts.  -->
+                                    {{ form(form) }}
                                 </div>
                             </div>
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
-                                <button id="botonGuardar" class="btn btn-primary">Guardar cambios</button>
-                                <div style="float: left; margin-right: 3px;">
-                                   <form id="formEliminar" action="{{ path('usuarios_delete', { 'id': entity.id }) }}" method="post">
-                                   {{ form_widget(delete_form) }}
-                                   </form>
-                                   <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
-                                </div>        
+                                <button id="botonGuardar" class="btn btn-primary">Crear configuracion</button>
+
                             </div>
                         </div>  
 
@@ -79,6 +75,7 @@
     {{ parent() }}
 
     <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+
     <!-- jQuery Notification - Noty -->
     <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
     <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -89,29 +86,16 @@
 
     <script src="{{asset('js/languages/jquery.validationEngine-es.js')}}"></script> <!-- jQuery Validation Engine Language File -->
     <script src="{{asset('js/jquery.validationEngine.js')}}"></script> <!-- jQuery Validation Engine -->
-    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
-    <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
-    <script src="{{asset('js/jquery.gritter.min.js')}}"></script> <!-- jQuery Gritter -->
+
+    <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 
-
     <script>
-        var eliminarRegistro = function(){
-            {% if is_granted('ROLE_ADMIN') %}
-              bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
-                if(result){
-                   $("#formEliminar").submit();
-                }
-              });
-            {% else %}
-              noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
-            {% endif %}      
-        };
         $(document).ready(function () {
             $(".validate").validationEngine();
 
             $("#botonRegresar").on("click", function () {
-                location.href = "{{path('usuarios')}}";
+                location.href = "{{path('residenciales')}}";
             });
 
             $("#botonGuardar").on("click", function () {
@@ -133,3 +117,5 @@
 
     </script>
 {% endblock %}
+
+

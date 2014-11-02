@@ -8,18 +8,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-use JMS\Serializer\Annotation as Serializer;
-
-
-
 /**
  * Usuarios
  *
  * @ORM\Table(name="usuarios")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\UsuariosRepository")
  * @ORM\HasLifecycleCallbacks()
- * @UniqueEntity("email")
- * @Serializer\ExclusionPolicy("all")
+ * @UniqueEntity("username")
  */
 class Usuario implements UserInterface, \Serializable
 {
@@ -29,9 +24,6 @@ class Usuario implements UserInterface, \Serializable
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("integer")
      */
     private $id;
 
@@ -39,10 +31,7 @@ class Usuario implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=100, nullable=false)
-     * @Assert\NotBlank()
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
+     * @Assert\NotBlank(message="Ingresar un nombre de usuario")
      */
     private $username;
 
@@ -56,83 +45,62 @@ class Usuario implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=100, nullable=false)
+     * @ORM\Column(name="salt", type="string", length=255)
+     */
+    private $salt;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=100, nullable=true)
+     * @Assert\Email(message="Email no es correcto")
      */
     private $email;
     
     /**
      * @var string
      *
-     * @ORM\Column(name="salt", type="string", length=255)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
+     * @ORM\Column(name="telefono", type="string", length=255, nullable=true)
      */
-    private $salt;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="nombre", type="string", length=255, nullable=false)
-     * @Assert\NotBlank()
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
-     */
-    private $nombre;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="twitter", type="string", length=255, nullable=true)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
-     * 
-     */
-    private $twitter;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="facebook", type="string", length=255, nullable=true)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
-     */
-    private $facebook;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="grupo", type="string", length=100, nullable=false)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("integer")
-     */
-    private $grupo;
-    
+    private $telefono;
+   
     /**
      * @var string
      *
      * @ORM\Column(name="imagen", type="string", length=255, nullable=true)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("string")
      */
     private $imagen;
+
+    /**
+     * @var \Edificio
+     * @todo Edificio del usuario
+     *
+     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="usuarios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
+     * })
+     */
+    private $edificio;    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="numero", type="string", length=100, nullable=true)
+     */
+    private $numero;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("DateTime")
      */
     private $createdAt;
 
@@ -140,44 +108,13 @@ class Usuario implements UserInterface, \Serializable
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     * 
-     * @Serializer\Expose
-     * @Serializer\Type("DateTime")
      */
     private $updatedAt;
     
-    const GRUPO_USUARIOS=1;
-    const GRUPO_ADMIN=2;
-    const GRUPO_SUPER_ADMIN=3;
-    
- 
     public function __toString(){
         return $this->getUsername();
     }
     
-    /**
-     * @Serializer\VirtualProperty
-     * @Serializer\SerializedName("stringGrupo")
-     */
-    public function getStringTipoGrupo(){
-        $arreglo = $this->getArrayTipoGrupo();
-        return $arreglo[$this->getGrupo()];
-    }
-
-    static function getArrayTipoGrupo(){
-        $sTipoGrupo=array(
-            self::GRUPO_USUARIOS=>'Usuarios',
-            self::GRUPO_ADMIN=>'Administrador',
-            self::GRUPO_SUPER_ADMIN=>'Superadmin',
-        );
-        return $sTipoGrupo;
-    }
-
-    static function getPreferedTipoGrupo(){
-        return array(self::GRUPO_USUARIOS);
-    }
-
-
     public function __construct()
     {
         // may not be needed, see section on salt below
@@ -287,29 +224,6 @@ class Usuario implements UserInterface, \Serializable
     }
 
     /**
-     * Set grupo
-     *
-     * @param string $grupo
-     * @return Usuarios
-     */
-    public function setGrupo($grupo)
-    {
-        $this->grupo = $grupo;
-    
-        return $this;
-    }
-
-    /**
-     * Get grupo
-     *
-     * @return string 
-     */
-    public function getGrupo()
-    {
-        return $this->grupo;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -388,13 +302,7 @@ class Usuario implements UserInterface, \Serializable
 
     function getRoles()
     {
-        if($this->getGrupo() == self::GRUPO_USUARIOS){
-            return array('ROLE_USER','ROLE_API');
-        }elseif($this->getGrupo() == self::GRUPO_SUPER_ADMIN){
-            return array('ROLE_SUPER_ADMIN','ROLE_API');
-        }else{
-            return array('ROLE_ADMIN','ROLE_API');
-        }
+        return array('ROLE_USER','ROLE_API');
     }
 
     /**
@@ -420,52 +328,6 @@ class Usuario implements UserInterface, \Serializable
         return $this->salt;
     }
 
-    /**
-     * Set twitter
-     *
-     * @param string $twitter
-     * @return Usuario
-     */
-    public function setTwitter($twitter)
-    {
-        $this->twitter = $twitter;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter
-     *
-     * @return string 
-     */
-    public function getTwitter()
-    {
-        return $this->twitter;
-    }
-
-    /**
-     * Set facebook
-     *
-     * @param string $facebook
-     * @return Usuario
-     */
-    public function setFacebook($facebook)
-    {
-        $this->facebook = $facebook;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook
-     *
-     * @return string 
-     */
-    public function getFacebook()
-    {
-        return $this->facebook;
-    }
-    
     /**
      * Set imagen
      *
@@ -584,12 +446,6 @@ class Usuario implements UserInterface, \Serializable
         return __DIR__.'/../../../../html'.$this->getUploadDir();
     }
     
-    
-    /**
-     * @Serializer\VirtualProperty
-     * @Serializer\SerializedName("webPath")
-     * 
-     */
     public function getWebPath()
     {
         return null === $this->imagen ? null : $this->getUploadDir().'/'.$this->imagen;
@@ -608,9 +464,8 @@ class Usuario implements UserInterface, \Serializable
         return serialize(array(
             $this->id,
             $this->username,
-            $this->twitter,
-            $this->facebook,
-            $this->email
+            $this->email,
+            $this->nombre
         ));
     }
 
@@ -622,10 +477,79 @@ class Usuario implements UserInterface, \Serializable
         list (
             $this->id,
             $this->username,
-            $this->twitter,
-            $this->facebook,
-            $this->email
+            $this->email,
+            $this->nombre
         ) = unserialize($serialized);
     }
     
+    
+
+    /**
+     * Set telefono
+     *
+     * @param string $telefono
+     * @return Usuario
+     */
+    public function setTelefono($telefono)
+    {
+        $this->telefono = $telefono;
+
+        return $this;
+    }
+
+    /**
+     * Get telefono
+     *
+     * @return string 
+     */
+    public function getTelefono()
+    {
+        return $this->telefono;
+    }
+
+    /**
+     * Set numero
+     *
+     * @param string $numero
+     * @return Usuario
+     */
+    public function setNumero($numero)
+    {
+        $this->numero = $numero;
+
+        return $this;
+    }
+
+    /**
+     * Get numero
+     *
+     * @return string 
+     */
+    public function getNumero()
+    {
+        return $this->numero;
+    }
+
+    /**
+     * Set edificio
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @return Usuario
+     */
+    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    {
+        $this->edificio = $edificio;
+
+        return $this;
+    }
+
+    /**
+     * Get edificio
+     *
+     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     */
+    public function getEdificio()
+    {
+        return $this->edificio;
+    }
 }

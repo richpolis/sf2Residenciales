@@ -24,7 +24,7 @@ class Usuarios extends AbstractFixture implements OrderedFixtureInterface, Conta
 {
     public function getOrder()
     {
-        return 10;
+        return 30;
     }
 
     private $container;
@@ -36,54 +36,48 @@ class Usuarios extends AbstractFixture implements OrderedFixtureInterface, Conta
 
     public function load(ObjectManager $manager)
     {
-        // Obtener todas las ciudades de la base de datos
+        // Obtener las residenciales creadas
+        $residencial1 = $manager->getRepository('BackendBundle:Residencial')
+                                ->findOneBy(array('username'=>'RESIDENCIAL_1'));
+        $residencial2 = $manager->getRepository('BackendBundle:Residencial')
+                                ->findOneBy(array('username'=>'RESIDENCIAL_2'));
+
+
+        // Inquilino edificio 1a depto 101, residencial 1
+        $inquilino = new Usuario();
         
-        // usuario Richpolis 
-        $richpolis = new Usuario();
-        
-        $richpolis->setUsername('richpolis');
-        $richpolis->setNombre("Ricardo Alcantara Gomez");
-        $richpolis->setEmail('richpolis@gmail.com');
-        $richpolis->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
-        $passwordEnClaro = 'sfR0xC4s';
-        $encoder = $this->container->get('security.encoder_factory')->getEncoder($richpolis);
-        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $richpolis->getSalt());
-        $richpolis->setPassword($passwordCodificado);
-        $richpolis->setGrupo(Usuario::GRUPO_SUPER_ADMIN);
-        $richpolis->setTwitter('Richpolis');
-        $richpolis->setFacebook('RICHPOLIS');
-        $manager->persist($richpolis);
+        $inquilino->setUsername('R1_E1A_D101');
+        $inquilino->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
+        $passwordEnClaro = 'R1_E1A_D101';
+        $encoder = $this->container->get('security.encoder_factory')->getEncoder($inquilino);
+        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $inquilino->getSalt());
+        $inquilino->setPassword($passwordCodificado);
+        $inquilino->setNombre("Inquilino Edificio 1A Depto 101");
+        $inquilino->setEmail('r1_e1a_d101@app.residenciales.com');
+        $inquilino->setTelefono('55555555');
+        $inquilino->setNumero('101');
+        $edificios = $residencial1->getEdificios();
+        $inquilino->setEdificio($edificios[1]);
+        $manager->persist($inquilino);
         
             
-        // usuario Administrador
-        $usuarioAdmin = new Usuario();
+        // Inquilino edificio 1a depto 101, residencial 2
+        $inquilino = new Usuario();
         
-        $usuarioAdmin->setUsername('Admin');
-        $usuarioAdmin->setNombre("Administrador general");
-        $usuarioAdmin->setEmail('admin@heraldodetoluca.com');
-        $usuarioAdmin->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
-        $passwordEnClaro = 'admin';
-        $encorder = $this->container->get('security.encoder_factory')->getEncoder($usuarioAdmin);
-        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $usuarioAdmin->getSalt());
-        $usuarioAdmin->setPassword($passwordCodificado);
-        $usuarioAdmin->setGrupo(Usuario::GRUPO_ADMIN);
-        $usuarioAdmin->setTwitter('admin');
-        $manager->persist($usuarioAdmin);
-        
-        // usuario Normal
-        $usuarioNormal = new Usuario();
-        
-        $usuarioNormal->setUsername('Usuario1');
-        $usuarioNormal->setNombre("Usuario 1");
-        $usuarioNormal->setEmail('usuario1@heraldodetoluca.com');
-        $usuarioNormal->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
-        $passwordEnClaro = '12345678';
-        $encorder = $this->container->get('security.encoder_factory')->getEncoder($usuarioNormal);
-        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $usuarioNormal->getSalt());
-        $usuarioNormal->setPassword($passwordCodificado);
-        $usuarioNormal->setGrupo(Usuario::GRUPO_USUARIOS);
-        $manager->persist($usuarioNormal);
-        $usuarioNormal->setFacebook("usuarioNormal");
+        $inquilino->setUsername('R2_E1A_D101');
+        $inquilino->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
+        $passwordEnClaro = 'R2_E1A_D101';
+        $encoder = $this->container->get('security.encoder_factory')->getEncoder($inquilino);
+        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $inquilino->getSalt());
+        $inquilino->setPassword($passwordCodificado);
+        $inquilino->setNombre("Inquilino Edificio 1A Depto 101");
+        $inquilino->setEmail('r2_e1a_d101@app.residenciales.com');
+        $inquilino->setTelefono('55555555');
+        $inquilino->setNumero('101');
+        $edificios = $residencial1->getEdificios();
+        $inquilino->setEdificio($edificios[1]);
+        $manager->persist($inquilino);
+
         $manager->flush();
     }
 

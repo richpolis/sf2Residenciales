@@ -27,9 +27,6 @@ class AppKernel extends Kernel
             
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
-            new FM\ElfinderBundle\FMElfinderBundle(),
-            new Ivory\CKEditorBundle\IvoryCKEditorBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

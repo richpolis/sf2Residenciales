@@ -34,7 +34,7 @@ twig:
 assetic:
     debug:          %kernel.debug%
     use_controller: false
-    bundles:        ['FMElfinderBundle']
+    #bundles:        ['']
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
@@ -128,24 +128,6 @@ liip_imagine:
                 thumbnail: { size: [90, 60], mode: outbound }
 
 
-fm_elfinder:
-    instances:
-        default:
-            locale: %locale% # defaults to current request locale
-            editor: tinymce4
-            tinymce_popup_path: "asset[bundles/stfalcontinymce/vendor/tiny_mce/tiny_mce_popup.js]"
-            fullscreen: true # defaults true, applies to simple and ckeditor editors
-            include_assets: true # disable if you want to handle loading of the javascript and css assets yourself
-            compression: false # enable if you configured the uglifycss and uglifyjs2 assetic filters and want compression
-            connector:
-                debug: false # defaults to false
-                roots:       # at least one root must be defined
-                    uploads:
-                        driver: LocalFileSystem
-                        path: uploads/repositorios
-                        upload_allow: ['image/png', 'image/jpg', 'image/jpeg']
-                        upload_deny: ['all']
-                        upload_max_size: 2M
 
 parameters:
     # dirección de correo electrónico

@@ -3,43 +3,65 @@
 #    expressions: true
 
 security:
+
+    firewalls:
+        # Firewall de la parte de administración o backend
+        backend:
+            pattern:        ^/backend
+            provider:       administradores
+            http_basic:     ~
+        # Firewall de la intranet de residenciales
+        extranet:
+            pattern:        ^/admin
+            provider:       residenciales
+            anonymous:      ~
+            form_login:
+                login_path: admin_login
+                check_path: admin_login_check
+            logout:
+                path:       admin_logout
+                target:     admin_login
+        # Firewall global utilizado en la parte pública o frontend
+        frontend:
+            pattern:        ^/*
+            provider:       usuarios
+            anonymous:      ~
+            form_login:
+                login_path: login
+                check_path: login_check
+            logout:
+                path:       logout
+            remember_me:
+                key:        residenciales1234
+                lifetime:   604800  # 604.800 = 3.600 * 24 * 7 = 1 semana
+
+    access_control:
+        - { path: ^/admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/*,   roles: ROLE_ADMIN }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/*, roles: ROLE_USER }
+        - { path: ^/backend/*,         roles: ROLE_SUPER_ADMIN }
+
     encoders:
-        Richpolis\BackendBundle\Entity\Usuario: { algorithm: sha512, iterations: 10 }
+        Richpolis\BackendBundle\Entity\Usuario:        { algorithm: sha512, iterations: 10 }
+        Richpolis\BackendBundle\Entity\Residencial:          { algorithm: sha512, iterations: 10 }
+        Symfony\Component\Security\Core\User\User: sha512
+
+    providers:
+        # Usuarios del frontend
+        usuarios:
+            entity: { class: Richpolis\BackendBundle\Entity\Usuario, property: username }
+        # Usuarios de la extranet
+        residenciales:
+            entity: { class: Richpolis\BackendBundle\Entity\Residencial, property: username }
+        # Usuarios del backend
+        administradores:
+            memory:
+                users:
+                    # user = admin, pass = 1234
+                    admin: { password: Eti36Ru/pWG6WfoIPiDFUBxUuyvgMA4L8+LLuGbGyqV9ATuT9brCWPchBqX5vFTF+DgntacecW+sSGD+GZts2A==, roles: ROLE_SUPER_ADMIN }
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
         ROLE_API:         ROLE_USER
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
-
-    providers:
-        usuarios:
-            entity: { class: Richpolis\BackendBundle\Entity\Usuario, property: username }
-
-    firewalls:
-        dev:
-            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-
-        login:
-            pattern:  ^/login$
-            security: false
-        frontend:
-            pattern:    ^/
-            form_login:
-                check_path: login_check
-                login_path: login
-                default_target_path: homepage
-                always_use_default_target_path: true
-            logout:
-                path:   logout
-                target: login
-            #anonymous: ~
-            #http_basic:
-            #    realm: "Secured Demo Area"
-
-    access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/, roles: ROLE_USER }
-        - { path: ^/efconnect, role: ROLE_USER }
-        - { path: ^/elfinder, role: ROLE_USER }

@@ -26,10 +26,7 @@
         "kriswallsmith/buzz": "~0.7",
         "liip/imagine-bundle": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
-        "stfalcon/tinymce-bundle": "dev-master",
-        "friendsofsymfony/rest-bundle": "~1.0",
-        "helios-ag/fm-elfinder-bundle": "dev-master",
-        "egeloen/ckeditor-bundle": "~2.0"
+        "friendsofsymfony/rest-bundle": "~1.0"
     },
     "scripts": {
         "post-install-cmd": [

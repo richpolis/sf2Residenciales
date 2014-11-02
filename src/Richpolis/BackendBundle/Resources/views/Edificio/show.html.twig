@@ -22,16 +22,16 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Usuarios</h2>
+            <h2 class="pull-left">Edificios</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
                 <a href="{{path('backend_homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
                     <Divider>
                         <span class="divider">/</span> 
-                        <a href="{{path('usuarios')}}" class="bread-current">Usuarios</a>
+                        <a href="{{path('edificios')}}" class="bread-current">Edificios</a>
                         {% if is_granted('ROLE_SUPER_ADMIN') %}
-                            <a href="{{path('usuarios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                            <a href="{{path('edificios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
                         {% endif %}
                         </div>
 
@@ -62,29 +62,21 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Residencial</th>
-                                                                    <td>{{ entity.edifico.residencial }}</td>
+                                                                    <td>{{ entity.residencial }}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Edificio</th>
-                                                                    <td>{{ entity.edificio }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Recurso</th>
-                                                                    <td>{{ entity.nombre }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Precio</th>
-                                                                    <td>{{ entity.precio }}</td>
+                                                                    <td>{{ entity.nombre}}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
                                                 <div class="widget-foot">
-                                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('usuarios')}}')">Regresar</button>
-                                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('usuarios_edit',{id: entity.id})}}')">Editar</button>
+                                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('edificios')}}')">Regresar</button>
+                                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('edificios_edit',{id: entity.id})}}')">Editar</button>
                                                     <div style="float: left; margin-right: 3px;">
-                                                        <form id="formEliminar" action="{{ path('usuarios_delete', { 'id': entity.id }) }}" method="post">
+                                                        <form id="formEliminar" action="{{ path('edificios_delete', { 'id': entity.id }) }}" method="post">
                                                             {{ form_widget(delete_form) }}
                                                         </form>
 							<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
