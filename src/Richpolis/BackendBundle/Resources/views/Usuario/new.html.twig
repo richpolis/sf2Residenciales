@@ -23,14 +23,14 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Configuraciones</h2>
+            <h2 class="pull-left">Usuarios</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
                 <a href="{{path('usuarios')}}"><i class="fa fa-home"></i>Usuarios</a> 
                 <!-- Divider -->
                 <span class="divider">/</span> 
-                <a href="{{path('usuarios_new')}}" class="bread-current">Nuevo recurso</a>
+                <a href="{{path('usuarios_new')}}" class="bread-current">Nuevo usuario</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -44,7 +44,7 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Nuevo recurso</div>
+                                <div class="pull-left">Nuevo usuario</div>
                                 <div class="clearfix"></div>
                             </div>
 
@@ -57,7 +57,7 @@
                                 
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
-                                <button id="botonGuardar" class="btn btn-primary">Crear configuracion</button>
+                                <button id="botonGuardar" class="btn btn-primary">Crear usuario</button>
 
                             </div>
                         </div>  
@@ -87,7 +87,7 @@
 
     <script src="{{asset('js/languages/jquery.validationEngine-es.js')}}"></script> <!-- jQuery Validation Engine Language File -->
     <script src="{{asset('js/jquery.validationEngine.js')}}"></script> <!-- jQuery Validation Engine -->
-
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
     <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 

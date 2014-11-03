@@ -4,11 +4,13 @@ namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * Comentario
  *
- * @ORM\Table()
+ * @ORM\Table(name="comentarios")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ComentarioRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Comentario
 {
@@ -22,9 +24,24 @@ class Comentario
     private $id;
 
     /**
-     * @var string
+     * @var \Residencial
+     * @todo Administrador de la residencial
      *
-     * @ORM\Column(name="usuario", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var \Usuario
+     * @todo Usuario del edificio
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
      */
     private $usuario;
 
@@ -36,119 +53,50 @@ class Comentario
     private $comentario;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="fecha", type="datetime")
-     */
-    private $fecha;
-
-    /**
      * @var integer
      *
-     * @ORM\Column(name="respuesta", type="integer")
+     * @ORM\Column(name="nivel", type="integer")
      */
-    private $respuesta;
-
+    private $nivel;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Richpolis\FrontendBundle\Entity\Comentario", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Richpolis\FrontendBundle\Entity\Comentario", mappedBy="parent")
+     * @ORM\OrderBy({"id" = "ASC"})
+     */
+    private $children;
 
     /**
-     * Get id
+     * @var \DateTime
      *
-     * @return integer 
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
+    private $createdAt;
+    
     /**
-     * Set usuario
+     * @var \Boolean
      *
-     * @param string $usuario
-     * @return Comentario
+     * @ORM\Column(name="is_administrador", type="boolean")
      */
-    public function setUsuario($usuario)
-    {
-        $this->usuario = $usuario;
+    private $isAdmin;
 
-        return $this;
-    }
-
+    /*
+     * Timestable
+     */
+    
     /**
-     * Get usuario
-     *
-     * @return string 
+     * @ORM\PrePersist
      */
-    public function getUsuario()
+    public function setCreatedAtValue()
     {
-        return $this->usuario;
-    }
-
-    /**
-     * Set comentario
-     *
-     * @param string $comentario
-     * @return Comentario
-     */
-    public function setComentario($comentario)
-    {
-        $this->comentario = $comentario;
-
-        return $this;
-    }
-
-    /**
-     * Get comentario
-     *
-     * @return string 
-     */
-    public function getComentario()
-    {
-        return $this->comentario;
-    }
-
-    /**
-     * Set fecha
-     *
-     * @param \DateTime $fecha
-     * @return Comentario
-     */
-    public function setFecha($fecha)
-    {
-        $this->fecha = $fecha;
-
-        return $this;
-    }
-
-    /**
-     * Get fecha
-     *
-     * @return \DateTime 
-     */
-    public function getFecha()
-    {
-        return $this->fecha;
-    }
-
-    /**
-     * Set respuesta
-     *
-     * @param integer $respuesta
-     * @return Comentario
-     */
-    public function setRespuesta($respuesta)
-    {
-        $this->respuesta = $respuesta;
-
-        return $this;
-    }
-
-    /**
-     * Get respuesta
-     *
-     * @return integer 
-     */
-    public function getRespuesta()
-    {
-        return $this->respuesta;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
 }

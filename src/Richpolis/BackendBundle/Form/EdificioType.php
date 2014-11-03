@@ -15,8 +15,8 @@ class EdificioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nombre')
-            ->add('residencial')
+            ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
+            ->add('residencial',null,array('attr'=>array('class'=>'form-control')))
         ;
     }
     

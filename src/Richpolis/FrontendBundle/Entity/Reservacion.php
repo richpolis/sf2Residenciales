@@ -3,12 +3,14 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints  as Assert;
 
 /**
  * Reservacion
  *
- * @ORM\Table()
+ * @ORM\Table(name="reservaciones")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ReservacionRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Reservacion
 {
@@ -22,30 +24,31 @@ class Reservacion
     private $id;
 
     /**
-     * @var string
+     * @var \Recurso
+     * @todo Recurso solicitado
      *
-     * @ORM\Column(name="usuario", type="string", length=255)
-     */
-    private $usuario;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="recurso", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Recurso")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="recurso_id", referencedColumnName="id")
+     * })
      */
     private $recurso;
 
     /**
-     * @var \DateTime
+     * @var \Usuario
+     * @todo Usuario que solicito la reservacion
      *
-     * @ORM\Column(name="fechaApartado", type="datetime")
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
+     * })
      */
-    private $fechaApartado;
-
+    private $usuario;    
+    
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fechaEvento", type="datetimetz")
+     * @ORM\Column(name="fechaEvento", type="datetime",nullable=true)
      */
     private $fechaEvento;
 
@@ -56,6 +59,28 @@ class Reservacion
      */
     private $duracion;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
+    }
+    
 
     /**
      * Get id
@@ -65,75 +90,6 @@ class Reservacion
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param string $usuario
-     * @return Reservacion
-     */
-    public function setUsuario($usuario)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return string 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
-
-    /**
-     * Set recurso
-     *
-     * @param string $recurso
-     * @return Reservacion
-     */
-    public function setRecurso($recurso)
-    {
-        $this->recurso = $recurso;
-
-        return $this;
-    }
-
-    /**
-     * Get recurso
-     *
-     * @return string 
-     */
-    public function getRecurso()
-    {
-        return $this->recurso;
-    }
-
-    /**
-     * Set fechaApartado
-     *
-     * @param \DateTime $fechaApartado
-     * @return Reservacion
-     */
-    public function setFechaApartado($fechaApartado)
-    {
-        $this->fechaApartado = $fechaApartado;
-
-        return $this;
-    }
-
-    /**
-     * Get fechaApartado
-     *
-     * @return \DateTime 
-     */
-    public function getFechaApartado()
-    {
-        return $this->fechaApartado;
     }
 
     /**
@@ -180,5 +136,74 @@ class Reservacion
     public function getDuracion()
     {
         return $this->duracion;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Reservacion
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set recurso
+     *
+     * @param \Richpolis\BackendBundle\Entity\Recurso $recurso
+     * @return Reservacion
+     */
+    public function setRecurso(\Richpolis\BackendBundle\Entity\Recurso $recurso = null)
+    {
+        $this->recurso = $recurso;
+
+        return $this;
+    }
+
+    /**
+     * Get recurso
+     *
+     * @return \Richpolis\BackendBundle\Entity\Recurso 
+     */
+    public function getRecurso()
+    {
+        return $this->recurso;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Reservacion
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
     }
 }

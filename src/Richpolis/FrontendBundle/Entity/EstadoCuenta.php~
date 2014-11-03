@@ -3,12 +3,16 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 /**
  * EstadoCuenta
  *
- * @ORM\Table()
+ * @ORM\Table(name="estadodecuenta")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\EstadoCuentaRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class EstadoCuenta
 {
@@ -22,133 +26,53 @@ class EstadoCuenta
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="usuario", type="integer")
-     */
-    private $usuario;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="fecha", type="date")
-     */
-    private $fecha;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="cargo", type="decimal")
+     * @Assert\NotBlank(message="Ingresa un monto a cargo")
      */
     private $cargo;
 
     /**
      * @var integer
+     * @todo Tipo de cargo aplicado, o la causa
      *
      * @ORM\Column(name="tipo", type="integer")
      */
     private $tipo;
+    
+    /**
+     * @var \Usuario
+     * @todo Usuario del estado de cuenta
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
+     * })
+     */
+    private $usuario;
 
 
     /**
-     * Get id
+     * @var \DateTime
      *
-     * @return integer 
+     * @ORM\Column(name="created_at", type="date")
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
     /**
-     * Set usuario
-     *
-     * @param integer $usuario
-     * @return EstadoCuenta
+     * @ORM\PrePersist
      */
-    public function setUsuario($usuario)
+    public function setCreatedAtValue()
     {
-        $this->usuario = $usuario;
-
-        return $this;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
 
-    /**
-     * Get usuario
-     *
-     * @return integer 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
-
-    /**
-     * Set fecha
-     *
-     * @param \DateTime $fecha
-     * @return EstadoCuenta
-     */
-    public function setFecha($fecha)
-    {
-        $this->fecha = $fecha;
-
-        return $this;
-    }
-
-    /**
-     * Get fecha
-     *
-     * @return \DateTime 
-     */
-    public function getFecha()
-    {
-        return $this->fecha;
-    }
-
-    /**
-     * Set cargo
-     *
-     * @param string $cargo
-     * @return EstadoCuenta
-     */
-    public function setCargo($cargo)
-    {
-        $this->cargo = $cargo;
-
-        return $this;
-    }
-
-    /**
-     * Get cargo
-     *
-     * @return string 
-     */
-    public function getCargo()
-    {
-        return $this->cargo;
-    }
-
-    /**
-     * Set tipo
-     *
-     * @param integer $tipo
-     * @return EstadoCuenta
-     */
-    public function setTipo($tipo)
-    {
-        $this->tipo = $tipo;
-
-        return $this;
-    }
-
-    /**
-     * Get tipo
-     *
-     * @return integer 
-     */
-    public function getTipo()
-    {
-        return $this->tipo;
-    }
 }

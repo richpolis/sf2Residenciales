@@ -1,0 +1,48 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Aviso</h1>
+
+    <table class="record_properties">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Titulo</th>
+                <td>{{ entity.titulo }}</td>
+            </tr>
+            <tr>
+                <th>Aviso</th>
+                <td>{{ entity.aviso }}</td>
+            </tr>
+            <tr>
+                <th>Tipoacceso</th>
+                <td>{{ entity.tipoAcceso }}</td>
+            </tr>
+            <tr>
+                <th>Link</th>
+                <td>{{ entity.link }}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{{ entity.createdAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <ul class="record_actions">
+    <li>
+        <a href="{{ path('avisos') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('avisos_edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

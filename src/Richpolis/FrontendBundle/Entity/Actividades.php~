@@ -3,12 +3,14 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Actividades
  *
- * @ORM\Table()
+ * @ORM\Table(name="actividades")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ActividadesRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Actividades
 {
@@ -25,6 +27,7 @@ class Actividades
      * @var string
      *
      * @ORM\Column(name="nombre", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa un nombre a la actividad")
      */
     private $nombre;
 
@@ -36,89 +39,35 @@ class Actividades
     private $descripcion;
 
     /**
+     * @var \Residencial
+     * @todo Administrador de la residencial
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+
+    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fecha", type="date")
+     * @ORM\Column(name="created_at", type="date")
      */
-    private $fecha;
-
-
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
     /**
-     * Get id
-     *
-     * @return integer 
+     * @ORM\PrePersist
      */
-    public function getId()
+    public function setCreatedAtValue()
     {
-        return $this->id;
-    }
-
-    /**
-     * Set nombre
-     *
-     * @param string $nombre
-     * @return Actividades
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    /**
-     * Get nombre
-     *
-     * @return string 
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
-
-    /**
-     * Set descripcion
-     *
-     * @param string $descripcion
-     * @return Actividades
-     */
-    public function setDescripcion($descripcion)
-    {
-        $this->descripcion = $descripcion;
-
-        return $this;
-    }
-
-    /**
-     * Get descripcion
-     *
-     * @return string 
-     */
-    public function getDescripcion()
-    {
-        return $this->descripcion;
-    }
-
-    /**
-     * Set fecha
-     *
-     * @param \DateTime $fecha
-     * @return Actividades
-     */
-    public function setFecha($fecha)
-    {
-        $this->fecha = $fecha;
-
-        return $this;
-    }
-
-    /**
-     * Get fecha
-     *
-     * @return \DateTime 
-     */
-    public function getFecha()
-    {
-        return $this->fecha;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
 }

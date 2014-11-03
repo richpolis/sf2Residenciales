@@ -3,12 +3,16 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 /**
  * Documento
  *
- * @ORM\Table()
+ * @ORM\Table(name="documentos")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\DocumentoRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Documento
 {
@@ -24,14 +28,15 @@ class Documento
     /**
      * @var string
      *
-     * @ORM\Column(name="nombre", type="string", length=255)
+     * @ORM\Column(name="titulo", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa un titulo al documento")
      */
-    private $nombre;
+    private $titulo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="descripcion", type="string", length=255)
+     * @ORM\Column(name="descripcion", type="text")
      */
     private $descripcion;
 
@@ -45,110 +50,41 @@ class Documento
     /**
      * @var string
      *
-     * @ORM\Column(name="tipoArchivo", type="string", length=255)
+     * @ORM\Column(name="tipoArchivo", type="integer",nullable=false)
      */
     private $tipoArchivo;
 
-
     /**
-     * Get id
+     * @var \Residencial
+     * @todo Administrador de la residencial
      *
-     * @return integer 
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
+    private $residencial;
+    
     /**
-     * Set nombre
+     * @var \DateTime
      *
-     * @param string $nombre
-     * @return Documento
+     * @ORM\Column(name="created_at", type="datetime",nullable=true)
      */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
     /**
-     * Get nombre
-     *
-     * @return string 
+     * @ORM\PrePersist
      */
-    public function getNombre()
+    public function setCreatedAtValue()
     {
-        return $this->nombre;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
-
-    /**
-     * Set descripcion
-     *
-     * @param string $descripcion
-     * @return Documento
-     */
-    public function setDescripcion($descripcion)
-    {
-        $this->descripcion = $descripcion;
-
-        return $this;
-    }
-
-    /**
-     * Get descripcion
-     *
-     * @return string 
-     */
-    public function getDescripcion()
-    {
-        return $this->descripcion;
-    }
-
-    /**
-     * Set archivo
-     *
-     * @param string $archivo
-     * @return Documento
-     */
-    public function setArchivo($archivo)
-    {
-        $this->archivo = $archivo;
-
-        return $this;
-    }
-
-    /**
-     * Get archivo
-     *
-     * @return string 
-     */
-    public function getArchivo()
-    {
-        return $this->archivo;
-    }
-
-    /**
-     * Set tipoArchivo
-     *
-     * @param string $tipoArchivo
-     * @return Documento
-     */
-    public function setTipoArchivo($tipoArchivo)
-    {
-        $this->tipoArchivo = $tipoArchivo;
-
-        return $this;
-    }
-
-    /**
-     * Get tipoArchivo
-     *
-     * @return string 
-     */
-    public function getTipoArchivo()
-    {
-        return $this->tipoArchivo;
-    }
+    
 }

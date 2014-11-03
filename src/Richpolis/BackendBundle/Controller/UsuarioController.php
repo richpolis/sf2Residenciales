@@ -52,6 +52,7 @@ class UsuarioController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
 
@@ -79,7 +80,7 @@ class UsuarioController extends Controller
             'method' => 'POST',
         ));
 
-        //$form->add('submit', 'submit', array('label' => 'Create'));
+        ////$form->add('submit', 'submit', array('label' => 'Create'));
 
         return $form;
     }
@@ -170,7 +171,7 @@ class UsuarioController extends Controller
             'method' => 'PUT',
         ));
 
-        //$form->add('submit', 'submit', array('label' => 'Update'));
+        ////$form->add('submit', 'submit', array('label' => 'Update'));
 
         return $form;
     }
@@ -195,10 +196,19 @@ class UsuarioController extends Controller
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
-        if ($editForm->isValid()) {
-            $em->flush();
+        //obtiene la contraseña actual
+        $current_pass = $entity->getPassword();
 
-            return $this->redirect($this->generateUrl('usuarios_edit', array('id' => $id)));
+        if ($editForm->isValid()) {
+            if (null == $entity->getPassword()) {
+                // El usuario no cambia su contraseña.
+                $entity->setPassword($current_pass);
+            } else {
+                // actualizamos la contraseña.
+                $this->setSecurePassword($entity);
+            }
+            $em->flush();
+            return $this->redirect($this->generateUrl('usuarios_show', array('id' => $id)));
         }
 
         return array(
@@ -246,8 +256,18 @@ class UsuarioController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('usuarios_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            //->add('submit', 'submit', array('label' => 'Delete'))
+            ////->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+
+    private function setSecurePassword(&$entity) {
+        // encoder
+        $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
+        $passwordCodificado = $encoder->encodePassword(
+                    $entity->getPassword(),
+                    $entity->getSalt()
+        );
+        $entity->setPassword($passwordCodificado);
     }
 }

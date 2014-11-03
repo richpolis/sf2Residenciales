@@ -3,12 +3,16 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 /**
  * Aviso
  *
- * @ORM\Table()
+ * @ORM\Table(name="avisos")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\AvisoRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Aviso
 {
@@ -24,9 +28,10 @@ class Aviso
     /**
      * @var string
      *
-     * @ORM\Column(name="nombre", type="string", length=255)
+     * @ORM\Column(name="titulo", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa el titulo del aviso")
      */
-    private $nombre;
+    private $titulo;
 
     /**
      * @var string
@@ -38,14 +43,29 @@ class Aviso
     /**
      * @var integer
      *
-     * @ORM\Column(name="tipo", type="integer")
+     * @ORM\Column(name="tipo_acceso", type="integer")
      */
-    private $tipo;
+    private $tipoAcceso;
 
     /**
-     * @var integer
+     * @var \Residencial
+     * @todo Residencial del aviso
      *
-     * @ORM\Column(name="usuario", type="integer")
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var \Usuario
+     * @todo Usuario del aviso
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
+     * })
      */
     private $usuario;
 
@@ -55,130 +75,27 @@ class Aviso
      * @ORM\Column(name="link", type="string", length=255)
      */
     private $link;
-
-
+    
     /**
-     * Get id
+     * @var \DateTime
      *
-     * @return integer 
+     * @ORM\Column(name="created_at", type="datetime",nullable=true)
      */
-    public function getId()
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
     {
-        return $this->id;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
 
-    /**
-     * Set nombre
-     *
-     * @param string $nombre
-     * @return Aviso
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    /**
-     * Get nombre
-     *
-     * @return string 
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
-
-    /**
-     * Set aviso
-     *
-     * @param string $aviso
-     * @return Aviso
-     */
-    public function setAviso($aviso)
-    {
-        $this->aviso = $aviso;
-
-        return $this;
-    }
-
-    /**
-     * Get aviso
-     *
-     * @return string 
-     */
-    public function getAviso()
-    {
-        return $this->aviso;
-    }
-
-    /**
-     * Set tipo
-     *
-     * @param integer $tipo
-     * @return Aviso
-     */
-    public function setTipo($tipo)
-    {
-        $this->tipo = $tipo;
-
-        return $this;
-    }
-
-    /**
-     * Get tipo
-     *
-     * @return integer 
-     */
-    public function getTipo()
-    {
-        return $this->tipo;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param integer $usuario
-     * @return Aviso
-     */
-    public function setUsuario($usuario)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return integer 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
-
-    /**
-     * Set link
-     *
-     * @param string $link
-     * @return Aviso
-     */
-    public function setLink($link)
-    {
-        $this->link = $link;
-
-        return $this;
-    }
-
-    /**
-     * Get link
-     *
-     * @return string 
-     */
-    public function getLink()
-    {
-        return $this->link;
-    }
 }

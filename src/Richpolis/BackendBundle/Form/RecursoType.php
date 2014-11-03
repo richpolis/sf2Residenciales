@@ -15,10 +15,10 @@ class RecursoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nombre')
-            ->add('tipoAcceso')
-            ->add('precio')
-            ->add('edificio')
+            ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
+            ->add('tipoAcceso','checkbox',array('attr'=>array('class'=>'form-control')))
+            ->add('precio','money',array('attr'=>array('class'=>'form-control')))
+            ->add('edificio',null,array('attr'=>array('class'=>'form-control')))
         ;
     }
     

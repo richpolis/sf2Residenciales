@@ -11,6 +11,10 @@ class Richsys
     const TIPO_ARCHIVO_LINK=3;
     const TIPO_ARCHIVO_MUSICA=4;
     const TIPO_ARCHIVO_FLASH=5;
+    
+    const TIPO_ACCESO_GENERAL = 1;
+    const TIPO_ACCESO_PRIVADO = 2;
+    
         
     static public $sTipoArchivo=array(
         self::TIPO_ARCHIVO_IMAGEN=>'Imagen',

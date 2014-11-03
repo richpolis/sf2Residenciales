@@ -4,11 +4,13 @@ namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * Comentario
  *
- * @ORM\Table()
+ * @ORM\Table(name="comentarios")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ComentarioRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Comentario
 {
@@ -22,9 +24,24 @@ class Comentario
     private $id;
 
     /**
-     * @var string
+     * @var \Residencial
+     * @todo Administrador de la residencial
      *
-     * @ORM\Column(name="usuario", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var \Usuario
+     * @todo Usuario del edificio
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
      */
     private $usuario;
 
@@ -36,19 +53,59 @@ class Comentario
     private $comentario;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="fecha", type="datetime")
-     */
-    private $fecha;
-
-    /**
      * @var integer
      *
-     * @ORM\Column(name="respuesta", type="integer")
+     * @ORM\Column(name="nivel", type="integer")
      */
-    private $respuesta;
+    private $nivel;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Richpolis\FrontendBundle\Entity\Comentario", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Richpolis\FrontendBundle\Entity\Comentario", mappedBy="parent")
+     * @ORM\OrderBy({"id" = "ASC"})
+     */
+    private $children;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+    
+    /**
+     * @var \Boolean
+     *
+     * @ORM\Column(name="is_administrador", type="boolean")
+     */
+    private $isAdmin;
+
+    /*
+     * Timestable
+     */
+    
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -58,29 +115,6 @@ class Comentario
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param string $usuario
-     * @return Comentario
-     */
-    public function setUsuario($usuario)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return string 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
     }
 
     /**
@@ -107,48 +141,173 @@ class Comentario
     }
 
     /**
-     * Set fecha
+     * Set nivel
      *
-     * @param \DateTime $fecha
+     * @param integer $nivel
      * @return Comentario
      */
-    public function setFecha($fecha)
+    public function setNivel($nivel)
     {
-        $this->fecha = $fecha;
+        $this->nivel = $nivel;
 
         return $this;
     }
 
     /**
-     * Get fecha
-     *
-     * @return \DateTime 
-     */
-    public function getFecha()
-    {
-        return $this->fecha;
-    }
-
-    /**
-     * Set respuesta
-     *
-     * @param integer $respuesta
-     * @return Comentario
-     */
-    public function setRespuesta($respuesta)
-    {
-        $this->respuesta = $respuesta;
-
-        return $this;
-    }
-
-    /**
-     * Get respuesta
+     * Get nivel
      *
      * @return integer 
      */
-    public function getRespuesta()
+    public function getNivel()
     {
-        return $this->respuesta;
+        return $this->nivel;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Comentario
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set isAdmin
+     *
+     * @param boolean $isAdmin
+     * @return Comentario
+     */
+    public function setIsAdmin($isAdmin)
+    {
+        $this->isAdmin = $isAdmin;
+
+        return $this;
+    }
+
+    /**
+     * Get isAdmin
+     *
+     * @return boolean 
+     */
+    public function getIsAdmin()
+    {
+        return $this->isAdmin;
+    }
+
+    /**
+     * Set residencial
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
+     * @return Comentario
+     */
+    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    {
+        $this->residencial = $residencial;
+
+        return $this;
+    }
+
+    /**
+     * Get residencial
+     *
+     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     */
+    public function getResidencial()
+    {
+        return $this->residencial;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Comentario
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Comentario $parent
+     * @return Comentario
+     */
+    public function setParent(\Richpolis\FrontendBundle\Entity\Comentario $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \Richpolis\FrontendBundle\Entity\Comentario 
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Add children
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Comentario $children
+     * @return Comentario
+     */
+    public function addChild(\Richpolis\FrontendBundle\Entity\Comentario $children)
+    {
+        $this->children[] = $children;
+
+        return $this;
+    }
+
+    /**
+     * Remove children
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Comentario $children
+     */
+    public function removeChild(\Richpolis\FrontendBundle\Entity\Comentario $children)
+    {
+        $this->children->removeElement($children);
+    }
+
+    /**
+     * Get children
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getChildren()
+    {
+        return $this->children;
     }
 }

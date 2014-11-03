@@ -3,12 +3,14 @@
 namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints  as Assert;
 
 /**
  * Reservacion
  *
- * @ORM\Table()
+ * @ORM\Table(name="reservaciones")
  * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ReservacionRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Reservacion
 {
@@ -22,30 +24,31 @@ class Reservacion
     private $id;
 
     /**
-     * @var string
+     * @var \Recurso
+     * @todo Recurso solicitado
      *
-     * @ORM\Column(name="usuario", type="string", length=255)
-     */
-    private $usuario;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="recurso", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Recurso")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="recurso_id", referencedColumnName="id")
+     * })
      */
     private $recurso;
 
     /**
-     * @var \DateTime
+     * @var \Usuario
+     * @todo Usuario que solicito la reservacion
      *
-     * @ORM\Column(name="fechaApartado", type="datetime")
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
+     * })
      */
-    private $fechaApartado;
-
+    private $usuario;    
+    
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fechaEvento", type="datetimetz")
+     * @ORM\Column(name="fechaEvento", type="datetime",nullable=true)
      */
     private $fechaEvento;
 
@@ -56,129 +59,26 @@ class Reservacion
      */
     private $duracion;
 
-
     /**
-     * Get id
+     * @var \DateTime
      *
-     * @return integer 
+     * @ORM\Column(name="created_at", type="datetime")
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
+    private $createdAt;
+    
+    /*
+     * Timestable
+     */
+    
     /**
-     * Set usuario
-     *
-     * @param string $usuario
-     * @return Reservacion
+     * @ORM\PrePersist
      */
-    public function setUsuario($usuario)
+    public function setCreatedAtValue()
     {
-        $this->usuario = $usuario;
-
-        return $this;
+        if(!$this->getCreatedAt())
+        {
+          $this->createdAt = new \DateTime();
+        }
     }
-
-    /**
-     * Get usuario
-     *
-     * @return string 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
-
-    /**
-     * Set recurso
-     *
-     * @param string $recurso
-     * @return Reservacion
-     */
-    public function setRecurso($recurso)
-    {
-        $this->recurso = $recurso;
-
-        return $this;
-    }
-
-    /**
-     * Get recurso
-     *
-     * @return string 
-     */
-    public function getRecurso()
-    {
-        return $this->recurso;
-    }
-
-    /**
-     * Set fechaApartado
-     *
-     * @param \DateTime $fechaApartado
-     * @return Reservacion
-     */
-    public function setFechaApartado($fechaApartado)
-    {
-        $this->fechaApartado = $fechaApartado;
-
-        return $this;
-    }
-
-    /**
-     * Get fechaApartado
-     *
-     * @return \DateTime 
-     */
-    public function getFechaApartado()
-    {
-        return $this->fechaApartado;
-    }
-
-    /**
-     * Set fechaEvento
-     *
-     * @param \DateTime $fechaEvento
-     * @return Reservacion
-     */
-    public function setFechaEvento($fechaEvento)
-    {
-        $this->fechaEvento = $fechaEvento;
-
-        return $this;
-    }
-
-    /**
-     * Get fechaEvento
-     *
-     * @return \DateTime 
-     */
-    public function getFechaEvento()
-    {
-        return $this->fechaEvento;
-    }
-
-    /**
-     * Set duracion
-     *
-     * @param integer $duracion
-     * @return Reservacion
-     */
-    public function setDuracion($duracion)
-    {
-        $this->duracion = $duracion;
-
-        return $this;
-    }
-
-    /**
-     * Get duracion
-     *
-     * @return integer 
-     */
-    public function getDuracion()
-    {
-        return $this->duracion;
-    }
+    
 }
