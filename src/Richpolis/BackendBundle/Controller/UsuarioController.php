@@ -15,7 +15,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * Usuario controller.
  *
- * @Route("/backend/usuarios")
+ * @Route("/usuarios")
  */
 class UsuarioController extends Controller
 {

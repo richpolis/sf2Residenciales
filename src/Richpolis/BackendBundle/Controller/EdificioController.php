@@ -15,7 +15,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * Edificio controller.
  *
- * @Route("/backend/edificios")
+ * @Route("/edificios")
  */
 class EdificioController extends Controller
 {

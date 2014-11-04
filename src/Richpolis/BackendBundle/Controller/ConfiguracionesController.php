@@ -17,7 +17,7 @@ use Richpolis\BackendBundle\Form\ConfiguracionesStringType;
 /**
  * Configuraciones controller.
  *
- * @Route("/backend/configuraciones")
+ * @Route("/configuraciones")
  */
 class ConfiguracionesController extends Controller
 {

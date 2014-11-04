@@ -15,7 +15,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * Recurso controller.
  *
- * @Route("/backend/recursos")
+ * @Route("/recursos")
  */
 class RecursoController extends Controller
 {

@@ -26,7 +26,7 @@
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('backend_homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
                     <Divider>
                         <span class="divider">/</span> 
                         <a href="{{path('residenciales')}}" class="bread-current">Residenciales</a>
@@ -57,20 +57,16 @@
                                                     <div class="padd">    <table class="record_properties">
                                                             <tbody>
                                                                 <tr>
-                                                                    <th>Id</th>
+                                                                    <th>Id:</th>
                                                                     <td>{{ entity.id }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Nombre</th>
+                                                                    <th>Residencial:</th>
                                                                     <td>{{ entity.nombre }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Porcentaje</th>
+                                                                    <th>Porcentaje:</th>
                                                                     <td>{{ entity.porcentaje }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Username</th>
-                                                                    <td>{{ entity.username }}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>

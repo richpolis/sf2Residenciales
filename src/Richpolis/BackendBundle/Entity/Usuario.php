@@ -96,6 +96,14 @@ class Usuario implements UserInterface, \Serializable
      * @ORM\Column(name="numero", type="string", length=100, nullable=true)
      */
     private $numero;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="grupo", type="integer")
+     */
+    private $grupo;
 
     /**
      * @var \DateTime
@@ -111,9 +119,32 @@ class Usuario implements UserInterface, \Serializable
      */
     private $updatedAt;
     
+    const GRUPO_USUARIOS=1;
+    const GRUPO_ADMIN=2;
+    const GRUPO_SUPER_ADMIN=3;
+    
     public function __toString(){
-        return $this->getUsername();
+        return $this->getNombre();
     }
+    
+    public function getStringTipoGrupo(){
+        $arreglo = $this->getArrayTipoGrupo();
+        return $arreglo[$this->getGrupo()];
+    }
+    
+    static function getArrayTipoGrupo(){
+        $sTipoGrupo=array(
+            self::GRUPO_USUARIOS=>'Usuarios',
+            self::GRUPO_ADMIN=>'Administrador',
+            self::GRUPO_SUPER_ADMIN=>'Superadmin',
+        );
+        return $sTipoGrupo;
+    }
+    
+    static function getPreferedTipoGrupo(){
+        return array(self::GRUPO_USUARIOS);
+    }
+
     
     public function __construct()
     {
@@ -121,153 +152,6 @@ class Usuario implements UserInterface, \Serializable
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
     }
     
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     * @return Usuarios
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string 
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return Usuarios
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string 
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     * @return Usuarios
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string 
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set nombre
-     *
-     * @param string $nombre
-     * @return Usuarios
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-    
-        return $this;
-    }
-
-    /**
-     * Get nombre
-     *
-     * @return string 
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Usuarios
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-    
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return Usuarios
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-    
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime 
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
 
     /*
      * Timestable
@@ -296,61 +180,20 @@ class Usuario implements UserInterface, \Serializable
         $this->updatedAt = new \DateTime();
     }
     
-    function eraseCredentials()
+    public function eraseCredentials()
     {
-    }
-
-    function getRoles()
-    {
-        return array('ROLE_USER','ROLE_API');
-    }
-
-    /**
-     * Set salt
-     *
-     * @param string $salt
-     * @return Usuario
-     */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
-    
-        return $this;
-    }
-
-    /**
-     * Get salt
-     *
-     * @return string 
-     */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    /**
-     * Set imagen
-     *
-     * @param string $imagen
-     * @return Usuario
-     */
-    public function setImagen($imagen)
-    {
-        $this->imagen = $imagen;
-    
-        return $this;
-    }
-
-    /**
-     * Get imagen
-     *
-     * @return string 
-     */
-    public function getImagen()
-    {
-        return $this->imagen;
     }
     
+    public function getRoles() {
+        if ($this->getGrupo() == self::GRUPO_USUARIOS) {
+            return array('ROLE_USER', 'ROLE_API');
+        } elseif ($this->getGrupo() == self::GRUPO_SUPER_ADMIN) {
+            return array('ROLE_SUPER_ADMIN', 'ROLE_API');
+        } else {
+            return array('ROLE_ADMIN', 'ROLE_API');
+        }
+    }
+
     /*** uploads ***/
     
     /**
@@ -481,8 +324,134 @@ class Usuario implements UserInterface, \Serializable
             $this->nombre
         ) = unserialize($serialized);
     }
+
     
-    
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     * @return Usuario
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string 
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return Usuario
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string 
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return Usuario
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    /**
+     * Get salt
+     *
+     * @return string 
+     */
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
+    /**
+     * Set nombre
+     *
+     * @param string $nombre
+     * @return Usuario
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * Get nombre
+     *
+     * @return string 
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Usuario
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
     /**
      * Set telefono
@@ -505,6 +474,29 @@ class Usuario implements UserInterface, \Serializable
     public function getTelefono()
     {
         return $this->telefono;
+    }
+
+    /**
+     * Set imagen
+     *
+     * @param string $imagen
+     * @return Usuario
+     */
+    public function setImagen($imagen)
+    {
+        $this->imagen = $imagen;
+
+        return $this;
+    }
+
+    /**
+     * Get imagen
+     *
+     * @return string 
+     */
+    public function getImagen()
+    {
+        return $this->imagen;
     }
 
     /**
@@ -531,6 +523,52 @@ class Usuario implements UserInterface, \Serializable
     }
 
     /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Usuario
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Usuario
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
      * Set edificio
      *
      * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
@@ -551,5 +589,28 @@ class Usuario implements UserInterface, \Serializable
     public function getEdificio()
     {
         return $this->edificio;
+    }
+
+    /**
+     * Set grupo
+     *
+     * @param integer $grupo
+     * @return Usuario
+     */
+    public function setGrupo($grupo)
+    {
+        $this->grupo = $grupo;
+
+        return $this;
+    }
+
+    /**
+     * Get grupo
+     *
+     * @return integer 
+     */
+    public function getGrupo()
+    {
+        return $this->grupo;
     }
 }

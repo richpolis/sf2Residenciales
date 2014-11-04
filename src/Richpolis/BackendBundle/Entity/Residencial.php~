@@ -3,9 +3,7 @@
 namespace Richpolis\BackendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Residencial
@@ -13,9 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="residenciales")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\ResidencialRepository")
  * @ORM\HasLifecycleCallbacks()
- * @UniqueEntity("username") 
  */
-class Residencial implements UserInterface, \Serializable
+class Residencial implements \Serializable
 {
     /**
      * @var integer
@@ -41,29 +38,6 @@ class Residencial implements UserInterface, \Serializable
      */
     private $porcentaje;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="username", type="string", length=100, nullable=false)
-     * @Assert\NotBlank()
-     * 
-     */
-    private $username;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=255, nullable=false)
-     */
-    private $password;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="salt", type="string", length=255)
-     */
-    private $salt;
-    
     public function __toString() {
         return $this->nombre;
     }
@@ -76,12 +50,6 @@ class Residencial implements UserInterface, \Serializable
      * @ORM\OrderBy({"nombre" = "ASC"})
      */
     private $edificios;
-
-    public function __construct()
-    {
-        // may not be needed, see section on salt below
-        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-    }
 
     /**
      * Get id
@@ -137,84 +105,6 @@ class Residencial implements UserInterface, \Serializable
     public function getPorcentaje()
     {
         return $this->porcentaje;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     * @return Residencial
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string 
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return Residencial
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string 
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Set salt
-     *
-     * @param string $salt
-     * @return Residencial
-     */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
-
-        return $this;
-    }
-
-    /**
-     * Get salt
-     *
-     * @return string 
-     */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    public function eraseCredentials()
-    {
-    }
-
-    public function getRoles()
-    {
-        return array('ROLE_ADMIN','ROLE_API');
     }
 
     /**

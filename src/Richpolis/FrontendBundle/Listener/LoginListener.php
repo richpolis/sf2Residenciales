@@ -32,7 +32,7 @@ class LoginListener
             if($this->usuario->getIsActive()) {
                 $session = $this->container->get('session');
                 if($this->contexto->isGranted('ROLE_SUPER_ADMIN')){
-                    $irA = $this->router->generate('backend_homepage');
+                    $irA = $this->router->generate('homepage');
                 }else{
                     $irA = $this->router->generate('homepage');
                 }

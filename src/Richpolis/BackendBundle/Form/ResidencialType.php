@@ -17,9 +17,6 @@ class ResidencialType extends AbstractType
         $builder
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
             ->add('porcentaje',null,array('attr'=>array('class'=>'form-control')))
-            ->add('username','text',array('attr'=>array('class'=>'form-control')))
-            ->add('password','password',array('attr'=>array('class'=>'form-control')))
-            ->add('salt','hidden')
         ;
     }
     

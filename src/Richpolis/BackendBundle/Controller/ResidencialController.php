@@ -15,7 +15,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * Residencial controller.
  *
- * @Route("/backend/residenciales")
+ * @Route("/residenciales")
  */
 class ResidencialController extends Controller
 {
@@ -53,7 +53,6 @@ class ResidencialController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
 
@@ -197,17 +196,7 @@ class ResidencialController extends Controller
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
-        //obtiene la contraseña actual.
-        $current_pass = $entity->getPassword();
-
         if ($editForm->isValid()) {
-            if (null == $entity->getPassword()) {
-                // No se cambia la contraseña. 
-                $entity->setPassword($current_pass);
-            } else {
-                // actualizamos la cntraseña
-                $this->setSecurePassword($entity);
-            }
             $em->flush();
 
             return $this->redirect($this->generateUrl('residenciales_edit', array('id' => $id)));
@@ -261,15 +250,5 @@ class ResidencialController extends Controller
             //->add('submit', 'submit', array('label' => 'Delete','attr'=>array('class'=>'btn btn-danger')))
             ->getForm()
         ;
-    }
-
-    private function setSecurePassword(&$entity) {
-        // encoder
-        $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
-        $passwordCodificado = $encoder->encodePassword(
-                    $entity->getPassword(),
-                    $entity->getSalt()
-        );
-        $entity->setPassword($passwordCodificado);
     }
 }

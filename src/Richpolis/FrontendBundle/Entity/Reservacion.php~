@@ -49,6 +49,8 @@ class Reservacion
      * @var \DateTime
      *
      * @ORM\Column(name="fechaEvento", type="datetime",nullable=true)
+     * @Assert\NotBlank(message="Ingresa la fecha del evento")
+     * @Assert\Date()
      */
     private $fechaEvento;
 
@@ -81,4 +83,129 @@ class Reservacion
         }
     }
     
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set fechaEvento
+     *
+     * @param \DateTime $fechaEvento
+     * @return Reservacion
+     */
+    public function setFechaEvento($fechaEvento)
+    {
+        $this->fechaEvento = $fechaEvento;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaEvento
+     *
+     * @return \DateTime 
+     */
+    public function getFechaEvento()
+    {
+        return $this->fechaEvento;
+    }
+
+    /**
+     * Set duracion
+     *
+     * @param integer $duracion
+     * @return Reservacion
+     */
+    public function setDuracion($duracion)
+    {
+        $this->duracion = $duracion;
+
+        return $this;
+    }
+
+    /**
+     * Get duracion
+     *
+     * @return integer 
+     */
+    public function getDuracion()
+    {
+        return $this->duracion;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Reservacion
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set recurso
+     *
+     * @param \Richpolis\BackendBundle\Entity\Recurso $recurso
+     * @return Reservacion
+     */
+    public function setRecurso(\Richpolis\BackendBundle\Entity\Recurso $recurso = null)
+    {
+        $this->recurso = $recurso;
+
+        return $this;
+    }
+
+    /**
+     * Get recurso
+     *
+     * @return \Richpolis\BackendBundle\Entity\Recurso 
+     */
+    public function getRecurso()
+    {
+        return $this->recurso;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Reservacion
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
 }

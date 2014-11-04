@@ -5,16 +5,14 @@ namespace Richpolis\FrontendBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
-
 /**
- * Documento
+ * Actividades
  *
- * @ORM\Table(name="documentos")
- * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\DocumentoRepository")
+ * @ORM\Table(name="actividades")
+ * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\ActividadesRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Documento
+class Actividad
 {
     /**
      * @var integer
@@ -28,10 +26,10 @@ class Documento
     /**
      * @var string
      *
-     * @ORM\Column(name="titulo", type="string", length=255)
-     * @Assert\NotBlank(message="Ingresa un titulo al documento")
+     * @ORM\Column(name="nombre", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa un nombre a la actividad")
      */
-    private $titulo;
+    private $nombre;
 
     /**
      * @var string
@@ -39,20 +37,6 @@ class Documento
      * @ORM\Column(name="descripcion", type="text")
      */
     private $descripcion;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="archivo", type="string", length=255)
-     */
-    private $archivo;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tipoArchivo", type="integer",nullable=false)
-     */
-    private $tipoArchivo;
 
     /**
      * @var \Residencial
@@ -64,11 +48,11 @@ class Documento
      * })
      */
     private $residencial;
-    
+
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime",nullable=true)
+     * @ORM\Column(name="created_at", type="date")
      */
     private $createdAt;
     
@@ -86,7 +70,6 @@ class Documento
           $this->createdAt = new \DateTime();
         }
     }
-    
 
     /**
      * Get id
@@ -99,33 +82,33 @@ class Documento
     }
 
     /**
-     * Set titulo
+     * Set nombre
      *
-     * @param string $titulo
-     * @return Documento
+     * @param string $nombre
+     * @return Actividades
      */
-    public function setTitulo($titulo)
+    public function setNombre($nombre)
     {
-        $this->titulo = $titulo;
+        $this->nombre = $nombre;
 
         return $this;
     }
 
     /**
-     * Get titulo
+     * Get nombre
      *
      * @return string 
      */
-    public function getTitulo()
+    public function getNombre()
     {
-        return $this->titulo;
+        return $this->nombre;
     }
 
     /**
      * Set descripcion
      *
      * @param string $descripcion
-     * @return Documento
+     * @return Actividades
      */
     public function setDescripcion($descripcion)
     {
@@ -145,56 +128,10 @@ class Documento
     }
 
     /**
-     * Set archivo
-     *
-     * @param string $archivo
-     * @return Documento
-     */
-    public function setArchivo($archivo)
-    {
-        $this->archivo = $archivo;
-
-        return $this;
-    }
-
-    /**
-     * Get archivo
-     *
-     * @return string 
-     */
-    public function getArchivo()
-    {
-        return $this->archivo;
-    }
-
-    /**
-     * Set tipoArchivo
-     *
-     * @param integer $tipoArchivo
-     * @return Documento
-     */
-    public function setTipoArchivo($tipoArchivo)
-    {
-        $this->tipoArchivo = $tipoArchivo;
-
-        return $this;
-    }
-
-    /**
-     * Get tipoArchivo
-     *
-     * @return integer 
-     */
-    public function getTipoArchivo()
-    {
-        return $this->tipoArchivo;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return Documento
+     * @return Actividades
      */
     public function setCreatedAt($createdAt)
     {
@@ -217,7 +154,7 @@ class Documento
      * Set residencial
      *
      * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
-     * @return Documento
+     * @return Actividades
      */
     public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
     {

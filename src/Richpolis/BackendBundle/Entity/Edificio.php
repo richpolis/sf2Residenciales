@@ -63,7 +63,15 @@ class Edificio
     public function __toString() {
         return $this->nombre;
     }
-
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->recursos = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -97,14 +105,7 @@ class Edificio
     {
         return $this->nombre;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->recursos = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    
 
     /**
      * Set residencial

@@ -98,4 +98,175 @@ class Aviso
         }
     }
 
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set titulo
+     *
+     * @param string $titulo
+     * @return Aviso
+     */
+    public function setTitulo($titulo)
+    {
+        $this->titulo = $titulo;
+
+        return $this;
+    }
+
+    /**
+     * Get titulo
+     *
+     * @return string 
+     */
+    public function getTitulo()
+    {
+        return $this->titulo;
+    }
+
+    /**
+     * Set aviso
+     *
+     * @param string $aviso
+     * @return Aviso
+     */
+    public function setAviso($aviso)
+    {
+        $this->aviso = $aviso;
+
+        return $this;
+    }
+
+    /**
+     * Get aviso
+     *
+     * @return string 
+     */
+    public function getAviso()
+    {
+        return $this->aviso;
+    }
+
+    /**
+     * Set tipoAcceso
+     *
+     * @param integer $tipoAcceso
+     * @return Aviso
+     */
+    public function setTipoAcceso($tipoAcceso)
+    {
+        $this->tipoAcceso = $tipoAcceso;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoAcceso
+     *
+     * @return integer 
+     */
+    public function getTipoAcceso()
+    {
+        return $this->tipoAcceso;
+    }
+
+    /**
+     * Set link
+     *
+     * @param string $link
+     * @return Aviso
+     */
+    public function setLink($link)
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * Get link
+     *
+     * @return string 
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Aviso
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set residencial
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
+     * @return Aviso
+     */
+    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    {
+        $this->residencial = $residencial;
+
+        return $this;
+    }
+
+    /**
+     * Get residencial
+     *
+     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     */
+    public function getResidencial()
+    {
+        return $this->residencial;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Aviso
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
 }

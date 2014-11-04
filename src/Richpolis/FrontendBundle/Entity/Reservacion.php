@@ -49,6 +49,8 @@ class Reservacion
      * @var \DateTime
      *
      * @ORM\Column(name="fechaEvento", type="datetime",nullable=true)
+     * @Assert\NotBlank(message="Ingresa la fecha del evento")
+     * @Assert\Date()
      */
     private $fechaEvento;
 

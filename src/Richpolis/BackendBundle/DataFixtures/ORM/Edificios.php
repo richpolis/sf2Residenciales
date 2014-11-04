@@ -33,10 +33,11 @@ class Edificios extends AbstractFixture implements OrderedFixtureInterface, Cont
 
     public function load(ObjectManager $manager)
     {
-        $residencial1 = $manager->getRepository('BackendBundle:Residencial')
-                                ->findOneBy(array('username'=>'RESIDENCIAL_1'));
-        $residencial2 = $manager->getRepository('BackendBundle:Residencial')
-                                ->findOneBy(array('username'=>'RESIDENCIAL_2'));                        
+        // Obtener las residenciales creadas
+        $residencias = $manager->getRepository('BackendBundle:Residencial')
+                               ->findAll();
+        $residencial1 = $residencias[0];
+        $residencial2 = $residencias[1];                        
 
        // areas comunes  residencial 1                      
         $edificio = new Edificio();

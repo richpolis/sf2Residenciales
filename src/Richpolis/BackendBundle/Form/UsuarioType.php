@@ -5,6 +5,7 @@ namespace Richpolis\BackendBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 class UsuarioType extends AbstractType
 {
@@ -24,6 +25,15 @@ class UsuarioType extends AbstractType
             ->add('imagen','hidden')
             ->add('numero','text',array('attr'=>array('class'=>'form-control')))
             ->add('edificio',null,array('attr'=>array('class'=>'form-control')))
+            ->add('grupo','choice',array(
+                'label'=>'Grupo',
+                'empty_value'=>false,
+                'choices'=>Usuario::getArrayTipoGrupo(),
+                'preferred_choices'=>Usuario::getPreferedTipoGrupo(),
+                'attr'=>array(
+                    'class'=>'form-control',
+                    'placeholder'=>'Grupo',
+            )))    
         ;
     }
     
