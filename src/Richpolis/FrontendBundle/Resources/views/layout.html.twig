@@ -94,11 +94,14 @@
         <!-- If the main navigation has sub navigation, then add the class "has_sub" to "li" of main navigation. -->
         <ul id="nav">
             <!-- Main menu with font awesome icon -->
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
             <li>
                 <a {{residenciales}}  href="{{path('residenciales')}}">
                     <i class="fa fa-sitemap"></i> <span>Residenciales</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
             <li>
                 <a {{edificios}}  href="{{path('edificios')}}">
                     <i class="fa fa-sitemap"></i> <span>Edificios</span>
@@ -117,6 +120,32 @@
             <li>
                 <a {{configuraciones}} href="{{path('configuraciones')}}">
                     <i class="fa fa-gears"></i> <span>Configuraciones</span>
+                </a>
+            </li>
+            {% endif %}
+            <li>
+                <a href="{{path('estadodecuentas')}}">
+                    <i class="fa fa-gears"></i> <span>Estado de Cuenta</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('actividades')}}">
+                    <i class="fa fa-gears"></i> <span>Actividades</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('avisos')}}">
+                    <i class="fa fa-gears"></i> <span>Avisos y notificaciones</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('documentos')}}">
+                    <i class="fa fa-gears"></i> <span>Documentos</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('reservaciones')}}">
+                    <i class="fa fa-gears"></i> <span>Reservaciones</span>
                 </a>
             </li>
         </ul>
