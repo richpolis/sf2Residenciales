@@ -15,13 +15,17 @@
 
   {% set route = app.request.get('_route') %}
 
+  {% set homepage = "" %}
   {% set residenciales = "" %}
   {% set edificios = "" %}
   {% set recursos = "" %}   
   {% set usuarios = "" %}
   {% set configuraciones = "" %}
 
-  {% if route == "residenciales" %}
+  
+  {% if route == "homepage" %}
+    {% set homepage = "class=open" %}
+  {% elseif route == "residenciales" %}
     {% set residenciales = "class=open" %}
   {% elseif route == "usuarios" %}
     {% set usuarios = "class=open" %}
@@ -94,6 +98,12 @@
         <!-- If the main navigation has sub navigation, then add the class "has_sub" to "li" of main navigation. -->
         <ul id="nav">
             <!-- Main menu with font awesome icon -->
+            <li>
+                <a {{homepage}}  href="{{path('homepage')}}">
+                    <i class="fa fa-home"></i> <span>Inicio</span>
+                </a>
+            </li>
+            
             {% if is_granted('ROLE_SUPER_ADMIN') %}
             <li>
                 <a {{residenciales}}  href="{{path('residenciales')}}">
