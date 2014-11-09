@@ -15,10 +15,9 @@ class ComentarioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('comentario')
-            ->add('nivel')
-            ->add('createdAt')
-            ->add('isAdmin')
+            ->add('comentario',null,array('attr'=>array('class'=>'form-control')))
+            ->add('nivel','hidden')
+            ->add('isAdmin','hidden')
             ->add('residencial')
             ->add('usuario')
             ->add('parent')

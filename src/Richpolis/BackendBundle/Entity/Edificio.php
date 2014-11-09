@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * Edificio
+ * Usuario
  *
  * @ORM\Table(name="edificios")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\EdificioRepository")
@@ -58,7 +58,7 @@ class Edificio
      * @ORM\OneToMany(targetEntity="Usuario",mappedBy="edificio")
      * @ORM\OrderBy({"nombre" = "ASC"})
      */
-    private $edificios;
+    private $usuarios;
     
     public function __toString() {
         return $this->nombre;
@@ -70,7 +70,7 @@ class Edificio
     public function __construct()
     {
         $this->recursos = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->usuarios = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -87,7 +87,7 @@ class Edificio
      * Set nombre
      *
      * @param string $nombre
-     * @return Edificio
+     * @return Usuario
      */
     public function setNombre($nombre)
     {
@@ -111,7 +111,7 @@ class Edificio
      * Set residencial
      *
      * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
-     * @return Edificio
+     * @return Usuario
      */
     public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
     {
@@ -134,7 +134,7 @@ class Edificio
      * Add recursos
      *
      * @param \Richpolis\BackendBundle\Entity\Recurso $recursos
-     * @return Edificio
+     * @return Usuario
      */
     public function addRecurso(\Richpolis\BackendBundle\Entity\Recurso $recursos)
     {
@@ -164,35 +164,35 @@ class Edificio
     }
 
     /**
-     * Add edificios
+     * Add usuarios
      *
-     * @param \Richpolis\BackendBundle\Entity\Usuario $edificios
-     * @return Edificio
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuarios
+     * @return Usuario
      */
-    public function addEdificio(\Richpolis\BackendBundle\Entity\Usuario $edificios)
+    public function addUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuarios)
     {
-        $this->edificios[] = $edificios;
+        $this->usuarios[] = $usuarios;
 
         return $this;
     }
 
     /**
-     * Remove edificios
+     * Remove usuarios
      *
-     * @param \Richpolis\BackendBundle\Entity\Usuario $edificios
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuarios
      */
-    public function removeEdificio(\Richpolis\BackendBundle\Entity\Usuario $edificios)
+    public function removeUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuarios)
     {
-        $this->edificios->removeElement($edificios);
+        $this->usuarios->removeElement($usuarios);
     }
 
     /**
-     * Get edificios
+     * Get usuarios
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEdificios()
+    public function getUsuarios()
     {
-        return $this->edificios;
+        return $this->usuarios;
     }
 }

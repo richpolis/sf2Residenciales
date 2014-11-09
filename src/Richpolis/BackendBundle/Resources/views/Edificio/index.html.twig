@@ -1,12 +1,7 @@
-{% extends 'BackendBundle::layout.html.twig' %}
+{% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-    <!-- Stylesheets -->
-  <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
-  <!-- Font awesome icon -->
-  <link rel="stylesheet" href="{{asset('css/font-awesome.css')}}"> 
-  <!-- jQuery UI -->
-  <link rel="stylesheet" href="{{asset('css/jquery-ui-1.9.2.custom.min.css')}}"> 
+  {{ parent() }}
   <!-- Datatables -->
   <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
   <!-- Main stylesheet -->
@@ -26,8 +21,15 @@
         <div class="clearfix"></div>
         <!-- Breadcrumb -->
         <div class="bread-crumb">
-          <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
-          <Divider>
+          <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+          <!--Divider-->
+          <span class="divider">/</span>
+          {% if is_granted('ROLE_SUPER_ADMIN') %}
+          <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+          {% else %}
+          <a href="#" class="bread-current">{{residencial}}</a>    
+          {% endif %}    
+          <!--Divider-->
           <span class="divider">/</span> 
           <a href="{{path('edificios')}}" class="bread-current">Edificios</a>
           <a href="{{path('edificios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear edificio</a>
@@ -67,6 +69,8 @@
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('edificios_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('edificios_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('usuarios', { 'edificio': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-user"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('recursos', { 'edificio': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-cubes"></i> </button>
                                 </td>
                            </tr>
                        {% endfor %}

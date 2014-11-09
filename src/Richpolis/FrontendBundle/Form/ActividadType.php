@@ -5,20 +5,23 @@ namespace Richpolis\FrontendBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
+
 
 class ActividadType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $em = $options['em'];
+        $residencialTransformer = new ResidencialToNumberTransformer($em);
         $builder
-            ->add('nombre')
-            ->add('descripcion')
-            ->add('createdAt')
-            ->add('residencial')
+            ->add('nombre',null,array('attr'=>array('class'=>'form-control')))
+            ->add('descripcion',null,array('attr'=>array('class'=>'form-control')))
+            ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
         ;
     }
     
@@ -29,7 +32,10 @@ class ActividadType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'Richpolis\FrontendBundle\Entity\Actividad'
-        ));
+        ))
+        ->setRequired(array('em'))
+        ->setAllowedTypes(array('em'=>'Doctrine\Common\Persistence\ObjectManager'))
+        ;
     }
 
     /**

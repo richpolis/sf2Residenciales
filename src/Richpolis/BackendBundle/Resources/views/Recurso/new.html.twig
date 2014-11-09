@@ -1,12 +1,7 @@
-{% extends 'BackendBundle::layout.html.twig' %}
+{% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
-    <!-- Font awesome icon -->
-    <link rel="stylesheet" href="{{asset('css/font-awesome.css')}}"> 
-    <!-- jQuery UI -->
-    <link rel="stylesheet" href="{{asset('css/jquery-ui-1.9.2.custom.min.css')}}"> 
+  {{ parent() }}
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <!-- Widgets stylesheet -->
@@ -23,12 +18,23 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Configuraciones</h2>
+            <h2 class="pull-left">Recursos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('recursos')}}"><i class="fa fa-home"></i>Recursos</a> 
-                <!-- Divider -->
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
+                <span class="divider">/</span>
+                <a href="{{path('recursos')}}" class="bread-current">Recursos</a>
                 <span class="divider">/</span> 
                 <a href="{{path('recursos_new')}}" class="bread-current">Nuevo recurso</a>
             </div>

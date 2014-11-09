@@ -13,5 +13,15 @@ use Richpolis\BackendBundle\Entity\Usuarios;
  */
 class UsuariosRepository extends EntityRepository
 {
-    
+    public function queryUsuariosResidencial($residencial){
+        $query= $this->getEntityManager()->createQueryBuilder();
+        $query->select('u')   
+              ->from('Richpolis\BackendBundle\Entity\Usuario', 'u')
+              ->leftJoin('u.edificio', 'e')
+              ->leftJoin('e.residencial', 'r')
+              ->where('r.id=:residencial')
+              ->setParameter('residencial', $residencial)
+              ->orderBy('u.nombre', 'ASC');
+        return $query;
+    }
 }

@@ -1,12 +1,7 @@
-{% extends 'BackendBundle::layout.html.twig' %}
+{% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-    <!-- Stylesheets -->
-  <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
-  <!-- Font awesome icon -->
-  <link rel="stylesheet" href="{{asset('css/font-awesome.css')}}"> 
-  <!-- jQuery UI -->
-  <link rel="stylesheet" href="{{asset('css/jquery-ui-1.9.2.custom.min.css')}}"> 
+  {{ parent() }}
   <!-- Main stylesheet -->
   <link rel="stylesheet" href="{{asset('css/style.css')}}">
   <!-- Widgets stylesheet -->
@@ -26,11 +21,22 @@
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a--> 
-                    <Divider>
-                        <span class="divider">/</span> 
-                        <a href="{{path('usuarios')}}" class="bread-current">Usuarios</a>
-                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
+                <span class="divider">/</span>
+                <a href="{{path('usuarios')}}" class="bread-current">Usuarios</a>
+                <span class="divider">/</span>
+                <a href="{{path('usuarios_show',{'id': entity.id})}}" class="bread-current">{{entity.nombre}}</a>
+                        {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{path('usuarios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
                         {% endif %}
                         </div>
@@ -62,19 +68,19 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Residencial</th>
-                                                                    <td>{{ entity.edifico.residencial }}</td>
+                                                                    <td>{{ entity.edificio.residencial }}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Edificio</th>
                                                                     <td>{{ entity.edificio }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Recurso</th>
+                                                                    <th>Nombre</th>
                                                                     <td>{{ entity.nombre }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Precio</th>
-                                                                    <td>{{ entity.precio }}</td>
+                                                                    <th>Departamento</th>
+                                                                    <td>{{ entity.numero }}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>

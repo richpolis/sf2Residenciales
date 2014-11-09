@@ -3,19 +3,21 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\EstadoCuentaType;
 
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
 /**
  * EstadoCuenta controller.
  *
  * @Route("/estadodecuentas")
  */
-class EstadoCuentaController extends Controller
+class EstadoCuentaController extends BaseController
 {
 
     /**
@@ -59,6 +61,7 @@ class EstadoCuentaController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -71,9 +74,12 @@ class EstadoCuentaController extends Controller
      */
     private function createCreateForm(EstadoCuenta $entity)
     {
+        $residencial = $this->getResidencialDefault();
+        
         $form = $this->createForm(new EstadoCuentaType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_create'),
             'method' => 'POST',
+            'residencial'=>$residencial,
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -96,6 +102,7 @@ class EstadoCuentaController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -148,6 +155,7 @@ class EstadoCuentaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 
@@ -160,9 +168,11 @@ class EstadoCuentaController extends Controller
     */
     private function createEditForm(EstadoCuenta $entity)
     {
+        $residencial = $this->getResidencialDefault();
         $form = $this->createForm(new EstadoCuentaType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'residencial'=>$residencial,
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -200,6 +210,7 @@ class EstadoCuentaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
     /**

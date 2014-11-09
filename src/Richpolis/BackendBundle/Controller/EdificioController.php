@@ -3,12 +3,13 @@
 namespace Richpolis\BackendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\BackendBundle\Entity\Edificio;
 use Richpolis\BackendBundle\Form\EdificioType;
+
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -17,9 +18,8 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
  *
  * @Route("/edificios")
  */
-class EdificioController extends Controller
+class EdificioController extends BaseController
 {
-
     /**
      * Lists all Edificio entities.
      *
@@ -27,14 +27,27 @@ class EdificioController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('BackendBundle:Edificio')->findAll();
-
+        //$entities = $em->getRepository('BackendBundle:Edificio')->findAll();
+        if(true === $this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')){
+            if($request->query->has('residencial')){
+                $filters = $this->getFilters();
+                $filters['residencial'] = $request->query->get('residencial');
+                $this->setFilters($filters);
+            }
+        }
+        
+        $residenciaActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificios = $em->getRepository('BackendBundle:Edificio')
+                        ->findBy(array('residencial'=>$residenciaActual));
+        
         return array(
-            'entities' => $entities,
+            'entities'      =>  $edificios,
+            'residencial'   =>  $residenciaActual,
+            'residenciales' =>  $this->residenciales,
         );
     }
     
@@ -78,6 +91,7 @@ class EdificioController extends Controller
         $form = $this->createForm(new EdificioType(), $entity, array(
             'action' => $this->generateUrl('edificios_create'),
             'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Create'));
@@ -95,6 +109,8 @@ class EdificioController extends Controller
     public function newAction()
     {
         $entity = new Edificio();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity->setResidencial($residencial);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -169,6 +185,7 @@ class EdificioController extends Controller
         $form = $this->createForm(new EdificioType(), $entity, array(
             'action' => $this->generateUrl('edificios_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Update'));

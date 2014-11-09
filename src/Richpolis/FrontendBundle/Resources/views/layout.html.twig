@@ -5,9 +5,11 @@
 {% block stylesheets %}
 <!-- Stylesheets -->
 <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
-<link rel="stylesheet" href="{{asset('css/font-awesome.css')}}">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<!--link rel="stylesheet" href="{{asset('css/font-awesome.css')}}"-->
 <link rel="stylesheet" href="{{asset('css/style.css')}}">
 <link rel="stylesheet" href="{{asset('css/bootstrap-responsive.html')}}">
+<link rel="stylesheet" href="{{asset('css/jquery-ui-1.9.2.custom.min.css')}}"> 
 <link rel="stylesheet" href="{{asset('css/admin.css')}}">
 {% endblock %}
 
@@ -107,19 +109,19 @@
             {% if is_granted('ROLE_SUPER_ADMIN') %}
             <li>
                 <a {{residenciales}}  href="{{path('residenciales')}}">
-                    <i class="fa fa-sitemap"></i> <span>Residenciales</span>
+                    <i class="fa fa-bank"></i> <span>Residenciales</span>
                 </a>
             </li>
             {% endif %}
             {% if is_granted('ROLE_ADMIN') %}
             <li>
                 <a {{edificios}}  href="{{path('edificios')}}">
-                    <i class="fa fa-sitemap"></i> <span>Edificios</span>
+                    <i class="fa fa-building"></i> <span>Edificios</span>
                 </a>
             </li>
             <li>
                 <a {{recursos}} href="{{path('recursos')}}">
-                    <i class="fa fa-user"></i> <span>Recursos</span>
+                    <i class="fa fa-cubes"></i> <span>Recursos</span>
                 </a>
             </li>
             <li>

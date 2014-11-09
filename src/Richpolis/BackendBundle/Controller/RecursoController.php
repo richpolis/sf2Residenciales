@@ -3,7 +3,7 @@
 namespace Richpolis\BackendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -17,7 +17,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
  *
  * @Route("/recursos")
  */
-class RecursoController extends Controller
+class RecursoController extends BaseController
 {
 
     /**
@@ -27,14 +27,29 @@ class RecursoController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('BackendBundle:Recurso')->findAll();
+        //$entities = $em->getRepository('BackendBundle:Recurso')->findAll();
+        
+        if($request->query->has('edificio')){
+            $filters = $this->getFilters();
+            $filters['edificio'] = $request->query->get('edificio');
+            $this->setFilters($filters);
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $recursos = $em->getRepository('BackendBundle:Recurso')->findBy(array(
+           'edificio' => $edificioActual, 
+        ));
 
         return array(
-            'entities' => $entities,
+            'entities'      => $recursos,
+            'residencial'   => $residencialActual,
+            'edificio'      => $edificioActual,
         );
     }
     /**
@@ -77,6 +92,7 @@ class RecursoController extends Controller
         $form = $this->createForm(new RecursoType(), $entity, array(
             'action' => $this->generateUrl('recursos_create'),
             'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Create'));
@@ -94,6 +110,8 @@ class RecursoController extends Controller
     public function newAction()
     {
         $entity = new Recurso();
+        $entity->setEdificio($this->getEdificioActual());
+        
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -168,6 +186,7 @@ class RecursoController extends Controller
         $form = $this->createForm(new RecursoType(), $entity, array(
             'action' => $this->generateUrl('recursos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Update'));

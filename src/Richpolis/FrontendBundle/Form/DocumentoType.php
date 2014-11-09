@@ -15,11 +15,11 @@ class DocumentoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('titulo')
-            ->add('descripcion')
-            ->add('archivo')
-            ->add('tipoArchivo')
-            ->add('createdAt')
+            ->add('titulo',null,array('attr'=>array('class'=>'form-control')))
+            ->add('descripcion',null,array('attr'=>array('class'=>'form-control')))
+            ->add('file','file',array('label'=>'Archivo','attr'=>array('class'=>'form-control')))
+            ->add('archivo','hidden')
+            ->add('tipoArchivo',null,array('attr'=>array('class'=>'form-control')))
             ->add('residencial')
         ;
     }

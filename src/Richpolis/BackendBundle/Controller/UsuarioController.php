@@ -3,7 +3,7 @@
 namespace Richpolis\BackendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -17,7 +17,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
  *
  * @Route("/usuarios")
  */
-class UsuarioController extends Controller
+class UsuarioController extends BaseController
 {
 
     /**
@@ -27,14 +27,29 @@ class UsuarioController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('BackendBundle:Usuario')->findAll();
+        //$entities = $em->getRepository('BackendBundle:Usuario')->findAll();
+
+        if($request->query->has('edificio')){
+            $filters = $this->getFilters();
+            $filters['edificio'] = $request->query->get('edificio');
+            $this->setFilters($filters);
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $usuarios = $em->getRepository('BackendBundle:Usuario')->findBy(array(
+           'edificio' => $edificioActual, 
+        ));
 
         return array(
-            'entities' => $entities,
+            'entities'      => $usuarios,
+            'residencial'   => $residencialActual,
+            'edificio'      => $edificioActual,
         );
     }
     /**
@@ -75,9 +90,12 @@ class UsuarioController extends Controller
      */
     private function createCreateForm(Usuario $entity)
     {
+        $is_super_admin=$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN');
+        
         $form = $this->createForm(new UsuarioType(), $entity, array(
             'action' => $this->generateUrl('usuarios_create'),
             'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Create'));
@@ -95,6 +113,7 @@ class UsuarioController extends Controller
     public function newAction()
     {
         $entity = new Usuario();
+        $entity->setEdificio($this->getEdificioActual());
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -166,9 +185,12 @@ class UsuarioController extends Controller
     */
     private function createEditForm(Usuario $entity)
     {
+        $is_super_admin=$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN');
+        
         $form = $this->createForm(new UsuarioType(), $entity, array(
             'action' => $this->generateUrl('usuarios_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em'=>$this->getDoctrine()->getManager()
         ));
 
         ////$form->add('submit', 'submit', array('label' => 'Update'));
