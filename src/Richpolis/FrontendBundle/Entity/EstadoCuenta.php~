@@ -27,19 +27,42 @@ class EstadoCuenta
 
     /**
      * @var string
+     * @todo cargo, descripcion del cargo realizado 
      *
-     * @ORM\Column(name="cargo", type="decimal")
+     * @ORM\Column(name="cargo", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresa una descripcion del cargo")
+     */
+    private $cargo;    
+
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="monto", type="decimal")
      * @Assert\NotBlank(message="Ingresa un monto a cargo")
      */
-    private $cargo;
+    private $monto;
 
     /**
      * @var integer
      * @todo Tipo de cargo aplicado, o la causa
      *
-     * @ORM\Column(name="tipo", type="integer")
+     * @ORM\Column(name="tipo_cargo", type="integer")
      */
-    private $tipo;
+    private $tipoCargo;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_paid", type="boolean")
+     */
+    private $isPaid;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="paid_at", type="date")
+     */
+    private $paidAt;
     
     /**
      * @var \Usuario
@@ -74,7 +97,28 @@ class EstadoCuenta
           $this->createdAt = new \DateTime();
         }
     }
-
+    
+    const TIPO_CARGO_NORMAL=1;
+    const TIPO_CARGO_ADEUDO=2;
+    const TIPO_CARGO_INTERESES=3;
+        
+    static public $sTipoCargo=array(
+        self::TIPO_CARGO_NORMAL=>'Normal',
+        self::TIPO_CARGO_ADEUDO=>'Por adeudo',
+        self::TIPO_CARGO_INTERESES=>'Intereses',
+    );
+    
+    public function getStringTipoCargo(){
+        return self::$sTipoCargo[$this->getTipoCargo()];
+    }
+    
+    static function getArrayTipoCargo(){
+        return self::$sTipoCargo;
+    }
+    
+    static function getPreferedTipoCargo(){
+        return array(self::TIPO_CARGO_NORMAL);
+    }
 
     /**
      * Get id
@@ -112,12 +156,12 @@ class EstadoCuenta
     /**
      * Set tipo
      *
-     * @param integer $tipo
+     * @param integer $tipoCargo
      * @return EstadoCuenta
      */
-    public function setTipo($tipo)
+    public function setTipoCargo($tipo)
     {
-        $this->tipo = $tipo;
+        $this->tipoCargo = $tipo;
 
         return $this;
     }
@@ -127,9 +171,9 @@ class EstadoCuenta
      *
      * @return integer 
      */
-    public function getTipo()
+    public function getTipoCargo()
     {
-        return $this->tipo;
+        return $this->tipoCargo;
     }
 
     /**

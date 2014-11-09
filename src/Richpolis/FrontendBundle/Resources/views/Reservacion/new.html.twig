@@ -22,8 +22,21 @@
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('reservaciones')}}"><i class="fa fa-home"></i>Reservaciones</a> 
-                <!-- Divider -->
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.recurso.edificio.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.recurso.edificio.residencial}}</a>    
+                {% endif %}
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.recurso.edificio}}</a>
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
+                <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('reservaciones_new')}}" class="bread-current">Nuevo reservacion</a>
             </div>

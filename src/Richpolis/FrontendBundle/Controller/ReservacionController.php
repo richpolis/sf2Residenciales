@@ -3,19 +3,21 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Reservacion;
 use Richpolis\FrontendBundle\Form\ReservacionType;
 
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
 /**
  * Reservacion controller.
  *
  * @Route("/reservaciones")
  */
-class ReservacionController extends Controller
+class ReservacionController extends BaseController
 {
 
     /**
@@ -29,12 +31,20 @@ class ReservacionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:Reservacion')->findAll();
+        //$entities = $em->getRepository('FrontendBundle:Reservacion')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $reservaciones = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getReservacionesPorEdificio($edificioActual->getId());
 
         return array(
-            'entities' => $entities,
+            'entities' => $reservaciones,
+            'residencial'=>$residencialActual,
+            'edificio'=>$edificioActual,
         );
     }
+    
     /**
      * Creates a new Reservacion entity.
      *
@@ -59,6 +69,7 @@ class ReservacionController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form)
         );
     }
 
@@ -74,6 +85,7 @@ class ReservacionController extends Controller
         $form = $this->createForm(new ReservacionType(), $entity, array(
             'action' => $this->generateUrl('reservaciones_create'),
             'method' => 'POST',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -90,12 +102,19 @@ class ReservacionController extends Controller
      */
     public function newAction()
     {
+        $em = $this->getDoctrine()->getManager();
         $entity = new Reservacion();
+        $filtros = $this->getFilters();
+        $recurso = $em->find('BackendBundle:Recurso', $filtros['recurso']);
+        $usuario = $em->find('BackendBundle:Usuario', $filtros['usuario']);
+        $entity->setRecurso($recurso);
+        $entity->setUsuario($usuario);
         $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form)
         );
     }
 
@@ -148,6 +167,7 @@ class ReservacionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm)
         );
     }
 
@@ -163,6 +183,7 @@ class ReservacionController extends Controller
         $form = $this->createForm(new ReservacionType(), $entity, array(
             'action' => $this->generateUrl('reservaciones_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -200,6 +221,7 @@ class ReservacionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm)
         );
     }
     /**
@@ -243,5 +265,104 @@ class ReservacionController extends Controller
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar edificio para la reservacion.
+     *
+     * @Route("/seleccionar/edificio", name="reservaciones_select_edificio")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectEdificioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('edificio')){
+            $filtros = $this->getFilters();
+            $filtros['edificio'] = $request->query->get('edificio');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('reservaciones_select_recurso'));
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificios = $em->getRepository('BackendBundle:Edificio')
+                        ->findBy(array('residencial'=>$residencialActual));
+        
+        return array(
+            'entities'=>$edificios,
+            'residencial'=>$residencialActual,
+            'ruta' => 'reservaciones_select_edificio',
+            'campo' => 'edificio',
+            'titulo' => 'Seleccionar edificio del usuario',
+        );
+        
+    }
+    
+    /**
+     * Seleccionar recurso para reservacion.
+     *
+     * @Route("/seleccionar/recurso", name="reservaciones_select_recurso")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectRecursoAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        if($request->query->has('recurso')){
+            $filtros = $this->getFilters();
+            $filtros['recurso'] = $request->query->get('recurso');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('reservaciones_select_usuario'));
+        }
+        
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $recursos = $em->getRepository('BackendBundle:Recurso')
+                       ->getRecursosPorEdificio($edificio->getId(),$residencialActual->getId());
+        
+        return array(
+            'entities'=>$recursos,
+            'residencial'=>$residencialActual,
+            'edificio'=> $edificio,
+            'ruta' => 'reservaciones_select_recurso',
+            'campo' => 'recurso',
+            'titulo' => 'Seleccionar recurso',
+        );
+        
+    }
+    
+    /**
+     * Seleccionar usuario para reservacion.
+     *
+     * @Route("/seleccionar/usuario", name="reservaciones_select_usuario")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectUsuarioAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        if($request->query->has('usuario')){
+            $filtros = $this->getFilters();
+            $filtros['usuario'] = $request->query->get('usuario');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('reservaciones_new'));
+        }
+        
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        
+        return array(
+            'entities'=>$usuarios,
+            'residencial'=>$residencialActual,
+            'edificio'=> $edificio,
+            'ruta' => 'reservaciones_select_usuario',
+            'campo' => 'usuario',
+            'titulo' => 'Seleccionar usuario',
+        );
+        
     }
 }

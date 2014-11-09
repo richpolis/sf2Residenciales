@@ -77,4 +77,6 @@ class BaseController extends Controller
         return $edificio;
     }
     
+    
+    
 }

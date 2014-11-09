@@ -221,4 +221,73 @@ class EstadoCuenta
     {
         return $this->usuario;
     }
+
+    /**
+     * Set monto
+     *
+     * @param string $monto
+     * @return EstadoCuenta
+     */
+    public function setMonto($monto)
+    {
+        $this->monto = $monto;
+
+        return $this;
+    }
+
+    /**
+     * Get monto
+     *
+     * @return string 
+     */
+    public function getMonto()
+    {
+        return $this->monto;
+    }
+
+    /**
+     * Set isPaid
+     *
+     * @param boolean $isPaid
+     * @return EstadoCuenta
+     */
+    public function setIsPaid($isPaid)
+    {
+        $this->isPaid = $isPaid;
+
+        return $this;
+    }
+
+    /**
+     * Get isPaid
+     *
+     * @return boolean 
+     */
+    public function getIsPaid()
+    {
+        return $this->isPaid;
+    }
+
+    /**
+     * Set paidAt
+     *
+     * @param \DateTime $paidAt
+     * @return EstadoCuenta
+     */
+    public function setPaidAt($paidAt)
+    {
+        $this->paidAt = $paidAt;
+
+        return $this;
+    }
+
+    /**
+     * Get paidAt
+     *
+     * @return \DateTime 
+     */
+    public function getPaidAt()
+    {
+        return $this->paidAt;
+    }
 }

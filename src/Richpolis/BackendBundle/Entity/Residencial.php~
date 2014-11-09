@@ -52,6 +52,14 @@ class Residencial implements \Serializable
     private $edificios;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
      * Get id
      *
      * @return integer 
@@ -115,8 +123,7 @@ class Residencial implements \Serializable
         return serialize(array(
             $this->id,
             $this->nombre,
-            $this->porcentaje,
-            $this->username,
+            $this->porcentaje
         ));
     }
 
@@ -128,8 +135,7 @@ class Residencial implements \Serializable
         list (
             $this->id,
             $this->nombre,
-            $this->porcentaje,
-            $this->username
+            $this->porcentaje
         ) = unserialize($serialized);
     }
 
@@ -166,4 +172,6 @@ class Residencial implements \Serializable
     {
         return $this->edificios;
     }
+    
+
 }

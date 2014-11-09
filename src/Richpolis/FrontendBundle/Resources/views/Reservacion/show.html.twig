@@ -1,13 +1,13 @@
 {% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-  {{ parent() }}
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/style.css')}}">
-  <!-- Widgets stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+    {{ parent() }}
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    <!-- Widgets stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
     <!-- Gritter Notifications stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
 
 {% endblock %}
 
@@ -22,80 +22,105 @@
             <!-- Breadcrumb -->
             <div class="bread-crumb">
                 <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
-                    <!--Divider-->
-                        <span class="divider">/</span> 
-                        <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{path('reservaciones_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
-                        {% endif %}
-                        </div>
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a href="{{ path('residenciales')}}" class="bread-current">{{entity.recurso.edificio.residencial}}</a>
+                {% else %}
+                    <a href="#" class="bread-current">{{entity.recurso.edificio.residencial}}</a>    
+                {% endif %}
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.recurso.edificio}}</a>
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('reservaciones_show',{'id':entity.id})}}" class="bread-current">Reservacion id: {{entity.id}} </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{path('reservaciones_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                {% endif %}
+            </div>
 
-                        <div class="clearfix"></div>
+            <div class="clearfix"></div>
 
-                        </div>
-                        <!-- Page heading ends -->
+        </div>
+        <!-- Page heading ends -->
 
-                        <!-- Matter -->
+        <!-- Matter -->
 
-                        <div class="matter">
-                            <div class="container" id="contenidoPagina">
-                                <div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="widget">
-                                                <div class="widget-head">
-                                                    <div class="pull-left">{{entity.nombre}}</div>
-                                                    <div class="clearfix"></div>
-                                                </div>
+        <div class="matter">
+            <div class="container" id="contenidoPagina">
+                <div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="widget">
+                                <div class="widget-head">
+                                    <div class="pull-left">{{entity.nombre}}</div>
+                                    <div class="clearfix"></div>
+                                </div>
 
-                                                <div class="widget-content">
-                                                    <div class="padd contenido-formulario">    <table class="record_properties">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th>Id</th>
-                                                                    <td>{{ entity.id }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Residencial</th>
-                                                                    <td>{{ entity.usuario.edificio.residencial }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Recurso</th>
-                                                                    <td>{{ entity.recurso}}</td>
-                                                                </tr>                                                                <tr>
-                                                                    <th>Usuario</th>
-                                                                    <td>{{ entity.usuario}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Fecha apartado</th>
-                                                                    <td>{{ entity.createdAt|date('d-m-Y')}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Fecha evento</th>
-                                                                    <td>{{ entity.fechaEvento|date('d-m-Y')}}</td>
-                                                                </tr>                             
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="widget-foot">
-                                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('reservaciones')}}')">Regresar</button>
-                                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('reservaciones_edit',{id: entity.id})}}')">Editar</button>
-                                                    <div style="float: left; margin-right: 3px;">
-                                                        <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
-                                                            {{ form_widget(delete_form) }}
-                                                        </form>
-							<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
-                                                    </div>        
-                                                </div>
-                                            </div>  
-                                        </div>    
+                                <div class="widget-content">
+                                    <div class="padd contenido-formulario">    <table class="record_properties">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <td>{{ entity.id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Residencial</th>
+                                                    <td>{{ entity.usuario.edificio.residencial }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Edificio</th>
+                                                    <td>{{ entity.usuario.edificio }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Recurso</th>
+                                                    <td>{{ entity.recurso}}</td>
+                                                </tr>                                                                <tr>
+                                                    <th>Usuario</th>
+                                                    <td>{{ entity.usuario}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Fecha apartado</th>
+                                                    <td>{{ entity.createdAt|date('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Fecha evento</th>
+                                                    <td>{{ entity.fechaEvento|date('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Duracion</th>
+                                                    <td>{{ entity.duracion}} hrs.</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Aproado?</th>
+                                                    <td>{{ (entity.isAproved)?'Si':'No' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div class="widget-foot">
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('reservaciones')}}')">Regresar</button>
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('reservaciones_edit',{id: entity.id})}}')">Editar</button>
+                                    <div style="float: left; margin-right: 3px;">
+                                        <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
+                                            {{ form_widget(delete_form) }}
+                                        </form>
+                                        <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
+                                    </div>        
+                                </div>
+                            </div>  
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Matter ends -->
+        <!-- Matter ends -->
 
     </div>
 

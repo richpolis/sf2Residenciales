@@ -119,9 +119,9 @@ class Usuario implements UserInterface, \Serializable
      */
     private $updatedAt;
     
-    const GRUPO_USUARIOS=1;
-    const GRUPO_ADMIN=2;
-    const GRUPO_SUPER_ADMIN=3;
+    const GRUPO_USUARIOS    =   1;
+    const GRUPO_ADMIN       =   2;
+    const GRUPO_SUPER_ADMIN =   3;
     
     public function __toString(){
         return $this->getNombre();
@@ -132,12 +132,19 @@ class Usuario implements UserInterface, \Serializable
         return $arreglo[$this->getGrupo()];
     }
     
-    static function getArrayTipoGrupo(){
-        $sTipoGrupo=array(
-            self::GRUPO_USUARIOS=>'Usuarios',
-            self::GRUPO_ADMIN=>'Administrador',
-            self::GRUPO_SUPER_ADMIN=>'Superadmin',
-        );
+    static function getArrayTipoGrupo($is_super_admin=false){
+        if($is_super_admin){
+            $sTipoGrupo=array(
+                self::GRUPO_USUARIOS=>'Usuarios',
+                self::GRUPO_ADMIN=>'Administrador',
+                self::GRUPO_SUPER_ADMIN=>'Superadmin',
+            );
+        }else{
+            $sTipoGrupo=array(
+                self::GRUPO_USUARIOS=>'Usuarios',
+                self::GRUPO_ADMIN=>'Administrador'
+            );
+        }
         return $sTipoGrupo;
     }
     
@@ -286,7 +293,7 @@ class Usuario implements UserInterface, \Serializable
 
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../html'.$this->getUploadDir();
+        return __DIR__.'/../../../../web'.$this->getUploadDir();
     }
     
     public function getWebPath()
@@ -589,5 +596,28 @@ class Usuario implements UserInterface, \Serializable
     public function getEdificio()
     {
         return $this->edificio;
+    }
+
+    /**
+     * Set grupo
+     *
+     * @param integer $grupo
+     * @return Usuario
+     */
+    public function setGrupo($grupo)
+    {
+        $this->grupo = $grupo;
+
+        return $this;
+    }
+
+    /**
+     * Get grupo
+     *
+     * @return integer 
+     */
+    public function getGrupo()
+    {
+        return $this->grupo;
     }
 }

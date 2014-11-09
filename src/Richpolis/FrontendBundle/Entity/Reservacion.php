@@ -62,6 +62,13 @@ class Reservacion
     private $duracion;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_aproved", type="boolean")
+     */
+    private $isAproved;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -81,6 +88,10 @@ class Reservacion
         {
           $this->createdAt = new \DateTime();
         }
+    }
+    
+    public function __construct() {
+        $this->isAproved=false;
     }
     
 
@@ -207,5 +218,28 @@ class Reservacion
     public function getUsuario()
     {
         return $this->usuario;
+    }
+
+    /**
+     * Set isAproved
+     *
+     * @param boolean $isAproved
+     * @return Reservacion
+     */
+    public function setIsAproved($isAproved)
+    {
+        $this->isAproved = $isAproved;
+
+        return $this;
+    }
+
+    /**
+     * Get isAproved
+     *
+     * @return boolean 
+     */
+    public function getIsAproved()
+    {
+        return $this->isAproved;
     }
 }
