@@ -28,7 +28,7 @@ class UsuarioType extends AbstractType
             ->add('email','email',array('attr'=>array('class'=>'form-control')))
             ->add('telefono','text',array('attr'=>array('class'=>'form-control')))
             ->add('imagen','hidden')
-            ->add('numero','text',array('attr'=>array('class'=>'form-control')))
+            ->add('numero','text',array('label'=>'Departamento','attr'=>array('class'=>'form-control')))
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
             ->add('grupo','choice',array(
                 'label'=>'Grupo',

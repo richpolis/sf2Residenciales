@@ -1,7 +1,7 @@
 {% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-    {{ parent() }} 
+    {{ parent() }}
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <!-- Widgets stylesheet -->
@@ -17,7 +17,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Edificios</h2>
+            <h2 class="pull-left">Cargos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -25,17 +25,17 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                    <a href="{{ path('residenciales')}}" class="bread-current">{{entity.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
                 {% else %}
-                    <a href="#" class="bread-current">{{entity.residencial}}</a>    
+                <a href="#" class="bread-current">{{residencial}}</a>    
                 {% endif %}    
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">Edificios</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
                 <span class="divider">/</span> 
-                <a href="{{path('edificios_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>   
+                <a href="{{path('estadodecuentas_select')}}" class="bread-current">Seleccionar usuario</a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('edificios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                    <a href="{{path('estadodecuentas_select')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear cargo</a>
                 {% endif %}
             </div>
 
@@ -53,38 +53,24 @@
                         <div class="col-md-12">
                             <div class="widget">
                                 <div class="widget-head">
-                                    <div class="pull-left">{{entity.nombre}}</div>
+                                    <div class="pull-left">Seleccionar usuario para cargo</div>
                                     <div class="clearfix"></div>
                                 </div>
-
                                 <div class="widget-content">
-                                    <div class="padd contenido-formulario">    <table class="record_properties">
-                                            <tbody>
-                                                <tr>
-                                                    <th>Id</th>
-                                                    <td>{{ entity.id }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Residencial</th>
-                                                    <td>{{ entity.residencial }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Edificio</th>
-                                                    <td>{{ entity.nombre}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="padd contenido-formulario">    
+                                        <ul class="lista-seleccionar">
+                                            {% for usuario in entities %}
+                                                <li class="item-seleccionar">
+                                                    <a href="{{path('estadodecuentas_new',{'usuario':usuario.id})}}">
+                                                       {{usuario.numero}} - {{usuario.nombre}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}     
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="widget-foot">
-                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('edificios')}}')">Regresar</button>
-                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('edificios_edit',{id: entity.id})}}')">Editar</button>
-                                    <div style="float: left; margin-right: 3px;">
-                                        <form id="formEliminar" action="{{ path('edificios_delete', { 'id': entity.id }) }}" method="post">
-                                            {{ form_widget(delete_form) }}
-                                        </form>
-                                        <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
-                                    </div>        
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('estadodecuentas')}}')">Regresar</button>
                                 </div>
                             </div>  
                         </div>    
@@ -125,22 +111,6 @@
         var regresar = function (url) {
             location.href = url;
         };
-
-        var editarRegistro = function (url) {
-            location.href = url;
-        };
-
-        var eliminarRegistro = function () {
-        {% if is_granted('ROLE_ADMIN') %}
-                bootbox.confirm("Esta seguro de eliminar el registro?", function (result) {
-                    if (result) {
-                        $("#formEliminar").submit();
-                    }
-                });
-        {% else %}
-                noty({text: 'No tienes los permisos suficientes para realizar esta accion', layout: 'bottom', type: 'warning', timeout: 2000});
-        {% endif %}      
-            };
 
     </script>
 

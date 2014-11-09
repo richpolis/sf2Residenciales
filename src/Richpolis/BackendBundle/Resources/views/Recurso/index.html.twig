@@ -58,6 +58,8 @@
                                <th>Residencial</th>
                                <th>Edificio</th>
                                <th>Recurso</th>
+                               <th>Tipo acceso</th>
+                               <th>Precio</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -68,6 +70,8 @@
                                <td>{{ entity.edificio.residencial }}</td>
                                <td>{{ entity.edificio }}</td>
                                <td>{{ entity.nombre }}</td>
+                               <td>{{ entity.stringTipoAcceso }}</td>
+                               <td>$ {{ entity.precio|number_format(2, '.', ',') }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('recursos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('recursos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>

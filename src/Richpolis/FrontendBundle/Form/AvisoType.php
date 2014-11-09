@@ -6,7 +6,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
-use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
 
 class AvisoType extends AbstractType
 {
@@ -17,12 +16,18 @@ class AvisoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $em = $options['em'];
-        $residencial = $options['residencial'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control')))
-            ->add('aviso',null,array('attr'=>array('class'=>'form-control')))
+            ->add('aviso',null,array(
+                'label'=>'Descripcion',
+                'required'=>true,
+                'attr'=>array(
+                    'class'=>'cleditor tinymce form-control placeholder',
+                   'data-theme' => 'advanced',
+                    )
+                ))
             ->add('tipoAcceso','choice',array(
                 'label'=>'Nivel',
                 'empty_value'=>false,

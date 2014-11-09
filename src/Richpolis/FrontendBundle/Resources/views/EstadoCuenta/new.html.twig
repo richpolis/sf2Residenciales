@@ -18,14 +18,23 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Estado de cuenta</h2>
+            <h2 class="pull-left">Cargos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('estadodecuentas')}}"><i class="fa fa-home"></i>Estado de cuenta</a> 
-                <!-- Divider -->
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('estadodecuentas_new')}}" class="bread-current">Nuevo estado de cuenta</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
+                <span class="divider">/</span>  
+                <a href="{{path('estadodecuentas_new',{'usuario':entity.usuario.id})}}" class="bread-current">Nuevo cargo</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -39,19 +48,19 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Nuevo estado de cuenta</div>
+                                <div class="pull-left">Nuevo cargo a: {{entity.usuario.numero}} - {{entity.usuario.nombre}}</div>
                                 <div class="clearfix"></div>
                             </div>
 
                             <div class="widget-content">
-                                <div class="padd">
+                                <div class="padd contenido-formulario">
                                     <!-- Form starts.  -->
                                     {{ form(form) }}
                                 </div>
                             </div>
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
-                                <button id="botonGuardar" class="btn btn-primary">Crear estado de cuenta</button>
+                                <button id="botonGuardar" class="btn btn-primary">Crear cargo</button>
 
                             </div>
                         </div>  

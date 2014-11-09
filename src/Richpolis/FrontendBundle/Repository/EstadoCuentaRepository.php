@@ -12,4 +12,23 @@ use Doctrine\ORM\EntityRepository;
  */
 class EstadoCuentaRepository extends EntityRepository
 {
+     public function getCargosAdeudoPorEdificio($edificio_id,$todos=false){
+        $em=$this->getEntityManager();
+        $query = $em->createQueryBuilder();
+        $query
+                ->select('t,u,e,r')
+                ->from('Richpolis\FrontendBundle\Entity\EstadoCuenta', 't')
+                ->join('t.usuario', 'u')
+                ->join('u.edificio', 'e')
+                ->join('e.residencial', 'r')
+                ->where('e.id=:edificio')
+                ->setParameter('edificio', $edificio_id)
+                ->orderBy('u.numero','ASC')
+        ;
+        if(!$todos){
+            $query->andWhere('t.isPaid=:is_paid')
+                  ->setParameter('is_paid', false);
+        }
+        return $query->getResult();
+    }
 }

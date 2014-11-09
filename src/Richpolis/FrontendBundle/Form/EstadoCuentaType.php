@@ -5,7 +5,8 @@ namespace Richpolis\FrontendBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
+use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
+use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 
 class EstadoCuentaType extends AbstractType
 {
@@ -15,38 +16,26 @@ class EstadoCuentaType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        
-        $residencial = $options['residencial'];
+        $em = $options['em'];
+        $usuarioTransformer = new UsuarioToNumberTransformer($em);
         
         $builder
-            ->add('cargo',null,array('attr'=>array('class'=>'form-control')))
-            ->add('tipo','choice',array(
+            ->add('cargo',null,array('attr'=>array('class'=>'form-control')))    
+            ->add('monto','money',array('currency'=>'MXN','attr'=>array('class'=>'form-control')))
+            ->add('tipoCargo','choice',array(
                 'label'=>'Tipo de cargo',
                 'empty_value'=>false,
-                'read_only'=> false,
-                'choices'=>  array('1'=>'Cargo normal','2'=>'Adeudo','3'=>'Intereses'),
-                'preferred_choices'=> array('1'),
+                'read_only'=> true,
+                'choices'=>  EstadoCuenta::getArrayTipoCargo(),
+                'preferred_choices'=>  EstadoCuenta::getPreferedTipoCargo(),
                 'attr'=>array(
                     'class'=>'validate[required] form-control placeholder',
                     'placeholder'=>'Tipo de cargo',
-                    'data-bind'=>'value: tipo'
+                    'data-bind'=>'value: tipoCargo'
                 )))
-            ->add('usuario','entity',array( 
-                    'label' => 'Usuario',
-                    'required' => true,
-                    'expanded' => false,
-                    'class' => 'Richpolis\BackendBundle\Entity\Usuario',
-                    'property' => 'nombre',
-                    'multiple' => false,
-                    'query_builder' => function(\Richpolis\BackendBundle\Repository\UsuariosRepository $er)  {
-                        return $er->queryUsuariosResidencial($residencial);
-                    },                
-                    'attr'=>array(
-                        'class'=>'validate[required] form-control placeholder',
-                        'placeholder'=>'Usuario',
-                        'data-bind'=>'value: usuario',
-                    )
-            ))
+            ->add('isPaid','checkbox',array('label'=>'Pagado?','attr'=>array('class'=>'form-control')))
+            ->add('paidAt',null,array('label'=>'Fecha del pago','attr'=>array('class'=>'form-control')))    
+            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
         ;
     }
     
@@ -58,7 +47,8 @@ class EstadoCuentaType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'Richpolis\FrontendBundle\Entity\EstadoCuenta'
         ))
-        ->setRequired(array('residencial'))
+        ->setRequired(array('em'))
+        ->setAllowedTypes(array('em'=>'Doctrine\Common\Persistence\ObjectManager'))
         ;
     }
 

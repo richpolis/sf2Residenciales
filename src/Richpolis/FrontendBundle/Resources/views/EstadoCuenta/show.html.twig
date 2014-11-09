@@ -1,13 +1,13 @@
 {% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-  {{ parent() }}
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/style.css')}}">
-  <!-- Widgets stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+    {{ parent() }}
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    <!-- Widgets stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
     <!-- Gritter Notifications stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
 
 {% endblock %}
 
@@ -17,82 +17,103 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Estado de cuenta</h2>
+            <h2 class="pull-left">Cargos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
                 <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
-                    <!--Divider-->
-                        <span class="divider">/</span> 
-                        <a href="{{path('estadodecuentas')}}" class="bread-current">Estado de cuenta</a>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{path('estadodecuentas_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
-                        {% endif %}
-                        </div>
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
+                {% else %}
+                    <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
+                <span class="divider">/</span>  
+                <a href="{{path('estadodecuentas_show',{'id':entity.id})}}" class="bread-current">Mostrar Cargo</a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{path('estadodecuentas_select')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear cargo</a>
+                {% endif %}
+            </div>
 
-                        <div class="clearfix"></div>
+            <div class="clearfix"></div>
 
-                        </div>
-                        <!-- Page heading ends -->
+        </div>
+        <!-- Page heading ends -->
 
-                        <!-- Matter -->
+        <!-- Matter -->
 
-                        <div class="matter">
-                            <div class="container" id="contenidoPagina">
-                                <div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="widget">
-                                                <div class="widget-head">
-                                                    <div class="pull-left">{{entity.nombre}}</div>
-                                                    <div class="clearfix"></div>
-                                                </div>
+        <div class="matter">
+            <div class="container" id="contenidoPagina">
+                <div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="widget">
+                                <div class="widget-head">
+                                    <div class="pull-left">Cargos a: {{entity.usuario.numero}} - {{entity.usuario.nombre}}</div>
+                                    <div class="clearfix"></div>
+                                </div>
 
-                                                <div class="widget-content">
-                                                    <div class="padd">    <table class="record_properties">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th>Id</th>
-                                                                    <td>{{ entity.id }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Residencial</th>
-                                                                    <td>{{ entity.usuario.edificio.residencial }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Usuario</th>
-                                                                    <td>{{ entity.usuario}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Cargo</th>
-                                                                    <td>{{ entity.cargo}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Fecha</th>
-                                                                    <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="widget-foot">
-                                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('estadodecuentas')}}')">Regresar</button>
-                                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('estadodecuentas_edit',{id: entity.id})}}')">Editar</button>
-                                                    <div style="float: left; margin-right: 3px;">
-                                                        <form id="formEliminar" action="{{ path('estadodecuentas_delete', { 'id': entity.id }) }}" method="post">
-                                                            {{ form_widget(delete_form) }}
-                                                        </form>
-							<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
-                                                    </div>        
-                                                </div>
-                                            </div>  
-                                        </div>    
+                                <div class="widget-content">
+                                    <div class="padd contenido-formulario">    <table class="record_properties">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <td>{{ entity.id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Residencial</th>
+                                                    <td>{{ entity.usuario.edificio.residencial }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Edificio</th>
+                                                    <td>{{ entity.usuario.edificio }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <td>{{ entity.usuario.numero}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <td>{{ entity.usuario}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Cargo</th>
+                                                    <td>{{ entity.cargo}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Tipo de Cargo</th>
+                                                    <td>{{ entity.stringTipoCargo}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div class="widget-foot">
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('estadodecuentas')}}')">Regresar</button>
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('estadodecuentas_edit',{id: entity.id})}}')">Editar</button>
+                                    <div style="float: left; margin-right: 3px;">
+                                        <form id="formEliminar" action="{{ path('estadodecuentas_delete', { 'id': entity.id }) }}" method="post">
+                                            {{ form_widget(delete_form) }}
+                                        </form>
+                                        <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
+                                    </div>        
+                                </div>
+                            </div>  
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Matter ends -->
+        <!-- Matter ends -->
 
     </div>
 
@@ -102,47 +123,47 @@
 {% endblock %}
 
 {% block javascripts %}
-  {{ parent() }}
+    {{ parent() }}
 
-<script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-<!-- jQuery Notification - Noty -->
-<script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
-<!-- jQuery Notification ends -->
+    <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+    <!-- jQuery Notification - Noty -->
+    <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+    <!-- jQuery Notification ends -->
 
-<script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
+    <script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
 
-<script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
-<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
-<script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+    <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+    <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 
 
-<script>
-var regresar = function(url){
-    location.href=url;
-};
+    <script>
+                                                                var regresar = function (url) {
+                                                                    location.href = url;
+                                                                };
 
-var editarRegistro = function(url){
-    location.href=url;
-};
-    
-var eliminarRegistro = function(){
-  {% if is_granted('ROLE_ADMIN') %}
-    bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
-      if(result){
-         $("#formEliminar").submit();
-      }
-    });
-  {% else %}
-    noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
-  {% endif %}      
-};
+                                                                var editarRegistro = function (url) {
+                                                                    location.href = url;
+                                                                };
 
-</script>
+                                                                var eliminarRegistro = function () {
+        {% if is_granted('ROLE_ADMIN') %}
+              bootbox.confirm("Esta seguro de eliminar el registro?", function (result) {
+                  if (result) {
+                      $("#formEliminar").submit();
+                  }
+              });
+        {% else %}
+              noty({text: 'No tienes los permisos suficientes para realizar esta accion', layout: 'bottom', type: 'warning', timeout: 2000});
+        {% endif %}      
+          };
 
-    
+    </script>
+
+
 {% endblock %}
 

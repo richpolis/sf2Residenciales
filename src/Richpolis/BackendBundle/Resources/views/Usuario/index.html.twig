@@ -55,6 +55,7 @@
                                         <th>Id</th>
                                         <th>Residencial</th>
                                         <th>Edificio</th>
+                                        <th>Depto</th>
                                         <th>Nombre</th>
                                         <th>Actions</th>
                                     </tr>
@@ -65,6 +66,7 @@
                                             <td><a href="{{ path('usuarios_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                                             <td>{{ entity.edificio.residencial }}</td>
                                             <td>{{ entity.edificio }}</td>
+                                            <td>{{ entity.numero }}</td>
                                             <td>{{ entity.nombre }}</td>
                                             <td>
                                                 <button onclick="javascript:editarRegistro('{{ path('usuarios_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>

@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\EdificioToNumberTransformer;
+use Richpolis\BackendBundle\Entity\Recurso;
 
 class RecursoType extends AbstractType
 {
@@ -21,8 +22,18 @@ class RecursoType extends AbstractType
         
         $builder
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
-            ->add('tipoAcceso','checkbox',array('attr'=>array('class'=>'form-control')))
-            ->add('precio','money',array('attr'=>array('class'=>'form-control')))
+            ->add('tipoAcceso','choice',array(
+                'label'=>'Tipo acceso',
+                'empty_value'=>false,
+                'read_only'=> true,
+                'choices'=> Recurso::getArrayTipoAcceso(),
+                'preferred_choices'=> Recurso::getPreferedTipoAcceso(),
+                'attr'=>array(
+                    'class'=>'validate[required] form-control placeholder',
+                    'placeholder'=>'Tipo acceso',
+                    'data-bind'=>'value: tipoAcceso'
+                )))
+            ->add('precio','money',array('currency'=>'MXN','attr'=>array('class'=>'form-control')))
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
         ;
     }

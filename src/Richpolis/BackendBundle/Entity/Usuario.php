@@ -293,7 +293,7 @@ class Usuario implements UserInterface, \Serializable
 
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../html'.$this->getUploadDir();
+        return __DIR__.'/../../../../web'.$this->getUploadDir();
     }
     
     public function getWebPath()

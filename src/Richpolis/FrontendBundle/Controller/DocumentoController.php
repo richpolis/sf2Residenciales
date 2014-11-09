@@ -3,19 +3,21 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Documento;
 use Richpolis\FrontendBundle\Form\DocumentoType;
 
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
 /**
  * Documento controller.
  *
  * @Route("/documentos")
  */
-class DocumentoController extends Controller
+class DocumentoController extends BaseController
 {
 
     /**
@@ -29,10 +31,16 @@ class DocumentoController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:Documento')->findAll();
+        //$entities = $em->getRepository('FrontendBundle:Documento')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $documentos = $em->getRepository('FrontendBundle:Documento')
+                         ->findBy(array('residencial'=>$residencialActual));
 
         return array(
-            'entities' => $entities,
+            'entities' => $documentos,
+            'residencial' => $residencialActual,
+            
         );
     }
     /**
@@ -59,6 +67,7 @@ class DocumentoController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form)
         );
     }
 
@@ -74,6 +83,7 @@ class DocumentoController extends Controller
         $form = $this->createForm(new DocumentoType(), $entity, array(
             'action' => $this->generateUrl('documentos_create'),
             'method' => 'POST',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -96,6 +106,7 @@ class DocumentoController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form)
         );
     }
 
@@ -148,6 +159,7 @@ class DocumentoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 
@@ -163,6 +175,7 @@ class DocumentoController extends Controller
         $form = $this->createForm(new DocumentoType(), $entity, array(
             'action' => $this->generateUrl('documentos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -200,6 +213,7 @@ class DocumentoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm)
         );
     }
     /**

@@ -15,7 +15,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * EstadoCuenta controller.
  *
- * @Route("/estadodecuentas")
+ * @Route("/cargos")
  */
 class EstadoCuentaController extends BaseController
 {
@@ -31,10 +31,17 @@ class EstadoCuentaController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargosAdeudoPorEdificio($edificioActual->getId());
 
         return array(
-            'entities' => $entities,
+            'entities' => $estadodecuentas,
+            'residencial'=> $residencialActual,
+            'edificio' => $edificioActual,
         );
     }
     /**
@@ -79,7 +86,7 @@ class EstadoCuentaController extends BaseController
         $form = $this->createForm(new EstadoCuentaType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_create'),
             'method' => 'POST',
-            'residencial'=>$residencial,
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -94,9 +101,15 @@ class EstadoCuentaController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
         $entity = new EstadoCuenta();
+        $usuario = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
+                                       ->find($request->query->get('usuario',0));
+        if(!$usuario){
+            return $this->redirect($this->generateUrl('estadodecuenta_select'));
+        }
+        $entity->setUsuario($usuario);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -104,6 +117,30 @@ class EstadoCuentaController extends BaseController
             'form'   => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
         );
+    }
+    
+    /**
+     * Seleccionar un usuario del edificio.
+     *
+     * @Route("/seleccionar", name="estadodecuentas_select")
+     * @Template()
+     */
+    public function selectAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                        ->findBy(array('edificio'=>$edificioActual));
+        
+        return array(
+            'entities'=>$usuarios,
+            'residencial'=>$residencialActual,
+            'edificio'=>$edificioActual
+        );
+        
     }
 
     /**
@@ -172,7 +209,7 @@ class EstadoCuentaController extends BaseController
         $form = $this->createForm(new EstadoCuentaType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_update', array('id' => $entity->getId())),
             'method' => 'PUT',
-            'residencial'=>$residencial,
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));

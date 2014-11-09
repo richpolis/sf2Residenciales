@@ -59,6 +59,17 @@ class Aviso
     private $residencial;
     
     /**
+     * @var \Edificio
+     * @todo Edificio del aviso
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
+     * })
+     */
+    private $edificio;
+    
+    /**
      * @var \Usuario
      * @todo Usuario del aviso
      *
@@ -97,7 +108,26 @@ class Aviso
           $this->createdAt = new \DateTime();
         }
     }
-
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+        
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Edificio',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+    
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
+    }
 
     /**
      * Get id

@@ -23,7 +23,14 @@
         <div class="bread-crumb">
           <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
           <!--Divider-->
-          <span class="divider">/</span> 
+          <span class="divider">/</span>
+          {% if is_granted('ROLE_SUPER_ADMIN') %}
+          <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+          {% else %}
+          <a href="#" class="bread-current">{{residencial}}</a>    
+          {% endif %}    
+          <!--Divider-->
+          <span class="divider">/</span>
           <a href="{{path('actividades')}}" class="bread-current">Actividades</a>
           <a href="{{path('actividades_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear actividad</a>
         </div>

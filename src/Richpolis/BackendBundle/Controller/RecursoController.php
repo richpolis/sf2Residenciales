@@ -170,7 +170,7 @@ class RecursoController extends BaseController
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'errores' => RpsStms::getErrorMessages($form),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 

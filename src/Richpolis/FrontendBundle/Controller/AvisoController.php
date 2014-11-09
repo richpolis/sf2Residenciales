@@ -3,19 +3,21 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Aviso;
 use Richpolis\FrontendBundle\Form\AvisoType;
 
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
 /**
  * Aviso controller.
  *
  * @Route("/avisos")
  */
-class AvisoController extends Controller
+class AvisoController extends BaseController
 {
 
     /**
@@ -29,10 +31,15 @@ class AvisoController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:Aviso')->findAll();
+        //$entities = $em->getRepository('FrontendBundle:Aviso')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $avisos = $em->getRepository('FrontendBundle:Aviso')
+                          ->findBy(array('residencial'=>$residencialActual));
 
         return array(
-            'entities' => $entities,
+            'entities' => $avisos,
+            'residencial' => $residencialActual,
         );
     }
     /**
@@ -59,6 +66,7 @@ class AvisoController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -74,6 +82,7 @@ class AvisoController extends Controller
         $form = $this->createForm(new AvisoType(), $entity, array(
             'action' => $this->generateUrl('avisos_create'),
             'method' => 'POST',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -96,6 +105,7 @@ class AvisoController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -148,6 +158,7 @@ class AvisoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 
@@ -163,6 +174,7 @@ class AvisoController extends Controller
         $form = $this->createForm(new AvisoType(), $entity, array(
             'action' => $this->generateUrl('avisos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -200,6 +212,7 @@ class AvisoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores'     => RpsStms::getErrorMessages($editForm),
         );
     }
     /**

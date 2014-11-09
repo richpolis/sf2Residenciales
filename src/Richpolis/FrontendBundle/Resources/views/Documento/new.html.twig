@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}">
     <!-- jQuery Validation Engine stylesheet -->
     <link rel="stylesheet" href="{{asset('css/validationEngine.jquery.css')}}">
+    <!-- CLEditor -->
+    <link rel="stylesheet" href="{{asset('css/jquery.cleditor.css')}}">
 {% endblock %}
 
 {% block mainbar %}
@@ -22,9 +24,19 @@
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
-                <a href="{{path('documentos')}}"><i class="fa fa-home"></i>Documentos</a> 
-                <!-- Divider -->
-                <span class="divider">/</span> 
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
+                <span class="divider">/</span>
+                <a href="{{path('documentos')}}" class="bread-current">Documentos</a>
+                <!--Divider-->
+                <span class="divider">/</span>
                 <a href="{{path('documentos_new')}}" class="bread-current">Nuevo documento</a>
             </div>
             <div class="clearfix"></div>
@@ -44,7 +56,7 @@
                             </div>
 
                             <div class="widget-content">
-                                <div class="padd">
+                                <div class="padd contenido-formulario">
                                     <!-- Form starts.  -->
                                     {{ form(form) }}
                                 </div>
@@ -78,6 +90,8 @@
     <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
     <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
     <!-- jQuery Notification ends -->
+    
+    <script src="{{asset('js/jquery.cleditor.min.js')}}"></script> <!-- CLEditor -->
     <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
     <script src="{{asset('js/languages/jquery.validationEngine-es.js')}}"></script> <!-- jQuery Validation Engine Language File -->
     <script src="{{asset('js/jquery.validationEngine.js')}}"></script> <!-- jQuery Validation Engine -->
@@ -96,6 +110,13 @@
             $("#botonGuardar").on("click", function () {
                 $(".contenido-formulario form").submit();
             });
+            
+            /* CL Editor */
+
+            $(".cleditor").cleditor({
+                width: "auto",
+                height: "auto"
+            });            
 
         {% if errores | length > 0 %}
             {% for error in errores %}

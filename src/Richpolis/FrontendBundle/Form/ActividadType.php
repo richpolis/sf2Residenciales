@@ -20,7 +20,14 @@ class ActividadType extends AbstractType
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         $builder
             ->add('nombre',null,array('attr'=>array('class'=>'form-control')))
-            ->add('descripcion',null,array('attr'=>array('class'=>'form-control')))
+            ->add('descripcion',null,array(
+                'label'=>'Descripcion',
+                'required'=>true,
+                'attr'=>array(
+                    'class'=>'cleditor tinymce form-control placeholder',
+                   'data-theme' => 'advanced',
+                    )
+                ))
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
         ;
     }

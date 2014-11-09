@@ -3,19 +3,21 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Actividad;
 use Richpolis\FrontendBundle\Form\ActividadType;
 
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
 /**
  * Actividad controller.
  *
  * @Route("/actividades")
  */
-class ActividadController extends Controller
+class ActividadController extends BaseController
 {
 
     /**
@@ -29,10 +31,15 @@ class ActividadController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:Actividad')->findAll();
+        //$entities = $em->getRepository('FrontendBundle:Actividad')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $actividades = $em->getRepository('FrontendBundle:Actividad')
+                          ->findBy(array('residencial'=>$residencialActual));
 
         return array(
-            'entities' => $entities,
+            'entities' => $actividades,
+            'residencial' => $residencialActual,
         );
     }
     
@@ -75,6 +82,7 @@ class ActividadController extends Controller
         $form = $this->createForm(new ActividadType(), $entity, array(
             'action' => $this->generateUrl('actividades_create'),
             'method' => 'POST',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -92,11 +100,14 @@ class ActividadController extends Controller
     public function newAction()
     {
         $entity = new Actividad();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $entity->setResidencial($residencialActual);
         $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -149,6 +160,7 @@ class ActividadController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 
@@ -164,6 +176,7 @@ class ActividadController extends Controller
         $form = $this->createForm(new ActividadType(), $entity, array(
             'action' => $this->generateUrl('actividades_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -202,6 +215,7 @@ class ActividadController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
     

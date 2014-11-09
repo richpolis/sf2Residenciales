@@ -18,14 +18,23 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Estado de cuenta</h2>
+            <h2 class="pull-left">Cargos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
                 <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
-                <!-- Divider -->
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
+                {% endif %}    
+                <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('estadodecuentas_edit',{'id':entity.id})}}" class="bread-current">Editar estado de cuenta</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
+                <span class="divider">/</span>  
+                <a href="{{path('estadodecuentas_edit',{'id':entity.id})}}" class="bread-current">Editar cargo</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -39,7 +48,7 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Editar estado de cuenta "{{entity.titulo}}"</div>
+                                <div class="pull-left">Editar cargo a usuario "{{entity.usuario.numero}} - {{entity.usuario.nombre}}"</div>
                                 <div class="clearfix"></div>
                             </div>
 
