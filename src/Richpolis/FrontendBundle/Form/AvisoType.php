@@ -6,6 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
+use Richpolis\BackendBundle\Form\DataTransformer\EdificioToNumberTransformer;
+use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
+
 
 class AvisoType extends AbstractType
 {
@@ -17,6 +20,8 @@ class AvisoType extends AbstractType
     {
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
+        $edificioTransformer = new EdificioToNumberTransformer($em);
+        $usuarioTransformer = new UsuarioToNumberTransformer($em);
         
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control')))
@@ -28,37 +33,11 @@ class AvisoType extends AbstractType
                    'data-theme' => 'advanced',
                     )
                 ))
-            ->add('tipoAcceso','choice',array(
-                'label'=>'Nivel',
-                'empty_value'=>false,
-                'read_only'=> false,
-                'choices'=>  array('1'=>'Residencial','2'=>'Edificio','3'=>'Particular'),
-                'preferred_choices'=> array('3'),
-                'attr'=>array(
-                    'class'=>'validate[required] form-control placeholder',
-                    'placeholder'=>'Nivel',
-                    'data-bind'=>'value: nivel'
-                )))
+            ->add('tipoAcceso','hidden')
             ->add('link',null,array('attr'=>array('class'=>'form-control')))
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
-            //falta agregar edificio, porque no siempre es a nivel usuario.    
-            ->add('usuario','entity',array( 
-                    'label' => 'Usuario',
-                    'required' => false,
-                    'empty_value'=>'Para usuario',
-                    'expanded' => false,
-                    'class' => 'Richpolis\BackendBundle\Entity\Usuario',
-                    'property' => 'nombre',
-                    'multiple' => false,
-                    'query_builder' => function(\Richpolis\BackendBundle\Repository\UsuarioRepository $er)  {
-                        return $er->queryUsuariosResidencial($residencial);
-                    },                
-                    'attr'=>array(
-                        'class'=>'validate[required] form-control placeholder',
-                        'placeholder'=>'Usuario',
-                        'data-bind'=>'value: usuario',
-                    )
-            ))
+            ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
+            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))    
         ;
     }
     
@@ -70,7 +49,7 @@ class AvisoType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'Richpolis\FrontendBundle\Entity\Aviso'
         ))
-        ->setRequired(array('em'))
+        ->setRequired(array('em',))
         ->setAllowedTypes(array('em'=>'Doctrine\Common\Persistence\ObjectManager'))
         ;
     }

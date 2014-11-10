@@ -32,7 +32,7 @@
           <!--Divider-->
           <span class="divider">/</span> 
           <a href="{{path('avisos')}}" class="bread-current">Avisos</a>
-          <a href="{{path('avisos_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear aviso</a>
+          <a href="{{path('avisos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear aviso</a>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -56,8 +56,9 @@
                            <tr>
                                <th>Id</th>
                                <th>Residencial</th>
-                               <th>Titulo</th>
-                               <th>Tipo Acceso</th>
+                               <th>Edificio</th>
+                               <th>Nivel</th>
+                               <th>Aviso</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -66,8 +67,9 @@
                            <tr>
                                <td><a href="{{ path('avisos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                                <td>{{ entity.residencial }}</td>
+                               <td>{{ entity.edificio }}</td>
+                               <td>{{ entity.stringNivel }}</td>
                                <td>{{ entity.titulo }}</td>
-                               <td>{{ entity.tipoAcceso }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('avisos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('avisos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>

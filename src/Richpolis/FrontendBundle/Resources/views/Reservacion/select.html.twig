@@ -29,7 +29,7 @@
                 {% else %}
                 <a href="#" class="bread-current">{{residencial}}</a>    
                 {% endif %}    
-                {% if edificio is not defined %}
+                {% if edificio is defined %}
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
@@ -61,7 +61,7 @@
                                         <ul class="lista-seleccionar">
                                             {% for entity in entities %}
                                                 <li class="item-seleccionar">
-                                                    <a href="{{path(ruta,{campo:entity.id})}}">
+                                                    <a href="{{path(ruta,{('' ~ campo) : entity.id })}}">
                                                        {{ entity.nombre }}
                                                     </a>
                                                 </li>

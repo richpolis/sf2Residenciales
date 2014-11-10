@@ -22,6 +22,7 @@ class ReservacionType extends AbstractType
         $builder
             ->add('fechaEvento',null,array('attr'=>array('class'=>'form-control')))
             ->add('duracion',null,array('attr'=>array('class'=>'form-control')))
+            ->add('isAproved',null,array('label'=>'Aprobado?'))    
             ->add($builder->create('recurso', 'hidden')->addModelTransformer($recursoTransformer))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
         ;

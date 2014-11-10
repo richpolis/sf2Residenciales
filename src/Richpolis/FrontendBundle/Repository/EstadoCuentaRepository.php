@@ -29,6 +29,6 @@ class EstadoCuentaRepository extends EntityRepository
             $query->andWhere('t.isPaid=:is_paid')
                   ->setParameter('is_paid', false);
         }
-        return $query->getResult();
+        return $query->getQuery()->getResult();
     }
 }

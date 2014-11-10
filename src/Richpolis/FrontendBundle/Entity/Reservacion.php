@@ -242,4 +242,9 @@ class Reservacion
     {
         return $this->isAproved;
     }
+    
+    public function getStringReservacion(){
+        return sprintf("Recurso %s reservacion por usuario %s - %s", 
+                $this->getRecurso(),$this->getUsuario()->getNumero(),$this->getUsuario());
+    }
 }

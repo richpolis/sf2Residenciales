@@ -16,14 +16,15 @@ class ReservacionRepository extends EntityRepository
         $em=$this->getEntityManager();
         $query = $em->createQueryBuilder();
         $query
-                ->select('i,e,r')
+                ->select('i,t,e,r')
                 ->from('Richpolis\FrontendBundle\Entity\Reservacion', 'i')
-                ->join('i.edificio', 'e')
+                ->join('i.recurso', 't')
+                ->join('t.edificio', 'e')
                 ->join('e.residencial', 'r')
                 ->where('e.id=:edificio')
                 ->setParameter('edificio', $edificio_id)
                 ->orderBy('i.createdAt','DESC')
         ;
-        return $query->getResult();
+        return $query->getQuery()->getResult();
     }
 }

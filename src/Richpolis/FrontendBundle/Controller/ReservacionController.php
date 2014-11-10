@@ -35,7 +35,7 @@ class ReservacionController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        $reservaciones = $em->getRepository('FrontendBundle:EstadoCuenta')
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                         ->getReservacionesPorEdificio($edificioActual->getId());
 
         return array(
@@ -293,7 +293,7 @@ class ReservacionController extends BaseController
             'residencial'=>$residencialActual,
             'ruta' => 'reservaciones_select_edificio',
             'campo' => 'edificio',
-            'titulo' => 'Seleccionar edificio del usuario',
+            'titulo' => 'Seleccionar edificio',
         );
         
     }
@@ -304,7 +304,7 @@ class ReservacionController extends BaseController
      * @Route("/seleccionar/recurso", name="reservaciones_select_recurso")
      * @Template("FrontendBundle:Reservacion:select.html.twig")
      */
-    public function selectRecursoAction()
+    public function selectRecursoAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -338,7 +338,7 @@ class ReservacionController extends BaseController
      * @Route("/seleccionar/usuario", name="reservaciones_select_usuario")
      * @Template("FrontendBundle:Reservacion:select.html.twig")
      */
-    public function selectUsuarioAction()
+    public function selectUsuarioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -361,7 +361,7 @@ class ReservacionController extends BaseController
             'edificio'=> $edificio,
             'ruta' => 'reservaciones_select_usuario',
             'campo' => 'usuario',
-            'titulo' => 'Seleccionar usuario',
+            'titulo' => 'Seleccionar usuario que hace la reservacion',
         );
         
     }

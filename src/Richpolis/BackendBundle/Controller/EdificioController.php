@@ -47,7 +47,6 @@ class EdificioController extends BaseController
         return array(
             'entities'      =>  $edificios,
             'residencial'   =>  $residenciaActual,
-            'residenciales' =>  $this->residenciales,
         );
     }
     

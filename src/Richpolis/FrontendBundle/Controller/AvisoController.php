@@ -99,7 +99,20 @@ class AvisoController extends BaseController
      */
     public function newAction()
     {
+        $em = $this->getDoctrine()->getManager();
         $entity = new Aviso();
+        $filtros = $this->getFilters();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuario = null;
+        if($filtros['nivel_aviso']==Aviso::TIPO_ACCESO_PRIVADO){
+            $usuario = $em->find('BackendBundle:Usuario', $filtros['usuario']);
+        }
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($residencial);
+        $entity->setEdificio($edificio);
+        $entity->setUsuario($usuario);
+        
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -256,5 +269,120 @@ class AvisoController extends BaseController
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar tipo acceso del aviso.
+     *
+     * @Route("/seleccionar/nivel", name="avisos_select_nivel")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectNivelAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('nivel_aviso')){
+            $filtros = $this->getFilters();
+            $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
+            $this->setFilters($filtros);
+            switch($filtros['nivel_aviso']){
+                case Aviso::TIPO_ACCESO_RESIDENCIAL:
+                    return $this->redirect($this->generateUrl('avisos_new'));
+                case Aviso::TIPO_ACCESO_EDIFICIO:
+                case Aviso::TIPO_ACCESO_PRIVADO:
+                    return $this->redirect($this->generateUrl('avisos_select_edificio'));
+            }
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $arreglo = array(
+            array('id'=>  Aviso::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Residencial'),
+            array('id'=>  Aviso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Edificio'),
+            array('id'=>  Aviso::TIPO_ACCESO_PRIVADO,'nombre'=>'A usuario'),
+        );
+        
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'avisos_select_nivel',
+            'campo' => 'nivel_aviso',
+            'titulo' => 'Seleccionar nivel del aviso',
+        );
+        
+    }
+    
+    /**
+     * Seleccionar edificio para el aviso.
+     *
+     * @Route("/seleccionar/edificio", name="avisos_select_edificio")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectEdificioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $filtros = $this->getFilters();
+        if($request->query->has('edificio')){
+            $filtros['edificio'] = $request->query->get('edificio');
+            $this->setFilters($filtros);
+            switch($filtros['nivel_aviso']){
+                case Aviso::TIPO_ACCESO_EDIFICIO:
+                    return $this->redirect($this->generateUrl('avisos_new'));
+                case Aviso::TIPO_ACCESO_PRIVADO:
+                    return $this->redirect($this->generateUrl('avisos_select_usuario'));
+            }
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificios = $em->getRepository('BackendBundle:Edificio')
+                        ->findBy(array('residencial'=>$residencialActual));
+        
+        if($filtros['nivel_aviso']==Aviso::TIPO_ACCESO_PRIVADO){
+            $tit = "Aviso para usuario: seleccionar edificio del usuario";
+        }else{
+            $tit = "Aviso para edificio: seleccionar edificio";
+        }
+        
+        return array(
+            'entities'=>$edificios,
+            'residencial'=>$residencialActual,
+            'ruta' => 'avisos_select_edificio',
+            'campo' => 'edificio',
+            'titulo' => $tit,
+        );
+        
+    }
+    
+    /**
+     * Seleccionar usuario para aviso.
+     *
+     * @Route("/seleccionar/usuario", name="avisos_select_usuario")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectUsuarioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        if($request->query->has('usuario')){
+            $filtros = $this->getFilters();
+            $filtros['usuario'] = $request->query->get('usuario');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('avisos_new'));
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        
+        return array(
+            'entities'=>$usuarios,
+            'residencial'=>$residencialActual,
+            'edificio'=> $edificio,
+            'ruta' => 'avisos_select_usuario',
+            'campo' => 'usuario',
+            'titulo' => 'Aviso para usuario: seleccionar usuario',
+        );
+        
     }
 }
