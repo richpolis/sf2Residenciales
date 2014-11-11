@@ -4,7 +4,7 @@ namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -12,7 +12,7 @@ use Richpolis\FrontendBundle\Entity\Contacto;
 use Richpolis\FrontendBundle\Form\ContactoType;
 
 
-class DefaultController extends Controller {
+class DefaultController extends BaseController {
 
     /**
      * @Route("/", name="homepage")
@@ -20,8 +20,34 @@ class DefaultController extends Controller {
      */
     public function indexAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-
-        return array();
+        
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        if(true === $this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')){
+            $comentarios = $em->getRepository('FrontendBundle:Comentario')
+                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+            
+        }else if(true === $this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $comentarios = $em->getRepository('FrontendBundle:Comentario')
+                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+        }else{
+            //true === $this->get('security.context')->isGranted('ROLE_USUARIO')
+            $comentarios = $em->getRepository('FrontendBundle:Comentario')
+                              ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), array('createdAt'=>'DESC'), 3);
+        }
+        
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+        
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                            ->getReservacionesPorEdificio($edificio->getId());
+        
+        
+        
+        return array(
+            'comentarios' => $comentarios,
+            
+        );
     }
     
     /**
