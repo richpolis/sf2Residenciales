@@ -25,7 +25,7 @@ class EstadoCuentaController extends BaseController
      *
      * @Route("/", name="estadodecuentas")
      * @Method("GET")
-     * @Template()
+     * @Template("FrontendBundle:EstadoCuenta:index.html.twig")
      */
     public function indexAction()
     {

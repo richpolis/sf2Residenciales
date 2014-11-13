@@ -45,8 +45,9 @@ class DefaultController extends BaseController {
         
         
         return array(
-            'comentarios' => $comentarios,
-            
+            'comentarios'   =>  $comentarios,
+            'cargos'        =>  $cargos,
+            'reservaciones' =>  $reservaciones,
         );
     }
     
@@ -107,6 +108,26 @@ class DefaultController extends BaseController {
                     'error' => $error,
                     'mensaje' => $mensaje,
                     'pagina' => $pagina,
+        ));
+    }
+    
+    public function residencialNameAction(){
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        return $this->render('FrontendBundle:Default:residencialName.html.twig', array(
+            'objeto'=>$residencial
+        ));
+    }
+    
+    public function edificiosResidencialAction(){
+        $em = $this->getDoctrine()->getManager();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $edificios = $em->getRepository('BackendBundle:Edificio')->findBy(array(
+                        'residencial'=>$residencial
+                     ));
+        return $this->render('FrontendBundle:Default:edificiosResidencial.html.twig', array(
+            'edificios' => $edificios,
+            'edificioActual' => $edificio,
         ));
     }
     

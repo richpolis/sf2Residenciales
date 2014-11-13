@@ -1,6 +1,6 @@
 {% extends '::base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard {% endblock %}
 
 {% block stylesheets %}
 <!-- Stylesheets -->
@@ -52,7 +52,7 @@
                 </a>
                 <!-- Site name for smallar screens -->
                 <a href="{{path('homepage')}}" class="navbar-brand">
-                    <span class="bold">Dashboard</span>
+                    <span class="bold">Dashboard | {{render(controller('FrontendBundle:Default:residencialName'))}}</span>
                 </a>
             </div>
 
@@ -69,7 +69,7 @@
                         <!-- Dropdown menu -->
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="#">
+                                <a href="{{path('logout')}}">
                                     <i class="fa fa-key"></i> Salir
                                 </a>
                             </li>
@@ -129,11 +129,11 @@
                     <i class="fa fa-user"></i> <span>Usuarios</span>
                 </a>
             </li>
-            <li>
+            <!--li>
                 <a {{configuraciones}} href="{{path('configuraciones')}}">
                     <i class="fa fa-gears"></i> <span>Configuraciones</span>
                 </a>
-            </li>
+            </li-->
             {% endif %}
             <li>
                 <a href="{{path('estadodecuentas')}}">
