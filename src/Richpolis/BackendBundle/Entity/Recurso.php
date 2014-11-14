@@ -52,7 +52,7 @@ class Recurso
     /**
      * @var string
      *
-     * @ORM\Column(name="precio", type="decimal")
+     * @ORM\Column(name="precio", type="decimal",nullable=true)
      */
     private $precio;
 

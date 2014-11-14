@@ -35,14 +35,20 @@ class EstadoCuentaController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+            $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
                         ->getCargosAdeudoPorEdificio($edificioActual->getId());
-
-        return array(
+        }else{
+            $pagina = 'estadodecuentas';
+            $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+        }
+        return $this->render("FrontendBundle:EstadoCuenta:$pagina.html.twig", array(
             'entities' => $estadodecuentas,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
-        );
+        ));
     }
     /**
      * Creates a new EstadoCuenta entity.

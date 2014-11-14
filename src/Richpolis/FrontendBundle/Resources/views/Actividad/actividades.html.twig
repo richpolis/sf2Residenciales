@@ -23,19 +23,32 @@
                     <div class="col-md-12">
 
                         <div class="widget">
-
+                            <div class="widget-head">
+                                <h2>Actividades</h2>
+                            </div>
                             <div class="widget-content">
                                 <div class="padd">
                                     <ul class="lista-actividades">
                                         {% for registro in entities %}
                                             <li class="item-actividad">
+                                                <div class="item-actividad-fecha">
+                                                    <span class="fecha-diasemana">
+                                                        martes
+                                                    </span>
+                                                    <span class="fecha-dia">
+                                                        5
+                                                    </span>
+                                                    <span class="fecha-mes">
+                                                        Nov
+                                                    </span>
+                                                </div>
+                                                <div class="item-actividad-duracion">1pm - 2pm</div>
                                                 <div class="item-actividad-titulo"> {{ registro.nombre }}</div>
                                                 <div class="item-actividad-descripcion"> {{ registro.descripcion|raw }}</div>
                                                 
                                             </li>
                                         {% endfor%}    
                                     </ul>    
-                                    
                                 </div>
                             </div>
                         </div>  

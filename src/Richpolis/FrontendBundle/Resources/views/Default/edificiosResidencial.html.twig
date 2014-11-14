@@ -16,8 +16,9 @@
 </form>
 {% else %}
  <form class="navbar-form" role="search" action="#search" method="post">
-    <div class="form-group">
-        <input id="buscarItem" name="buscarItem" type="text" class="form-control" placeholder="{{edificioActual}}" style="color: #000000;" readonly="readonly"> 
+    <div class="form-group"  style="color: #000000;">
+        <div style="color: white; font-size: 20px; text-transform: uppercase;">{{edificioActual}}</div>
+        <div style="color: white;">Bienvenido {{app.user.nombre}}</div>
     </div>
 </form>   
 {% endif %}    

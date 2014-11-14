@@ -19,7 +19,8 @@ class ActividadType extends AbstractType
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         $builder
-            ->add('nombre',null,array('attr'=>array('class'=>'form-control')))
+            ->add('fechaActividad',null,array('attr'=>array('class'=>'form-control')))
+            ->add('nombre',null,array('attr'=>array('class'=>'form-control')))    
             ->add('descripcion',null,array(
                 'label'=>'Descripcion',
                 'required'=>true,
@@ -28,6 +29,8 @@ class ActividadType extends AbstractType
                    'data-theme' => 'advanced',
                     )
                 ))
+            ->add('desde',null,array('attr'=>array('class'=>'form-control')))
+            ->add('hasta',null,array('attr'=>array('class'=>'form-control')))
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
         ;
     }

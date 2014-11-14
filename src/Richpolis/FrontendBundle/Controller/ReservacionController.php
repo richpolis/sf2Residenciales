@@ -294,6 +294,7 @@ class ReservacionController extends BaseController
             'ruta' => 'reservaciones_select_edificio',
             'campo' => 'edificio',
             'titulo' => 'Seleccionar edificio',
+            'return' => 'reservaciones',
         );
         
     }
@@ -328,6 +329,7 @@ class ReservacionController extends BaseController
             'ruta' => 'reservaciones_select_recurso',
             'campo' => 'recurso',
             'titulo' => 'Seleccionar recurso',
+            'return' => 'reservaciones',
         );
         
     }

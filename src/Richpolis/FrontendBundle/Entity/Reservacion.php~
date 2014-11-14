@@ -219,4 +219,32 @@ class Reservacion
     {
         return $this->usuario;
     }
+
+    /**
+     * Set isAproved
+     *
+     * @param boolean $isAproved
+     * @return Reservacion
+     */
+    public function setIsAproved($isAproved)
+    {
+        $this->isAproved = $isAproved;
+
+        return $this;
+    }
+
+    /**
+     * Get isAproved
+     *
+     * @return boolean 
+     */
+    public function getIsAproved()
+    {
+        return $this->isAproved;
+    }
+    
+    public function getStringReservacion(){
+        return sprintf("Recurso %s reservacion por usuario %s - %s", 
+                $this->getRecurso(),$this->getUsuario()->getNumero(),$this->getUsuario());
+    }
 }

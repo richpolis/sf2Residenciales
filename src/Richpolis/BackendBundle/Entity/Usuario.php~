@@ -104,6 +104,13 @@ class Usuario implements UserInterface, \Serializable
      * @ORM\Column(name="grupo", type="integer")
      */
     private $grupo;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
 
     /**
      * @var \DateTime
@@ -124,7 +131,7 @@ class Usuario implements UserInterface, \Serializable
     const GRUPO_SUPER_ADMIN =   3;
     
     public function __toString(){
-        return $this->getNombre();
+        return sprintf('%s | %s | %s', $this->getNumero(),$this->getNombre(),$this->getEdificio());
     }
     
     public function getStringTipoGrupo(){
@@ -157,6 +164,7 @@ class Usuario implements UserInterface, \Serializable
     {
         // may not be needed, see section on salt below
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+        $this->isActive = true;
     }
     
 
@@ -619,5 +627,28 @@ class Usuario implements UserInterface, \Serializable
     public function getGrupo()
     {
         return $this->grupo;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Usuario
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }

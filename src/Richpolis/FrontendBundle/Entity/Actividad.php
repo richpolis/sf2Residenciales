@@ -48,7 +48,29 @@ class Actividad
      * })
      */
     private $residencial;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha_actividad", type="datetime")
+     */
+    private $fechaActividad;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="desde", type="time")
+     */
+    private $desde;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="hasta", type="time")
+     */
+    private $hasta;
+    
+    
     /**
      * @var \DateTime
      *
@@ -171,5 +193,74 @@ class Actividad
     public function getResidencial()
     {
         return $this->residencial;
+    }
+
+    /**
+     * Set fechaActividad
+     *
+     * @param \DateTime $fechaActividad
+     * @return Actividad
+     */
+    public function setFechaActividad($fechaActividad)
+    {
+        $this->fechaActividad = $fechaActividad;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaActividad
+     *
+     * @return \DateTime 
+     */
+    public function getFechaActividad()
+    {
+        return $this->fechaActividad;
+    }
+
+    /**
+     * Set desde
+     *
+     * @param \DateTime $desde
+     * @return Actividad
+     */
+    public function setDesde($desde)
+    {
+        $this->desde = $desde;
+
+        return $this;
+    }
+
+    /**
+     * Get desde
+     *
+     * @return \DateTime 
+     */
+    public function getDesde()
+    {
+        return $this->desde;
+    }
+
+    /**
+     * Set hasta
+     *
+     * @param \DateTime $hasta
+     * @return Actividad
+     */
+    public function setHasta($hasta)
+    {
+        $this->hasta = $hasta;
+
+        return $this;
+    }
+
+    /**
+     * Get hasta
+     *
+     * @return \DateTime 
+     */
+    public function getHasta()
+    {
+        return $this->hasta;
     }
 }

@@ -36,11 +36,16 @@ class AvisoController extends BaseController
         
         $avisos = $em->getRepository('FrontendBundle:Aviso')
                           ->findBy(array('residencial'=>$residencialActual));
-
-        return array(
+        
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+        }else{
+            $pagina = 'avisos';
+        }
+        return $this->render("FrontendBundle:Aviso:$pagina.html.twig", array(
             'entities' => $avisos,
             'residencial' => $residencialActual,
-        );
+        ));
     }
     /**
      * Creates a new Aviso entity.

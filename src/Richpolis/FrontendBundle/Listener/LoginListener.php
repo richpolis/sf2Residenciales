@@ -33,16 +33,12 @@ class LoginListener
                 $session = $this->container->get('session');
                 if($this->contexto->isGranted('ROLE_SUPER_ADMIN')){
                     $irA = $this->router->generate('homepage');
-                    $session->set('filters',array(
-                       'residencial'=>'0',
-                       'edificio'=>'0',
-                    ));
+                    $session->set('filters',array());
                 }else if($this->contexto->isGranted('ROLE_ADMIN')){
                     $irA = $this->router->generate('homepage');
                     $edificio = $this->usuario->getEdificio();
                     $session->set('filters',array(
-                       'residencial'=>$edificio->getResidencial()->getId(),
-                        'edificio'=>'0',
+                       'residencial'=>$edificio->getResidencial()->getId()
                     ));
                 }else{
                     $irA = $this->router->generate('homepage');

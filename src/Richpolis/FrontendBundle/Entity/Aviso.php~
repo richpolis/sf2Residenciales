@@ -299,4 +299,40 @@ class Aviso
     {
         return $this->usuario;
     }
+
+    /**
+     * Set edificio
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @return Aviso
+     */
+    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    {
+        $this->edificio = $edificio;
+
+        return $this;
+    }
+
+    /**
+     * Get edificio
+     *
+     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     */
+    public function getEdificio()
+    {
+        return $this->edificio;
+    }
+    
+    public function getStringNivel(){
+        switch($this->getTipoAcceso()){
+            case self::TIPO_ACCESO_RESIDENCIAL:
+                return 'Aviso nivel residencial';
+            case self::TIPO_ACCESO_EDIFICIO: 
+                return 'Aviso nivel edificio: ' . $this->getEdificio();
+            case self::TIPO_ACCESO_PRIVADO:
+                return 'Aviso nivel usuario: ' . $this->getUsuario()->getNumero() . ' - ' .
+                    $this->getUsuario()->getNombre();
+                    
+        }
+    }
 }

@@ -30,6 +30,11 @@ class UsuarioType extends AbstractType
             ->add('imagen','hidden')
             ->add('numero','text',array('label'=>'Departamento','attr'=>array('class'=>'form-control')))
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
+            ->add('isActive',null,array('label'=>'Activo?','attr'=>array(
+                'class'=>'checkbox-inline',
+                'placeholder'=>'Es activo',
+                'data-bind'=>'value: isActive'
+                )))
             ->add('grupo','choice',array(
                 'label'=>'Grupo',
                 'empty_value'=>false,

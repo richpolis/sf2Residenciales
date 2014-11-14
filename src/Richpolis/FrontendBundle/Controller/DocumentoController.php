@@ -37,11 +37,16 @@ class DocumentoController extends BaseController
         $documentos = $em->getRepository('FrontendBundle:Documento')
                          ->findBy(array('residencial'=>$residencialActual));
 
-        return array(
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+        }else{
+            $pagina = 'documentos';
+        }
+        return $this->render("FrontendBundle:Documento:$pagina.html.twig", array(
             'entities' => $documentos,
             'residencial' => $residencialActual,
-            
-        );
+        ));
+        
     }
     /**
      * Creates a new Documento entity.
@@ -101,6 +106,8 @@ class DocumentoController extends BaseController
     public function newAction()
     {
         $entity = new Documento();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity->setResidencial($residencial);
         $form   = $this->createCreateForm($entity);
 
         return array(
