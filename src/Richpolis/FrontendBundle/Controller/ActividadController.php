@@ -25,7 +25,6 @@ class ActividadController extends BaseController
      *
      * @Route("/", name="actividades")
      * @Method("GET")
-     * @Template()
      */
     public function indexAction()
     {
@@ -37,10 +36,15 @@ class ActividadController extends BaseController
         $actividades = $em->getRepository('FrontendBundle:Actividad')
                           ->findBy(array('residencial'=>$residencialActual));
 
-        return array(
-            'entities' => $actividades,
-            'residencial' => $residencialActual,
-        );
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+        }else{
+            $pagina = 'actividades';
+        }
+        return $this->render("FrontendBundle:Actividad:$pagina.html.twig", array(
+                'entities' => $actividades,
+                'residencial' => $residencialActual,
+        ));
     }
     
     /**

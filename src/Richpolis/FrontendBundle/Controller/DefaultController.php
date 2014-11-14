@@ -23,21 +23,28 @@ class DefaultController extends BaseController {
         
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-        if(true === $this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')){
+        $context = $this->get('security.context');
+        if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
                               ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargosAdeudoPorEdificio($edificio->getId());
             
-        }else if(true === $this->get('security.context')->isGranted('ROLE_ADMIN')){
+        }else if(true === $context->isGranted('ROLE_ADMIN')){
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
                               ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargosAdeudoPorEdificio($edificio->getId());
         }else{
             //true === $this->get('security.context')->isGranted('ROLE_USUARIO')
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
-                              ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), array('createdAt'=>'DESC'), 3);
+                              ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), 
+                                      array('createdAt'=>'DESC'), 3);
         }
-        
-        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+        
+        
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                             ->getReservacionesPorEdificio($edificio->getId());
@@ -114,7 +121,7 @@ class DefaultController extends BaseController {
     public function residencialNameAction(){
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         return $this->render('FrontendBundle:Default:residencialName.html.twig', array(
-            'objeto'=>$residencial
+            'objeto'=>$residencial,
         ));
     }
     
@@ -123,7 +130,7 @@ class DefaultController extends BaseController {
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $edificios = $em->getRepository('BackendBundle:Edificio')->findBy(array(
-                        'residencial'=>$residencial
+                        'residencial'=>$residencial,
                      ));
         return $this->render('FrontendBundle:Default:edificiosResidencial.html.twig', array(
             'edificios' => $edificios,
@@ -131,4 +138,16 @@ class DefaultController extends BaseController {
         ));
     }
     
+    /**
+     * @Route("/cambiar/edificio", name="cambiar_edificio")
+     */
+    public function cambiarEdificioAction(Request $request) {
+        $filtros = $this->getFilters();
+        if($request->query->has('edificio') == true){
+            $filtros['edificio'] = $request->query->get('edificio');
+            $this->setFilters($filtros);
+        }
+        return $this->redirect($this->generateUrl('homepage'));
+        
+    }
 }

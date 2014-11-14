@@ -287,10 +287,10 @@ class AvisoController extends BaseController
             $this->setFilters($filtros);
             switch($filtros['nivel_aviso']){
                 case Aviso::TIPO_ACCESO_RESIDENCIAL:
-                    return $this->redirect($this->generateUrl('avisos_new'));
                 case Aviso::TIPO_ACCESO_EDIFICIO:
+                    return $this->redirect($this->generateUrl('avisos_new'));
                 case Aviso::TIPO_ACCESO_PRIVADO:
-                    return $this->redirect($this->generateUrl('avisos_select_edificio'));
+                    return $this->redirect($this->generateUrl('avisos_select_usuario'));
             }
         }
         
@@ -308,6 +308,7 @@ class AvisoController extends BaseController
             'ruta' => 'avisos_select_nivel',
             'campo' => 'nivel_aviso',
             'titulo' => 'Seleccionar nivel del aviso',
+            'return' => 'avisos',
         );
         
     }
@@ -349,6 +350,7 @@ class AvisoController extends BaseController
             'ruta' => 'avisos_select_edificio',
             'campo' => 'edificio',
             'titulo' => $tit,
+            'return' =>'avisos'
         );
         
     }
@@ -382,6 +384,7 @@ class AvisoController extends BaseController
             'ruta' => 'avisos_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Aviso para usuario: seleccionar usuario',
+            'return' =>'avisos'
         );
         
     }

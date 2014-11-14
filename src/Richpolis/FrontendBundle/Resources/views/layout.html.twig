@@ -88,14 +88,7 @@
             <a href="#">Navegador</a>
         </div>
         <!-- Search form -->
-        <form class="navbar-form" role="search" action="#search" method="post">
-            <div class="form-group">
-                <input id="buscarItem" name="buscarItem" type="text" class="form-control" placeholder="buscar">
-                <button class="btn search-button" type="submit">
-                    <i class="fa fa-search"></i>
-                </button>
-            </div>
-        </form>
+        {{render(controller('FrontendBundle:Default:edificiosResidencial'))}}
         <!--- Sidebar navigation -->
         <!-- If the main navigation has sub navigation, then add the class "has_sub" to "li" of main navigation. -->
         <ul id="nav">
@@ -195,5 +188,11 @@
         $(document).ready(function(){
             $(".loader").fadeOut();
         });
+        function cambiarEdificio(){
+            debugger;
+            var select = $('.cambiar-edificio');
+            var url = select.find('option:selected').data('url');
+            location.href = url;
+        }
     </script>
 {% endblock %}
