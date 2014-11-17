@@ -282,6 +282,7 @@ class Documento
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
             $this->archivo = $filename.'.'.$this->getFile()->guessExtension();
+            $this->setTipoArchivo(RpsStms::getTipoArchivo($this->archivo));
         }
     }
 
@@ -299,6 +300,7 @@ class Documento
         // be automatically thrown by move(). This will properly prevent
         // the entity from being persisted to the database on error
         $this->getFile()->move($this->getUploadRootDir(), $this->archivo);
+        
 
         // check if we have an old image
         if (isset($this->temp)) {

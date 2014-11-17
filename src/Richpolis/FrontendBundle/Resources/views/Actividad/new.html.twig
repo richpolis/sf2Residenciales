@@ -85,6 +85,7 @@
     {{ parent() }}
 
     <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+    <script src="{{asset('js/jquery-ui-timepicker-addon.js')}}"></script>
 
     <!-- jQuery Notification - Noty -->
     <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
@@ -104,7 +105,27 @@
     <script>
         $(document).ready(function () {
             $(".validate").validationEngine();
-
+            
+            $("#richpolis_frontendbundle_actividad_fechaActividad").datepicker({
+                dateFormat: "yy-mm-dd",
+                {% if is_granted('ROLE_SUPER_ADMIN') == false %}    
+                minDate: 0,       
+                maxDate: "+3M"
+                {% endif %}
+            });
+            
+            $('#richpolis_frontendbundle_actividad_desde').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
+            });
+            
+            $('#richpolis_frontendbundle_actividad_hasta').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
+            });
+            
             $("#botonRegresar").on("click", function () {
                 location.href = "{{path('actividades')}}";
             });

@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 /**
  * EstadoCuentaRepository
@@ -50,5 +51,30 @@ class EstadoCuentaRepository extends EntityRepository
                   ->setParameter('is_paid', false);
         }
         return $query->getQuery()->getResult();
+    }
+    
+    public function getCargoEnMes($mes, $year, $tipoCargo, Usuario $usuario)
+    {
+        $em = $this->getEntityManager();
+            $consulta = $em->createQuery(
+                "SELECT c "
+                . "FROM FrontendBundle:EstadoCuenta c "
+                . "JOIN c.usuario u " 
+                . "WHERE MONTH(c.createdAt)=:mes "
+                . "AND YEAR(c.createdAt)=:year "
+                . "AND c.tipoCargo=:tipo "
+                . "AND u.id=:usuario");
+            $consulta->setParameters(array(
+                'mes'=>$mes,
+                'year'=>$year,
+                'tipo'=>$tipoCargo,
+                'usuario'=>$usuario->getId(),
+            ));
+       $resultados =  $consulta->getResult();
+       if(isset($resultados[0])){
+           return $resultados[0];
+       }else{
+           return null;
+       }
     }
 }

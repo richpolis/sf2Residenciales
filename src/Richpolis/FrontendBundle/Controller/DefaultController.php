@@ -25,11 +25,7 @@ class DefaultController extends BaseController {
         $edificio = $this->getEdificioActual();
         $context = $this->get('security.context');
         if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
-            $comentarios = $em->getRepository('FrontendBundle:Comentario')
-                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
-            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorEdificio($edificio->getId());
-            
+            return $this->redirect($this->generateUrl('residenciales'));
         }else if(true === $context->isGranted('ROLE_ADMIN')){
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
                               ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
@@ -40,15 +36,13 @@ class DefaultController extends BaseController {
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
                               ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), 
                                       array('createdAt'=>'DESC'), 3);
-        }
-            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+           $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());
         
-        
+        }
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                             ->getReservacionesPorEdificio($edificio->getId());
-        
         
         
         return array(

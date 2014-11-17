@@ -66,7 +66,7 @@ class Recurso
         
     static public $sTipoAcceso=array(
         self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
-        self::TIPO_ACCESO_EDIFICIO=>'Edificio',
+        self::TIPO_ACCESO_EDIFICIO=>'Torre',
         self::TIPO_ACCESO_PRIVADO=>'Privado',
     );
     

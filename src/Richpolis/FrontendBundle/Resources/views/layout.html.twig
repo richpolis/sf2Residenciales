@@ -23,6 +23,13 @@
   {% set recursos = "" %}   
   {% set usuarios = "" %}
   {% set configuraciones = "" %}
+  {% set estadodecuentas = "" %}
+  {% set actividades = "" %}
+  {% set avisos = "" %}
+  {% set documentos = "" %}
+  {% set reservaciones = "" %}
+  
+  
 
   
   {% if route == "homepage" %}
@@ -36,7 +43,17 @@
   {% elseif route == "recursos" %}
     {% set recursos = "class=open" %}
   {% elseif route == "configuraciones" %}
-    {% set configuraciones = "class=open" %}       
+    {% set configuraciones = "class=open" %}
+  {% elseif route == "estadodecuentas" %}
+    {% set estadodecuentas = "class=open" %}
+  {% elseif route == "actividades" %}
+    {% set actividades = "class=open" %}
+  {% elseif route == "avisos" %}
+    {% set avisos = "class=open" %}
+  {% elseif route == "documentos" %}
+    {% set documentos = "class=open" %}
+  {% elseif route == "reservaciones" %}
+    {% set reservaciones = "class=open" %}
   {% endif %}
       
 <header>
@@ -109,7 +126,7 @@
             {% if is_granted('ROLE_ADMIN') %}
             <li>
                 <a {{edificios}}  href="{{path('edificios')}}">
-                    <i class="fa fa-building"></i> <span>Edificios</span>
+                    <i class="fa fa-building"></i> <span>Torres</span>
                 </a>
             </li>
             <li>
@@ -129,27 +146,27 @@
             </li-->
             {% endif %}
             <li>
-                <a href="{{path('estadodecuentas')}}">
-                    <i class="fa fa-gears"></i> <span>Estado de Cuenta</span>
+                <a {{estadodecuentas}} href="{{path('estadodecuentas')}}">
+                    <i class="fa fa-money"></i> <span>Estado de Cuenta</span>
                 </a>
             </li>
             <li>
-                <a href="{{path('actividades')}}">
+                <a {{actividades}} href="{{path('actividades')}}">
                     <i class="fa fa-gears"></i> <span>Actividades</span>
                 </a>
             </li>
             <li>
-                <a href="{{path('avisos')}}">
+                <a {{avisos}} href="{{path('avisos')}}">
                     <i class="fa fa-gears"></i> <span>Avisos y notificaciones</span>
                 </a>
             </li>
             <li>
-                <a href="{{path('documentos')}}">
+                <a {{documentos}} href="{{path('documentos')}}">
                     <i class="fa fa-gears"></i> <span>Documentos</span>
                 </a>
             </li>
             <li>
-                <a href="{{path('reservaciones')}}">
+                <a {{reservaciones}} href="{{path('reservaciones')}}">
                     <i class="fa fa-gears"></i> <span>Reservaciones</span>
                 </a>
             </li>

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
     <!-- Gritter Notifications stylesheet -->
     <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -28,14 +29,21 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-                                    <ul class="lista-avisos">
+                                    <ul class="lista lista-avisos">
                                         {% for registro in entities %}
-                                            <li class="item-aviso">
+                                            {% if registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
+                                                {% set nivel = "General" %}
+                                            {% elseif registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_EDIFICIO') %}
+                                                {% set nivel = registro.edificio %}
+                                            {% else %}
+                                                {% set nivel = registro.usuario %}    
+                                            {% endif %}
+                                            <li class="item item-aviso item-aviso-notificacion">
                                                 <div class="item-aviso-fecha">
-                                                    {{ registro.createdAt | date('d-m-Y') }}
+                                                    {{ registro.createdAt | date('d-M-Y') }} - {{nivel}}
                                                 </div>
-                                                <div class="item-aviso-titulo"> {{ registro.titulo }}</div>
-                                                <div class="item-aviso-descripcion"> {{ registro.aviso|raw }}</div>
+                                                <div class="item-titulo item-aviso-titulo"> {{ registro.titulo }}</div>
+                                                <div class="item-descripcion item-aviso-descripcion"> {{ registro.aviso|raw }}</div>
 
                                             </li>
                                         {% endfor%}    

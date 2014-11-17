@@ -50,6 +50,17 @@ class Actividad
     private $residencial;
     
     /**
+     * @var \Edificio
+     * @todo Edificio del aviso
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
+     * })
+     */
+    private $edificio;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="fecha_actividad", type="datetime")
@@ -70,6 +81,12 @@ class Actividad
      */
     private $hasta;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tipo_acceso", type="integer")
+     */
+    private $tipoAcceso;
     
     /**
      * @var \DateTime
@@ -91,6 +108,26 @@ class Actividad
         {
           $this->createdAt = new \DateTime();
         }
+    }
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+        
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Torre',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+    
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
     }
 
     /**
@@ -216,5 +253,51 @@ class Actividad
     public function getFechaActividad()
     {
         return $this->fechaActividad;
+    }
+
+    /**
+     * Set desde
+     *
+     * @param \DateTime $desde
+     * @return Actividad
+     */
+    public function setDesde($desde)
+    {
+        $this->desde = $desde;
+
+        return $this;
+    }
+
+    /**
+     * Get desde
+     *
+     * @return \DateTime 
+     */
+    public function getDesde()
+    {
+        return $this->desde;
+    }
+
+    /**
+     * Set hasta
+     *
+     * @param \DateTime $hasta
+     * @return Actividad
+     */
+    public function setHasta($hasta)
+    {
+        $this->hasta = $hasta;
+
+        return $this;
+    }
+
+    /**
+     * Get hasta
+     *
+     * @return \DateTime 
+     */
+    public function getHasta()
+    {
+        return $this->hasta;
     }
 }

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+  <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -28,24 +29,32 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-                                    <ul class="lista-actividades">
+                                    <ul class="lista lista-actividades">
                                         {% for registro in entities %}
-                                            <li class="item-actividad">
+                                            <li class="item item-actividad">
                                                 <div class="item-actividad-fecha">
                                                     <span class="fecha-diasemana">
-                                                        martes
+                                                        {% set dia = registro.fechaActividad|date('w') %}
+                                                        {{registro.diaSemana(dia)}}
                                                     </span>
                                                     <span class="fecha-dia">
-                                                        5
+                                                        {{registro.fechaActividad | date('d') }}
                                                     </span>
                                                     <span class="fecha-mes">
-                                                        Nov
+                                                        {% set mes = registro.fechaActividad|date('n')%}
+                                                        {{registro.nombreMes(mes)}}
                                                     </span>
                                                 </div>
-                                                <div class="item-actividad-duracion">1pm - 2pm</div>
-                                                <div class="item-actividad-titulo"> {{ registro.nombre }}</div>
-                                                <div class="item-actividad-descripcion"> {{ registro.descripcion|raw }}</div>
-                                                
+                                                {% if registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
+                                                    {% set edificio = "General" %}
+                                                {% else %}
+                                                    {% set edificio = registro.edificio %}  
+                                                {% endif %}    
+                                                <div class="item-actividad-contenido">
+                                                    <div class="item-actividad-duracion">{{ registro.desde | date('g:ia')}} - {{ registro.hasta | date('g:ia')}} - {{edificio}}</div>
+                                                    <div class="item-titulo item-actividad-titulo"> {{ registro.nombre }}</div>
+                                                    <div class="item-descripcion item-actividad-descripcion"> {{ registro.descripcion|raw }}</div>
+                                                </div>
                                             </li>
                                         {% endfor%}    
                                     </ul>    

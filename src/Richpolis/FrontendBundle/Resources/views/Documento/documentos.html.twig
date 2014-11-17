@@ -9,7 +9,10 @@
     <!-- Widgets stylesheet -->
     <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
     <!-- Gritter Notifications stylesheet -->
-    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}">
+    
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">
+    
 {% endblock %}
 
 {% block mainbar %}
@@ -28,16 +31,17 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-                                    <ul class="lista-documentos">
+                                    <ul class="lista lista-documentos">
                                         {% for registro in entities %}
-                                            <li class="item-documento">
+                                            <li class="item item-documento">
                                                 <div class="item-archivo">
                                                     <img src="/images/pdf.png"/>
                                                     <a href="{{registro.webPath}}" target="_blank">Descargar</a>
                                                 </div>
-                                                <div class="item-actividad-titulo"> {{ registro.titulo }}</div>
-                                                <div class="item-actividad-descripcion"> {{ registro.descripcion|raw }}</div>
-
+                                                <div class="item-documento-contenido">
+                                                    <div class="item-titulo item-actividad-titulo"> {{ registro.titulo }}</div>
+                                                    <div class="item-descripcion item-actividad-descripcion"> {{ registro.descripcion|raw }}</div>
+                                                </div>    
                                             </li>
                                         {% endfor%}    
                                     </ul>    

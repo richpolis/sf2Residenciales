@@ -35,14 +35,20 @@ class ReservacionController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+        }else{
+            $pagina = 'reservaciones';
+        }
+        
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                         ->getReservacionesPorEdificio($edificioActual->getId());
 
-        return array(
+        return $this->render("FrontendBundle:Reservacion:$pagina.html.twig", array(
             'entities' => $reservaciones,
             'residencial'=>$residencialActual,
             'edificio'=>$edificioActual,
-        );
+        ));
     }
     
     /**

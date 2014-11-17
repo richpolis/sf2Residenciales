@@ -17,7 +17,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Edificios</h2>
+            <h2 class="pull-left">Torres</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -31,11 +31,11 @@
                 {% endif %}    
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">Edificios</a>
+                <a href="{{path('edificios')}}" class="bread-current">Torres</a>
                 <span class="divider">/</span> 
                 <a href="{{path('edificios_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>   
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('edificios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                    <a href="{{path('edificios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear torre</a>
                 {% endif %}
             </div>
 
@@ -69,7 +69,7 @@
                                                     <td>{{ entity.residencial }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Edificio</th>
+                                                    <th>Torre</th>
                                                     <td>{{ entity.nombre}}</td>
                                                 </tr>
                                             </tbody>

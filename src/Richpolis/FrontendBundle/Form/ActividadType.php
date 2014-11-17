@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
+use Richpolis\BackendBundle\Form\DataTransformer\EdificioToNumberTransformer;
 
 
 class ActividadType extends AbstractType
@@ -18,8 +19,8 @@ class ActividadType extends AbstractType
     {
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
+        $edificioTransformer = new EdificioToNumberTransformer($em);
         $builder
-            ->add('fechaActividad',null,array('attr'=>array('class'=>'form-control')))
             ->add('nombre',null,array('attr'=>array('class'=>'form-control')))    
             ->add('descripcion',null,array(
                 'label'=>'Descripcion',
@@ -29,9 +30,24 @@ class ActividadType extends AbstractType
                    'data-theme' => 'advanced',
                     )
                 ))
-            ->add('desde',null,array('attr'=>array('class'=>'form-control')))
-            ->add('hasta',null,array('attr'=>array('class'=>'form-control')))
+            ->add('fechaActividad','date',array(
+                'widget' => 'single_text', 
+                'format' => 'yyyy-MM-dd',
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('desde','time',array(
+                'widget' => 'single_text',
+                'with_seconds'=> false,
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('hasta','time',array(
+                'widget' => 'single_text',
+                'with_seconds'=> false,
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('tipoAcceso','hidden')
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
+            ->add($builder->create('edificio','hidden')->addModelTransformer($edificioTransformer))
         ;
     }
     

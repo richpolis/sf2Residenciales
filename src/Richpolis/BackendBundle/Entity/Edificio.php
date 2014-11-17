@@ -28,6 +28,7 @@ class Edificio
      * @var string
      *
      * @ORM\Column(name="nombre", type="string", length=255)
+     * @Assert\NotBlank(message="Ingresar nombre de la torre")
      */
     private $nombre;
     
@@ -59,6 +60,13 @@ class Edificio
      * @ORM\OrderBy({"nombre" = "ASC"})
      */
     private $usuarios;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cuota", type="decimal", nullable=false)
+     */
+    private $cuota;
     
     public function __toString() {
         return $this->nombre;
@@ -194,5 +202,28 @@ class Edificio
     public function getUsuarios()
     {
         return $this->usuarios;
+    }
+
+    /**
+     * Set cuota
+     *
+     * @param string $cuota
+     * @return Edificio
+     */
+    public function setCuota($cuota)
+    {
+        $this->cuota = $cuota;
+
+        return $this;
+    }
+
+    /**
+     * Get cuota
+     *
+     * @return string 
+     */
+    public function getCuota()
+    {
+        return $this->cuota;
     }
 }

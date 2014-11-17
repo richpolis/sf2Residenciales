@@ -34,7 +34,7 @@ class AvisoType extends AbstractType
                     )
                 ))
             ->add('tipoAcceso','hidden')
-            ->add('link',null,array('attr'=>array('class'=>'form-control')))
+            ->add('link','hidden')
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))    

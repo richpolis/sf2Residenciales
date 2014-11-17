@@ -26,7 +26,8 @@
         "kriswallsmith/buzz": "~0.7",
         "liip/imagine-bundle": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
-        "friendsofsymfony/rest-bundle": "~1.0"
+        "friendsofsymfony/rest-bundle": "~1.0",
+        "beberlei/DoctrineExtensions": "*"
     },
     "scripts": {
         "post-install-cmd": [

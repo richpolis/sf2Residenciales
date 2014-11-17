@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\EstadoCuentaType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -27,7 +28,7 @@ class EstadoCuentaController extends BaseController
      * @Method("GET")
      * @Template("FrontendBundle:EstadoCuenta:index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -37,12 +38,15 @@ class EstadoCuentaController extends BaseController
         
         if($this->get('security.context')->isGranted('ROLE_ADMIN')){
             $pagina = 'index';
+            $todos = $request->query->get('todos',false);
             $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorEdificio($edificioActual->getId());
+                        ->getCargosAdeudoPorEdificio($edificioActual->getId(),$todos);
         }else{
             $pagina = 'estadodecuentas';
+            $todos = $request->query->get('todos',false);
             $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+                        ->getCargosAdeudoPorUsuario($this->getUser()->getId(),$todos);
+            
         }
         return $this->render("FrontendBundle:EstadoCuenta:$pagina.html.twig", array(
             'entities' => $estadodecuentas,
@@ -297,5 +301,65 @@ class EstadoCuentaController extends BaseController
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Aplicar cargo normal a todos los inquilinos del edificio.
+     *
+     * @Route("/aplicar/cargo/normal", name="estadodecuentas_aplicar_cargo_normal")
+     */
+    public function aplicarCargoNormalAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+        
+        //$residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        $fecha = new \DateTime();
+        $mes = $fecha->format("m");
+        $year = $fecha->format("Y");
+        $cont = 0;
+        $nombreMes = $this->getMes($mes);
+        foreach($usuarios as $usuario){
+            $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_NORMAL,$usuario);
+            if(!$cargo){
+                //no existe cargo en el mes, creamos el cargo
+                
+                $cargo = new EstadoCuenta();
+                $cargo->setCargo("Cargo automatico de ".$nombreMes." del ".$year);
+                $cargo->setMonto($edificio->getCuota());
+                $cargo->setUsuario($usuario);
+                $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_NORMAL);
+                $em->persist($cargo);
+                $cont++;
+            }
+        }
+        $em->flush();
+        $response = new JsonResponse(array('cargosAplicados'=>"Cargos aplicados ".$cont));
+        return $response;
+    }
+    
+    public function getMes($num){
+        switch($num){
+            case 1: return "Enero";
+            case 2: return "Febrero";
+            case 3: return "Marzo";
+            case 4: return "Abril";
+            case 5: return "Mayo";
+            case 6: return "Junio";
+            case 7: return "Julio";
+            case 8: return "Agosto";
+            case 9: return "Septiembre";
+            case 10: return "Octubre";
+            case 11: return "Noviembre";
+            case 12: return "Diciembre";
+        }
     }
 }

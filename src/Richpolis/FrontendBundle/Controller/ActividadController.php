@@ -71,6 +71,7 @@ class ActividadController extends BaseController
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
         );
     }
 
@@ -104,8 +105,12 @@ class ActividadController extends BaseController
     public function newAction()
     {
         $entity = new Actividad();
-        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        $entity->setResidencial($residencialActual);
+        $filtros = $this->getFilters();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($residencial);
+        $entity->setEdificio($edificio);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -264,5 +269,46 @@ class ActividadController extends BaseController
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar tipo acceso de la actividad.
+     *
+     * @Route("/seleccionar/nivel", name="actividades_select_nivel")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectNivelAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('nivel_aviso')){
+            $filtros = $this->getFilters();
+            $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
+            $this->setFilters($filtros);
+            switch($filtros['nivel_aviso']){
+                case Actividad::TIPO_ACCESO_RESIDENCIAL:
+                case Actividad::TIPO_ACCESO_EDIFICIO:
+                    return $this->redirect($this->generateUrl('actividades_new'));
+                case Actividad::TIPO_ACCESO_PRIVADO:
+                    return $this->redirect($this->generateUrl('actividades_select_usuario'));
+            }
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $arreglo = array(
+            array('id'=>  Actividad::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Para Residencial'),
+            array('id'=>  Actividad::TIPO_ACCESO_EDIFICIO,'nombre'=>'Para torre'),
+        );
+        
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'actividades_select_nivel',
+            'campo' => 'nivel_aviso',
+            'titulo' => 'Seleccionar nivel de la actividad',
+            'return' => 'actividades',
+        );
+        
     }
 }

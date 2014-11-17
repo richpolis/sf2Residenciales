@@ -60,7 +60,7 @@ class EstadoCuenta
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="paid_at", type="date")
+     * @ORM\Column(name="paid_at", type="date",nullable=true)
      */
     private $paidAt;
     
@@ -96,6 +96,10 @@ class EstadoCuenta
         {
           $this->createdAt = new \DateTime();
         }
+    }
+    
+    public function __construct() {
+        $this->isPaid = false;
     }
     
     const TIPO_CARGO_NORMAL=1;

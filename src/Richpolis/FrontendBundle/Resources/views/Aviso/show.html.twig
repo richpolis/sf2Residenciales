@@ -69,10 +69,14 @@
                                                     <th>Residencial</th>
                                                     <td>{{ entity.residencial }}</td>
                                                 </tr>
+                                                {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
+                                                <tr><th>Torre</th><td>General</td></tr>
+                                                {% else %}    
                                                 <tr>
-                                                    <th>Edificio</th>
-                                                    <td>{{ entity.residencial }}</td>
+                                                    <th>Torre</th>
+                                                    <td>{{ entity.edificio }}</td>
                                                 </tr>
+                                                {% endif %}
                                                 <tr>
                                                     <th>Nivel</th>
                                                     <td>{{ entity.stringNivel }}</td>

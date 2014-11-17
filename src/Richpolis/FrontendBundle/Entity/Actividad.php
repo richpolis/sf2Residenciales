@@ -50,9 +50,20 @@ class Actividad
     private $residencial;
     
     /**
+     * @var \Edificio
+     * @todo Edificio del aviso
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
+     * })
+     */
+    private $edificio;
+    
+    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fecha_actividad", type="datetime")
+     * @ORM\Column(name="fecha_actividad", type="date")
      */
     private $fechaActividad;
     
@@ -70,6 +81,12 @@ class Actividad
      */
     private $hasta;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tipo_acceso", type="integer")
+     */
+    private $tipoAcceso;
     
     /**
      * @var \DateTime
@@ -91,6 +108,26 @@ class Actividad
         {
           $this->createdAt = new \DateTime();
         }
+    }
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+        
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Torre',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+    
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
     }
 
     /**
@@ -262,5 +299,85 @@ class Actividad
     public function getHasta()
     {
         return $this->hasta;
+    }
+    
+    
+    public function isFechaDesdeHasta(){
+        
+    }
+
+    /**
+     * Set tipoAcceso
+     *
+     * @param integer $tipoAcceso
+     * @return Actividad
+     */
+    public function setTipoAcceso($tipoAcceso)
+    {
+        $this->tipoAcceso = $tipoAcceso;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoAcceso
+     *
+     * @return integer 
+     */
+    public function getTipoAcceso()
+    {
+        return $this->tipoAcceso;
+    }
+
+    /**
+     * Set edificio
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @return Actividad
+     */
+    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    {
+        $this->edificio = $edificio;
+
+        return $this;
+    }
+
+    /**
+     * Get edificio
+     *
+     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     */
+    public function getEdificio()
+    {
+        return $this->edificio;
+    }
+    
+    public function diaSemana($dia){
+        switch($dia){
+            case 0: return "Dom";
+            case 1: return "Lun";
+            case 2: return "Mar";
+            case 3: return "Mie";
+            case 4: return "Jue";
+            case 5: return "Vie";
+            case 6: return "Sab";
+        }
+    }
+    
+    public function nombreMes($mes){
+        switch($mes){
+            case 1: return "Ene";
+            case 2: return "Feb";
+            case 3: return "Mar";
+            case 4: return "Abr";
+            case 5: return "May";
+            case 6: return "Jun";
+            case 7: return "Jul";
+            case 8: return "Ago";
+            case 9: return "Sep";
+            case 10: return "Oct";
+            case 11: return "Nov";
+            case 12: return "Dic";
+        }
     }
 }

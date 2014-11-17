@@ -35,6 +35,7 @@
           <span class="divider">/</span> 
           <a href="{{path('estadodecuentas')}}" class="bread-current">Cargos</a>
           <a href="{{path('estadodecuentas_select')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear cargo</a>
+          <a href="{{path('estadodecuentas_aplicar_cargo_normal')}}" onclick="return false;" id="aplicarCargoNormal" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Aplicar cargos normal</a>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -60,6 +61,7 @@
                                <th>Residencial</th>
                                <th>Usuario</th>
                                <th>Cargo</th>
+                               <th>Monto</th>
                                <th>Fecha</th>
                                <th>Actions</th>
                            </tr>
@@ -71,6 +73,7 @@
                                <td>{{ entity.usuario.edificio.residencial }}</td>
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.cargo }}</td>
+                               <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.createdAt|date('d-m-Y') }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
@@ -139,6 +142,26 @@ $(document).ready(function() {
         "sLast":"Ultimo",
         "sFirst":"Primero",
         "sPrevious": "Anterior",
+    });
+    
+    $("#aplicarCargoNormal").on("click",function(){
+        $(".loader").fadeIn();
+        $.ajax({
+           url: '{{path('estadodecuentas_aplicar_cargo_normal')}}',
+           type: 'POST',
+           dataType: 'json',
+           success: function(data){
+               $(".loader").fadeOut();
+               //data = JSON.parse(data);
+               console.log(data);
+               noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
+               location.href = '{{path('estadodecuentas')}}';
+           },
+           error: function(data){
+               $(".loader").fadeOut();
+               console.log(JSON.parse(data));
+           }
+        });
     });
 });
 </script>
