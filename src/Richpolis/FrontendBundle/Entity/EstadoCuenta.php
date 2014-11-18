@@ -74,6 +74,17 @@ class EstadoCuenta
      * })
      */
     private $usuario;
+    
+    /**
+     * @var \Pago
+     * @todo Pago del cargo
+     *
+     * @ORM\ManyToOne(targetEntity="Pago", inversedBy="cargos")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="pago_id", referencedColumnName="id")
+     * })
+     */
+    private $pago;
 
 
     /**

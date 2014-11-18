@@ -11,6 +11,11 @@ class Richsys
     const TIPO_ARCHIVO_LINK=3;
     const TIPO_ARCHIVO_MUSICA=4;
     const TIPO_ARCHIVO_FLASH=5;
+    const TIPO_ARCHIVO_PDF = 6;
+    const TIPO_ARCHIVO_DOC = 7;
+    const TIPO_ARCHIVO_XLS = 8;
+    
+    
     
     const TIPO_ACCESO_GENERAL = 1;
     const TIPO_ACCESO_PRIVADO = 2;
@@ -300,11 +305,36 @@ EOF;
             case "mp3":    
               $resp=self::TIPO_ARCHIVO_MUSICA;
               break;
+            case "pdf":    
+              $resp=self::TIPO_ARCHIVO_PDF;
+              break;
+            case "doc":
+            case "docx":
+              $resp=self::TIPO_ARCHIVO_DOC;
+              break;
+            case "xls":
+            case "xlsx":
+              $resp=self::TIPO_ARCHIVO_XLS;
+              break;
             default:    
               $resp=self::TIPO_ARCHIVO_LINK;
               break;
         }
         return $resp;
+    }
+    
+    static public function getIcoArchivo($archivo){
+        $tipo = self::getTipoArchivo($archivo);
+        switch($tipo){
+            case self::TIPO_ARCHIVO_IMAGEN:
+                return 'ico_imagen.png';
+            case self::TIPO_ARCHIVO_PDF:
+                return 'ico_pdf.png';
+            case self::TIPO_ARCHIVO_DOC:
+                return 'ico_doc.png';
+            case self::TIPO_ARCHIVO_XLS:
+                return 'ico_xls.png';
+        }
     }
     
     /*static public function getTitleAndImageVideoYoutube($link){

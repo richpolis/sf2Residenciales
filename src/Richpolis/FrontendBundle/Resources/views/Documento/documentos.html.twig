@@ -35,7 +35,7 @@
                                         {% for registro in entities %}
                                             <li class="item item-documento">
                                                 <div class="item-documento-archivo">
-                                                    <img src="/images/pdf.png"/>
+                                                    <img class="icono-archivo" src="{{asset('images/' ~ registro.icoArchivo )}}"/>
                                                     <a href="{{registro.webPath}}" target="_blank">Descargar</a>
                                                 </div>
                                                 <div class="item-documento-contenido">

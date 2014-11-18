@@ -4,18 +4,18 @@ namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 /**
- * Documento
+ * Pago
  *
- * @ORM\Table(name="documentos")
- * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\DocumentoRepository")
+ * @ORM\Table(name="pagos")
+ * @ORM\Entity(repositoryClass="Richpolis\FrontendBundle\Repository\PagoRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Documento
+class Pago
 {
     /**
      * @var integer
@@ -26,20 +26,21 @@ class Documento
      */
     private $id;
 
-    /**
-     * @var string
+   /**
+     * @var Array 
+     * @todo Arreglo de cargos en un pago
      *
-     * @ORM\Column(name="titulo", type="string", length=255)
-     * @Assert\NotBlank(message="Ingresa un titulo al documento")
+     * @ORM\OneToMany(targetEntity="EstadoCuenta",mappedBy="pago")
+     * @ORM\OrderBy({"createdAt" = "ASC"})
      */
-    private $titulo;
+    private $cargos;
 
     /**
-     * @var string
+     * @var boolean
      *
-     * @ORM\Column(name="descripcion", type="text")
+     * @ORM\Column(name="is_aproved", type="boolean")
      */
-    private $descripcion;
+    private $isAproved;
 
     /**
      * @var string
@@ -49,30 +50,19 @@ class Documento
     private $archivo;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="tipoArchivo", type="integer",nullable=false)
-     */
-    private $tipoArchivo;
-
-    /**
-     * @var \Residencial
-     * @todo Administrador de la residencial
-     *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
-     * })
-     */
-    private $residencial;
-    
-    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime",nullable=true)
+     * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
-    
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="monto", type="float")
+     */
+    private $monto;
+
     /*
      * Timestable
      */
@@ -88,7 +78,6 @@ class Documento
         }
     }
     
-
     /**
      * Get id
      *
@@ -100,56 +89,33 @@ class Documento
     }
 
     /**
-     * Set titulo
+     * Set isAproved
      *
-     * @param string $titulo
-     * @return Documento
+     * @param boolean $isAproved
+     * @return Pago
      */
-    public function setTitulo($titulo)
+    public function setIsAproved($isAproved)
     {
-        $this->titulo = $titulo;
+        $this->isAproved = $isAproved;
 
         return $this;
     }
 
     /**
-     * Get titulo
+     * Get isAproved
      *
-     * @return string 
+     * @return boolean 
      */
-    public function getTitulo()
+    public function getIsAproved()
     {
-        return $this->titulo;
-    }
-
-    /**
-     * Set descripcion
-     *
-     * @param string $descripcion
-     * @return Documento
-     */
-    public function setDescripcion($descripcion)
-    {
-        $this->descripcion = $descripcion;
-
-        return $this;
-    }
-
-    /**
-     * Get descripcion
-     *
-     * @return string 
-     */
-    public function getDescripcion()
-    {
-        return $this->descripcion;
+        return $this->isAproved;
     }
 
     /**
      * Set archivo
      *
      * @param string $archivo
-     * @return Documento
+     * @return Pago
      */
     public function setArchivo($archivo)
     {
@@ -169,33 +135,10 @@ class Documento
     }
 
     /**
-     * Set tipoArchivo
-     *
-     * @param integer $tipoArchivo
-     * @return Documento
-     */
-    public function setTipoArchivo($tipoArchivo)
-    {
-        $this->tipoArchivo = $tipoArchivo;
-
-        return $this;
-    }
-
-    /**
-     * Get tipoArchivo
-     *
-     * @return integer 
-     */
-    public function getTipoArchivo()
-    {
-        return $this->tipoArchivo;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return Documento
+     * @return Pago
      */
     public function setCreatedAt($createdAt)
     {
@@ -215,26 +158,26 @@ class Documento
     }
 
     /**
-     * Set residencial
+     * Set monto
      *
-     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
-     * @return Documento
+     * @param float $monto
+     * @return Pago
      */
-    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    public function setMonto($monto)
     {
-        $this->residencial = $residencial;
+        $this->monto = $monto;
 
         return $this;
     }
 
     /**
-     * Get residencial
+     * Get monto
      *
-     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     * @return float 
      */
-    public function getResidencial()
+    public function getMonto()
     {
-        return $this->residencial;
+        return $this->monto;
     }
     
     /*** uploads ***/
@@ -326,7 +269,7 @@ class Documento
     
     protected function getUploadDir()
     {
-        return '/uploads/documentos';
+        return '/uploads/pagos';
     }
 
     protected function getUploadRootDir()

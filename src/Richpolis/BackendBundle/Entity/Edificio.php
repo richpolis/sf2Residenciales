@@ -45,7 +45,7 @@ class Edificio
 
     /**
      * @var Array 
-     * @todo Arreglo de recursos dentro de un recurso
+     * @todo Arreglo de recursos dentro de un edificio
      *
      * @ORM\OneToMany(targetEntity="Recurso",mappedBy="edificio")
      * @ORM\OrderBy({"nombre" = "ASC"})
