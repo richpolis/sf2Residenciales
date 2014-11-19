@@ -24,8 +24,7 @@
 
                         <div class="widget">
                             <div class="widget-head">
-                                <h2>Reservaciones</h2>
-                                <a href="{{path('reservaciones_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px; position: absolute; top: 10px; right: 10px;">Crear reservacion</a>
+                                <h2>Pagos</h2>
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
@@ -33,10 +32,11 @@
                                         <thead>
                                             <tr>
                                                 <th>Residencial</th>
-                                                <th>Recurso</th>
+                                                <th>Torre</th>
                                                 <th>Usuario</th>
-                                                <th>Fecha reservacion</th>
-                                                <th>Fecha evento</th>
+                                                <th>Monto</th>
+                                                <th>Fecha pago</th>
+                                                <th>Aprobado</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -44,20 +44,21 @@
                                         {% for entity in entities %}
                                             <tr>
                                                 <td>{{ entity.usuario.edificio.residencial }}</td>
-                                                <td>{{ entity.recurso }}</td>
+                                                <td>{{ entity.usuario.edificio}}</td>
                                                 <td>{{ entity.usuario }}</td>
+                                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                                                <td>{{ entity.fechaEvento | date('d-m-Y') }}</td>
+                                                <td>{{ entity.isAproved | isActive | raw }}</td>
                                                 <td>
-                                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                                     <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+                                                     <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
                                                  </td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="6">Reservaciones</th>
+                                                <th colspan="6">Pagos</th>
                                             </tr>
                                         </tfoot>
                                         </tbody>

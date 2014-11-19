@@ -305,4 +305,27 @@ class EstadoCuenta
     {
         return $this->paidAt;
     }
+
+    /**
+     * Set pago
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Pago $pago
+     * @return EstadoCuenta
+     */
+    public function setPago(\Richpolis\FrontendBundle\Entity\Pago $pago = null)
+    {
+        $this->pago = $pago;
+
+        return $this;
+    }
+
+    /**
+     * Get pago
+     *
+     * @return \Richpolis\FrontendBundle\Entity\Pago 
+     */
+    public function getPago()
+    {
+        return $this->pago;
+    }
 }

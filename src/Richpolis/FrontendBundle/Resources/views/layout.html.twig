@@ -28,6 +28,7 @@
   {% set avisos = "" %}
   {% set documentos = "" %}
   {% set reservaciones = "" %}
+  {% set pagos = "" %}
   
   
 
@@ -54,6 +55,8 @@
     {% set documentos = "class=open" %}
   {% elseif route == "reservaciones" %}
     {% set reservaciones = "class=open" %}
+  {% elseif route == "pagos" %}
+    {% set pagos = "class=open" %}
   {% endif %}
       
 <header>
@@ -147,27 +150,32 @@
             {% endif %}
             <li>
                 <a {{estadodecuentas}} href="{{path('estadodecuentas')}}">
-                    <i class="fa fa-money"></i> <span>Estado de Cuenta</span>
+                    <i class="fa fa-money"></i> <span>Cargos</span>
                 </a>
             </li>
             <li>
                 <a {{actividades}} href="{{path('actividades')}}">
-                    <i class="fa fa-gears"></i> <span>Actividades</span>
+                    <i class="fa fa-bullhorn"></i> <span>Actividades</span>
                 </a>
             </li>
             <li>
                 <a {{avisos}} href="{{path('avisos')}}">
-                    <i class="fa fa-gears"></i> <span>Avisos y notificaciones</span>
+                    <i class="fa fa-envelope-o"></i> <span>Avisos y notificaciones</span>
                 </a>
             </li>
             <li>
                 <a {{documentos}} href="{{path('documentos')}}">
-                    <i class="fa fa-gears"></i> <span>Documentos</span>
+                    <i class="fa fa-files-o"></i> <span>Documentos</span>
                 </a>
             </li>
             <li>
                 <a {{reservaciones}} href="{{path('reservaciones')}}">
-                    <i class="fa fa-gears"></i> <span>Reservaciones</span>
+                    <i class="fa fa-calendar"></i> <span>Reservaciones</span>
+                </a>
+            </li>
+            <li>
+                <a {{pagos}} href="{{path('pagos')}}">
+                    <i class="fa fa-newspaper-o"></i> <span>Pagos</span>
                 </a>
             </li>
         </ul>

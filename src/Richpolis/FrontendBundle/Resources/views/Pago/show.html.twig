@@ -17,7 +17,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Reservaciones</h2>
+            <h2 class="pull-left">Pagos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -25,21 +25,21 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                    <a href="{{ path('residenciales')}}" class="bread-current">{{entity.recurso.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
                 {% else %}
-                    <a href="#" class="bread-current">{{entity.recurso.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
                 {% endif %}
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.recurso.edificio}}</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
+                <a href="{{path('pagos')}}" class="bread-current">Pagos</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('reservaciones_show',{'id':entity.id})}}" class="bread-current">Reservacion id: {{entity.id}} </a>
+                <a href="{{path('pagos_show',{'id':entity.id})}}" class="bread-current">Pago id: {{entity.id}} </a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('reservaciones_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear reservacion</a>
+                    <a href="{{path('pagos_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear pago</a>
                 {% endif %}
             </div>
 
@@ -57,7 +57,7 @@
                         <div class="col-md-12">
                             <div class="widget">
                                 <div class="widget-head">
-                                    <div class="pull-left">{{ entity.stringReservacion }}</div>
+                                    <div class="pull-left">Pago id: {{ entity.id }}</div>
                                     <div class="clearfix"></div>
                                 </div>
 
@@ -76,38 +76,61 @@
                                                     <th>Edificio</th>
                                                     <td>{{ entity.usuario.edificio }}</td>
                                                 </tr>
-                                                <tr>
-                                                    <th>Recurso</th>
-                                                    <td>{{ entity.recurso}}</td>
-                                                </tr>                                                                <tr>
+                                                <tr>                                                              <tr>
                                                     <th>Usuario</th>
                                                     <td>{{ entity.usuario}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Fecha apartado</th>
+                                                    <th>Fecha Pago</th>
                                                     <td>{{ entity.createdAt|date('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Fecha evento</th>
-                                                    <td>{{ entity.fechaEvento|date('d-m-Y')}}</td>
+                                                    <th>Monto</th>
+                                                    <td>$ {{ entity.monto|number_format(2,".",",")}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Duracion</th>
-                                                    <td>{{ entity.duracion}} hrs.</td>
+                                                    <th>Archivo</th>
+                                                    <td>
+                                                        {% if entity.archivo | length > 0 %}
+                                                            <img src="{{entity.webPath}}" />
+                                                        {% endif %}    
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <th>Aproado?</th>
-                                                    <td>{{ (entity.isAproved)?'Si':'No' }}</td>
+                                                    <td>{{ entity.isAproved | isActive | raw }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                                
+                                        <table id="datatable" class="table table-striped table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cargo</th>
+                                                    <th>Monto</th>
+                                                    <th>Fecha</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for cargo in entity.cargos %}
+                                                <tr>
+                                                    <td>{{ cargo.cargo }}</td>
+                                                    <td>$ {{ cargo.monto | number_format(2,".",",") }}</td>
+                                                    <td>{{ cargo.createdAt|date('d-m-Y') }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>        
                                     </div>
                                 </div>
                                 <div class="widget-foot">
-                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('reservaciones')}}')">Regresar</button>
-                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('reservaciones_edit',{id: entity.id})}}')">Editar</button>
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('pagos')}}')">Regresar</button>
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('pagos_edit',{id: entity.id})}}')">Editar</button>
+                                    {% if entity.isAproved == false %}
+                                        <button id="botonEditar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('pagos_aprobar',{id: entity.id})}}')">Aprobar pago</button>
+                                    {% endif %}    
                                     <div style="float: left; margin-right: 3px;">
-                                        <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
+                                        <form id="formEliminar" action="{{ path('pagos_delete', { 'id': entity.id }) }}" method="post">
                                             {{ form_widget(delete_form) }}
                                         </form>
                                         <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>

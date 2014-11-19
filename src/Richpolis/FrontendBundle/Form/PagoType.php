@@ -19,6 +19,7 @@ class PagoType extends AbstractType
             ->add('archivo','hidden')
             ->add('file','file',array('label'=>'Comprobante','attr'=>array('class'=>'form-control')))
             ->add('monto','money',array('label'=>'Mnto','currency'=>'MXN','attr'=>array('class'=>'form-control')))
+                
         ;
     }
     

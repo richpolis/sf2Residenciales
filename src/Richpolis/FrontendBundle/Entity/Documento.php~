@@ -343,4 +343,8 @@ class Documento
     {
         return null === $this->archivo ? null : $this->getUploadRootDir().'/'.$this->archivo;
     }
+    
+    public function getIcoArchivo(){
+        return RpsStms::getIcoArchivo($this->getArchivo());
+    }
 }

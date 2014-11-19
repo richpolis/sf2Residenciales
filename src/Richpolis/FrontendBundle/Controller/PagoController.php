@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -31,11 +32,23 @@ class PagoController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FrontendBundle:Pago')->findAll();
-
-        return array(
-            'entities' => $entities,
-        );
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $pagina = 'index';
+            $pagos = $em->getRepository('FrontendBundle:Pago')->findAll();
+        }else{
+            $pagina = 'pagos';
+            $pagos = $em->getRepository('FrontendBundle:Pago')
+                        ->findBy(array('usuario'=>$this->getUser()));
+            
+        }
+        return $this->render("FrontendBundle:Pago:$pagina.html.twig", array(
+            'entities' => $pagos,
+            'residencial'=> $residencialActual,
+            'edificio' => $edificioActual,
+        ));
     }
     /**
      * Creates a new Pago entity.
@@ -249,5 +262,59 @@ class PagoController extends BaseController
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Aprobar pago.
+     *
+     * @Route("/aprobar/{id}", name="pagos_aprobar")
+     */
+    public function aprobarAction(Request $request, $id)
+    {
+       $em = $this->getDoctrine()->getManager();
+       $pago = $em->find('FrontendBundle:Pago', $id);
+       
+       foreach($pago->getCargos() as $cargo){
+           $cargo->setIsPaid(true);
+           $cargo->setPaidAt(new \DateTime());
+           $em->flush();
+       }
+       $pago->setIsAproved(true);
+       $em->flush();
+       return new JsonResponse(array('aprobado'=>'ok','pago'=>$id));
+    }
+    
+    /**
+     * Seleccionar usuario para pago.
+     *
+     * @Route("/seleccionar/usuario", name="pagos_select_usuario")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectUsuarioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        if($request->query->has('usuario')){
+            $filtros = $this->getFilters();
+            $filtros['usuario'] = $request->query->get('usuario');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('pagos_new'));
+        }
+        
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        
+        return array(
+            'entities'=>$usuarios,
+            'residencial'=>$residencialActual,
+            'edificio'=> $edificio,
+            'ruta' => 'pagos_select_usuario',
+            'campo' => 'usuario',
+            'titulo' => 'Seleccionar usuario para pago',
+        );
+        
     }
 }

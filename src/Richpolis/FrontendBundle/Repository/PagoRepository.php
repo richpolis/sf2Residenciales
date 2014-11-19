@@ -1,6 +1,6 @@
 <?php
 
-namespace Richpolis\FrontendBundle\Entity;
+namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 

@@ -17,7 +17,7 @@
     <div class="mainbar">
       <!-- Page heading -->
       <div class="page-head">
-        <h2 class="pull-left">Reservaciones</h2>
+        <h2 class="pull-left">Pagos</h2>
         <div class="clearfix"></div>
         <!-- Breadcrumb -->
         <div class="bread-crumb">
@@ -28,11 +28,11 @@
                 <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
                 {% else %}
                 <a href="#" class="bread-current">{{residencial}}</a>    
-                {% endif %}    
+                {% endif %}
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
-                <a href="{{path('reservaciones_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear reservacion</a>
+                <a href="{{path('pagos')}}" class="bread-current">Pagos</a>
+                <a href="{{path('pagos_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear pago</a>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -47,7 +47,7 @@
               <div class="col-md-12">
                 <div class="widget">
                 <div class="widget-head">
-                  <div class="pull-left">Registro de reservaciones</div>
+                  <div class="pull-left">Registro de pagos</div>
                   <div class="clearfix"></div>
                 </div>
                   <div class="widget-content">
@@ -56,27 +56,30 @@
                            <tr>
                                <th>Id</th>
                                <th>Residencial</th>
-                               <th>Recurso</th>
+                               <th>Torre</th>
                                <th>Usuario</th>
-                               <th>Fecha reservacion</th>
-                               <th>Fecha evento</th>
+                               <th>Monto</th>
+                               <th>Fecha pago</th>
+                               <th>Aprobado</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
                        <tbody>
                        {% for entity in entities %}
                            <tr>
-                               <td><a href="{{ path('reservaciones_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                               <td><a href="{{ path('pagos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                                <td>{{ entity.usuario.edificio.residencial }}</td>
-                               <td>{{ entity.recurso }}</td>
+                               <td>{{ entity.usuario.edificio }}</td>
                                <td>{{ entity.usuario }}</td>
+                               <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                               <td>{{ entity.fechaEvento | date('d-m-Y') }}</td>
+                               <td>{{ entity.isAproved | isActive | raw }}</td>
                                <td>
-                                    <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                    <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
                                 </td>
                            </tr>
+                           
                        {% endfor %}
                        </tbody>
                    </table>

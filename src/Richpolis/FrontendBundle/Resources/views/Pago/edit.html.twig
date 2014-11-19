@@ -26,19 +26,19 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.recurso.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.recurso.edificio.residencial}}</a>    
-                {% endif %}    
+                <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
+                {% endif %}
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.recurso.edificio}}</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('recursos')}}" class="bread-current">{{ entity.recurso }}</a>
+                <a href="{{path('pagos')}}" class="bread-current">Pago {{ pago.createdAt | date('M-Y') }}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('reservaciones_edit',{'id':entity.id})}}" class="bread-current">Editar reservacion</a>
+                <a href="{{path('pagos_edit',{'id':entity.id})}}" class="bread-current">Editar pago</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -52,7 +52,7 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Editar {{ entity.stringReservacion }}</div>
+                                <div class="pull-left">Editar pago {{ entity.id }}</div>
                                 <div class="clearfix"></div>
                             </div>
 
@@ -65,7 +65,7 @@
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
                                 <button id="botonGuardar" class="btn btn-primary">Guardar cambios</button>
                                 <div style="float: left; margin-right: 3px;">
-                                   <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
+                                   <form id="formEliminar" action="{{ path('pagos_delete', { 'id': entity.id }) }}" method="post">
                                    {{ form_widget(delete_form) }}
                                    </form>
                                    <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
@@ -119,7 +119,7 @@
             $(".validate").validationEngine();
 
             $("#botonRegresar").on("click", function () {
-                location.href = "{{path('reservaciones')}}";
+                location.href = "{{path('pagos')}}";
             });
 
             $("#botonGuardar").on("click", function () {
