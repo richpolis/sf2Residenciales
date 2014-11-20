@@ -68,7 +68,6 @@ class PagoController extends BaseController
     public function usuariosIndex(Request $request){
         $em = $this->getDoctrine()->getManager();
 
-        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
@@ -121,6 +120,8 @@ class PagoController extends BaseController
         $form = $this->createForm(new PagoType(), $entity, array(
             'action' => $this->generateUrl('pagos_create'),
             'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
+			
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -137,13 +138,26 @@ class PagoController extends BaseController
      */
     public function newAction()
     {
+		$em = $this->getDoctrine()->getManager();
+		$usuario = $this->getUsuarioActual();
+		//solo cargos por pagar
+		$cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                              ->getCargosAdeudoPorUsuario($usuario->getId(),false);
+		$monto = 0;
+		foreach($cargos as $cargo){
+			$monto += $cargo->getMonto();
+		}
         $entity = new Pago();
+		$entity->setUsuario($usuario);
+		$entity->setMonto($monto);
         $form   = $this->createCreateForm($entity);
-
+		
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
+			'cargos' => $cargos,
+			'monto' => $monto,
         );
     }
 
@@ -212,6 +226,7 @@ class PagoController extends BaseController
         $form = $this->createForm(new PagoType(), $entity, array(
             'action' => $this->generateUrl('pagos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'em'=>$this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
@@ -332,7 +347,6 @@ class PagoController extends BaseController
             return $this->redirect($this->generateUrl('pagos_new'));
         }
         
-        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
@@ -345,6 +359,7 @@ class PagoController extends BaseController
             'ruta' => 'pagos_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Seleccionar usuario para pago',
+			'return' => 'pagos'
         );
         
     }
@@ -368,6 +383,59 @@ class PagoController extends BaseController
         );
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="export-pagos.xls"');
+        return $response;
+    }
+	
+	/**
+     * Formulario para realizar pago.
+     *
+     * @Route("/realizar/pago", name="pagos_realizar_pago")
+     * @Method({"GET","POST"})
+     */
+    public function realizarPagoAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+		$usuario = $this->getUsuarioActual();
+		//solo cargos por pagar
+		$cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                              ->getCargosAdeudoPorUsuario($usuario->getId(),false);
+		$monto = 0;
+		foreach($cargos as $cargo){
+			$monto += $cargo->getMonto();
+		}
+        $entity = new Pago();
+		//var_dump($entity); die;
+		$entity->setUsuario($usuario);
+		$entity->setMonto($monto);
+		$entity->setIsAproved(false);
+        $form   = $this->createCreateForm($entity);
+		
+		if($request->isMethod('POST')){
+            $form->handleRequest($request);
+            if($form->isValid()){
+                $entity = $form->getData();
+				var_dump($entity); die;
+                $em->persist($entity);
+                $em->flush();
+				foreach($cargos as $cargo){
+					$cargo->setPago($entity);
+					$em->flush();
+				}
+                $response = new JsonResponse(json_encode(array(
+                    'html'=>'',
+                    'respuesta'=>'creado',
+                )));
+                return $response;
+            }
+        }
+		
+       $response = new JsonResponse(json_encode(array(
+            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                'rutaAction' => $this->generateUrl('pagos_realizar_pago'),
+                'form'=>$form->createView(),
+             )),
+            'respuesta' => 'nuevo',
+        )));
         return $response;
     }
 }

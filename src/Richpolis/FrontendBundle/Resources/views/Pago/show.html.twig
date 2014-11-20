@@ -39,7 +39,7 @@
                 <span class="divider">/</span> 
                 <a href="{{path('pagos_show',{'id':entity.id})}}" class="bread-current">Pago id: {{entity.id}} </a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('pagos_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear pago</a>
+                    <a href="{{path('pagos_select_usuario')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear pago</a>
                 {% endif %}
             </div>
 

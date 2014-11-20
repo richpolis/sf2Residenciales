@@ -77,6 +77,17 @@ class BaseController extends Controller
         return $edificio;
     }
     
+	protected function getUsuarioActual() {
+        $em = $this->getDoctrine()->getManager();
+		$filters = $this->getFilters();
+		if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $usuarioId = $filters['usuario'];
+			$usuario = $em->getRepository('BackendBundle:Usuario')->find($usuarioId);
+        	return $usuario;
+        }else{
+            return $this->getUser();
+        }
+    }
     
     
 }

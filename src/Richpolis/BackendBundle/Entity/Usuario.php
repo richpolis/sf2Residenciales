@@ -61,7 +61,7 @@ class Usuario implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=100, nullable=true)
-     * @Assert\Email(message="Email no es correcto")
+     * @Assert\Email(message="El email {{value}} no es correcto")
      */
     private $email;
     

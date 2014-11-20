@@ -34,11 +34,9 @@
                                                 <th colspan="6">Cargos pendientes de pago</th>
                                             </tr>
                                             <tr>
-                                                <th>Usuario</th>
-                                                <th>Cargo</th>
-                                                <th>Tipo</th>
-                                                <th>Monto</th>
                                                 <th>Fecha</th>
+                                                <th>Cargo</th>
+                                                <th>Monto</th>
                                                 <th>Pagado</th>
                                             </tr>
                                         </thead>
@@ -46,11 +44,12 @@
                                         {% set monto = 0 %}    
                                         {% for entity in entities if entity.isPaid == false %}
                                             <tr>
-                                                <td>{{ entity.usuario }}</td>
-                                                <td>{{ entity.cargo }}</td>
-                                                <td>{{ entity.stringTipoCargo }}</td>
-                                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                                                <td>
+													<div class="tipo-cargo">{{ entity.stringTipoCargo }}</div><br/>
+													<div class="descripcion-cargo">{{ entity.cargo }}</div><br/>
+												</td>
+                                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 <td>{{ entity.isPaid|isActive |raw }}</td>
                                             </tr>
                                             
@@ -60,7 +59,7 @@
                                             <tr>
                                                 {% if monto > 0 %}
                                                     <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}
-                                                        <button id="realizarPago" data-monto="{{monto}}" class="btn btn-success">Realizar Pago</button>
+                                                        <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Realizar Pago</button>
                                                     </th>
                                                 {% else %}
                                                     <th colspan="6">Sin saldo pendiente</th>
@@ -173,7 +172,7 @@ var eliminarRegistro = function(){
         
         function getFormulario(){
                 $.ajax({
-                    url: '{{path('pagos_new')}}',
+                    url: '{{path('pagos_realizar_pago')}}',
                     type: 'GET',
                     dataType: 'json',
                 }).done(function(data, textStatus,jqXHR){

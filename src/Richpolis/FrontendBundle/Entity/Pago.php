@@ -38,7 +38,7 @@ class Pago
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_aproved", type="boolean")
+     * @ORM\Column(name="is_aproved", type="boolean",nullable=true)
      */
     private $isAproved;
 
@@ -88,6 +88,16 @@ class Pago
           $this->createdAt = new \DateTime();
         }
     }
+	
+	/**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cargos = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->isAproved = false;
+    }
+
     
     /**
      * Get id
@@ -191,7 +201,63 @@ class Pago
         return $this->monto;
     }
     
-    /*** uploads ***/
+    /**
+     * Add cargos
+     *
+     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
+     * @return Pago
+     */
+    public function addCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
+    {
+        $this->cargos[] = $cargos;
+
+        return $this;
+    }
+
+    /**
+     * Remove cargos
+     *
+     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
+     */
+    public function removeCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
+    {
+        $this->cargos->removeElement($cargos);
+    }
+
+    /**
+     * Get cargos
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCargos()
+    {
+        return $this->cargos;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Pago
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
+	
+	/*** uploads ***/
     
     /**
      * @Assert\File(maxSize="6000000")
@@ -236,7 +302,6 @@ class Pago
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
             $this->archivo = $filename.'.'.$this->getFile()->guessExtension();
-            $this->setTipoArchivo(RpsStms::getTipoArchivo($this->archivo));
         }
     }
 
@@ -300,68 +365,5 @@ class Pago
     
     public function getIcoArchivo(){
         return RpsStms::getIcoArchivo($this->getArchivo());
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->cargos = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add cargos
-     *
-     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
-     * @return Pago
-     */
-    public function addCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
-    {
-        $this->cargos[] = $cargos;
-
-        return $this;
-    }
-
-    /**
-     * Remove cargos
-     *
-     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
-     */
-    public function removeCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
-    {
-        $this->cargos->removeElement($cargos);
-    }
-
-    /**
-     * Get cargos
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getCargos()
-    {
-        return $this->cargos;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
-     * @return Pago
-     */
-    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return \Richpolis\BackendBundle\Entity\Usuario 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
     }
 }

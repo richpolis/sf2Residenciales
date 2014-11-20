@@ -115,12 +115,12 @@ class EstadoCuenta
     
     const TIPO_CARGO_NORMAL=1;
     const TIPO_CARGO_ADEUDO=2;
-    const TIPO_CARGO_INTERESES=3;
+    const TIPO_CARGO_RESERVACION=3;
         
     static public $sTipoCargo=array(
         self::TIPO_CARGO_NORMAL=>'Normal',
         self::TIPO_CARGO_ADEUDO=>'Por adeudo',
-        self::TIPO_CARGO_INTERESES=>'Intereses',
+        self::TIPO_CARGO_RESERVACION=>'Reservación',
     );
     
     public function getStringTipoCargo(){
