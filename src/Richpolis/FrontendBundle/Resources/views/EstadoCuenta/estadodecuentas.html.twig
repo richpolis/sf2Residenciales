@@ -39,7 +39,7 @@
                                                 <th>Tipo</th>
                                                 <th>Monto</th>
                                                 <th>Fecha</th>
-                                                <th>Actions</th>
+                                                <th>Pagado</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -51,17 +51,17 @@
                                                 <td>{{ entity.stringTipoCargo }}</td>
                                                 <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 <td>{{ entity.createdAt|date('d-m-Y') }}</td>
-                                                <td>
-                                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
-                                                 </td>
+                                                <td>{{ entity.isPaid|isActive |raw }}</td>
                                             </tr>
+                                            
                                             {% set monto = monto + entity.monto %}
                                         {% endfor %}
                                         <tfoot>
                                             <tr>
                                                 {% if monto > 0 %}
-                                                    <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}</th>
+                                                    <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}
+                                                        <button id="realizarPago" data-monto="{{monto}}" class="btn btn-success">Realizar Pago</button>
+                                                    </th>
                                                 {% else %}
                                                     <th colspan="6">Sin saldo pendiente</th>
                                                 {% endif %}
@@ -80,7 +80,24 @@
             </div>
         </div>
     </div>
-    
+    <!-- Modal -->
+<div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="labelFormulario"></h4>
+      </div>
+      <div class="modal-body" id="modalBodyFormulario">
+          
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>  
 {% endblock %}
 
 {% block javascripts %}
@@ -117,7 +134,56 @@ var eliminarRegistro = function(){
     noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
   {% endif %}      
 };
-
+        function addPago(usuario){
+            mostrarFormulario("Realizar pago");
+            getFormulario();
+        }
+        
+        function mostrarFormulario(titulo){
+            $("#modalFormulario").modal("show");
+            $("#labelFormulario").html(titulo);
+            $loader = $("<img>");
+            $loader.attr({'src': '{{asset('images/loader.GIF')}}','id': 'loader'});
+            $loader.css({'maxWidth': '80px'});
+            $("#modalBodyFormulario").html($loader);
+        }
+        
+        function guardar(){
+            var $form = $("#modalBodyFormulario form");
+            var data = $form.serialize();
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+            }).done(function(data, textStatus,jqXHR){
+                debugger;
+                data = JSON.parse(data);
+                if(data.respuesta == 'nuevo'){
+                    $("#modalBodyFormulario").html(data.form);
+                    $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                }else if(data.respuesta == 'creado'){
+                    $("#historia-"+historiaActual).find(".comentarios").append(data.html);
+                    $("#modalFormulario").modal("hide");
+                }
+            }).fail(function(data){
+                console.log(data);
+            });
+        }
+        
+        function getFormulario(){
+                $.ajax({
+                    url: '{{path('pagos_new')}}',
+                    type: 'GET',
+                    dataType: 'json',
+                }).done(function(data, textStatus,jqXHR){
+                    data = JSON.parse(data);
+                    if(data.respuesta == 'nuevo'){
+                        $("#modalBodyFormulario").html(data.form);
+                        $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                    }
+                });
+        }
 </script>
 
     

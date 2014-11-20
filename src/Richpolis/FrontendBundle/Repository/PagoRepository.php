@@ -12,4 +12,42 @@ use Doctrine\ORM\EntityRepository;
  */
 class PagoRepository extends EntityRepository
 {
+    public function queryFindPagos($buscar = "", $edificio)
+    {
+        $em = $this->getEntityManager();
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT p,c,u,e,r "
+                    . "FROM FrontendBundle:Pago p "
+                    . "JOIN p.cargos c "
+                    . "JOIN p.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE u.edificio=:edificio "
+                    . "ORDER BY p.isAproved DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT p,c,u,e,r "
+                    . "FROM FrontendBundle:Pago p "
+                    . "JOIN p.cargos c "
+                    . "JOIN p.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE u.edificio=:edificio "
+                    . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email) "
+                    . "ORDER BY p.isAproved DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio,
+                'numero' => $buscar,
+                'nombre' => "%".$buscar."%",
+                'email' => "%".$buscar."%"
+            ));
+        }
+        return $consulta;
+    }
+    
+    public function findPagos($buscar = "", $edificio){
+        return $this->queryFindPagos($buscar,$edificio)->getResult();
+    }
 }

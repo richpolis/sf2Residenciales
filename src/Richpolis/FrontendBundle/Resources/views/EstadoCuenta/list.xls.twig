@@ -1,0 +1,28 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Residencial</th>
+            <th>Usuario</th>
+            <th>Cargo</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Pagado</th>
+            <th>Fecha pago</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td>{{ entity.id }}</td>
+                <td>{{ entity.usuario.edificio.residencial }}</td>
+                <td>{{ entity.usuario }}</td>
+                <td>{{ entity.cargo }}</td>
+                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
+                <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                <td>{{ (entity.isPaid)?"Si":"No" }}</td>
+                <td>{{ entity.paidAt|date('d-m-Y') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

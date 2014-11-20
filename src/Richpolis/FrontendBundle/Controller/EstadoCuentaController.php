@@ -29,30 +29,59 @@ class EstadoCuentaController extends BaseController
      */
     public function indexAction(Request $request)
     {
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            return $this->adminIndex($request);
+        }else{
+            return $this->usuariosIndex($request);
+        }
+    }
+    
+    public function adminIndex(Request $request){
+        $em = $this->getDoctrine()->getManager();
+
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $buscar = $request->query->get('buscar','');
+        
+        if(strlen($buscar)>0){
+            $options = array('filterParam'=>'buscar','filterValue'=>$buscar);
+        }else{
+            $options = array();
+        }
+        $query = $em->getRepository('FrontendBundle:EstadoCuenta')
+                              ->queryFindEstadoCuentas($buscar,$edificioActual->getId());
+        
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query, $this->get('request')->query->get('page', 1),10, $options 
+        );
+        
+        return $this->render("FrontendBundle:EstadoCuenta:index.html.twig", array(
+            'pagination' => $pagination,
+            'residencial'=> $residencialActual,
+            'edificio' => $edificioActual,
+        ));
+    }
+    
+    public function usuariosIndex(Request $request){
         $em = $this->getDoctrine()->getManager();
 
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            $pagina = 'index';
-            $todos = $request->query->get('todos',false);
-            $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorEdificio($edificioActual->getId(),$todos);
-        }else{
-            $pagina = 'estadodecuentas';
-            $todos = $request->query->get('todos',false);
-            $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorUsuario($this->getUser()->getId(),$todos);
-            
-        }
-        return $this->render("FrontendBundle:EstadoCuenta:$pagina.html.twig", array(
+        $todos = $request->query->get('todos',false);
+        $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
+                              ->getCargosAdeudoPorUsuario($this->getUser()->getId(),$todos);
+        
+        return $this->render("FrontendBundle:EstadoCuenta:estadodecuentas.html.twig", array(
             'entities' => $estadodecuentas,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
         ));
     }
+    
     /**
      * Creates a new EstadoCuenta entity.
      *
@@ -155,7 +184,7 @@ class EstadoCuentaController extends BaseController
     /**
      * Finds and displays a EstadoCuenta entity.
      *
-     * @Route("/{id}", name="estadodecuentas_show")
+     * @Route("/{id}", name="estadodecuentas_show",requirements={"id": "\d+"})
      * @Method("GET")
      * @Template()
      */
@@ -361,4 +390,27 @@ class EstadoCuentaController extends BaseController
             case 12: return "Diciembre";
         }
     }
+    
+    /**
+     * Exportar los cargos.
+     *
+     * @Route("/exportar", name="estadodecuentas_exportar")
+     */
+    public function exportarAction(Request $request)
+    {
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        
+        $cargos = $this->getDoctrine()
+                ->getRepository('FrontendBundle:EstadoCuenta')
+                ->findEstadoCuentas("",$edificio->getId());
+
+        $response = $this->render(
+                'FrontendBundle:EstadoCuenta:list.xls.twig', array('entities' => $cargos)
+        );
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export-cargos.xls"');
+        return $response;
+    }
+    
 }

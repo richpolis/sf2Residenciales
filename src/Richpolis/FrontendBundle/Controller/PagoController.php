@@ -28,23 +28,54 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            return $this->adminIndex($request);
+        }else{
+            return $this->usuariosIndex($request);
+        }
+    }
+    
+    public function adminIndex(Request $request){
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            $pagina = 'index';
-            $pagos = $em->getRepository('FrontendBundle:Pago')->findAll();
+        $buscar = $request->query->get('buscar','');
+        
+        if(strlen($buscar)>0){
+            $options = array('filterParam'=>'buscar','filterValue'=>$buscar);
         }else{
-            $pagina = 'pagos';
-            $pagos = $em->getRepository('FrontendBundle:Pago')
-                        ->findBy(array('usuario'=>$this->getUser()));
-            
+            $options = array();
         }
-        return $this->render("FrontendBundle:Pago:$pagina.html.twig", array(
+        $query = $em->getRepository('FrontendBundle:Pago')
+                              ->queryFindPagos($buscar,$edificioActual->getId());
+        
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query, $this->get('request')->query->get('page', 1),10, $options 
+        );
+        
+        return $this->render("FrontendBundle:Pago:index.html.twig", array(
+            'pagination' => $pagination,
+            'residencial'=> $residencialActual,
+            'edificio' => $edificioActual,
+        ));
+    }
+    
+    public function usuariosIndex(Request $request){
+        $em = $this->getDoctrine()->getManager();
+
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        
+        $pagos = $em->getRepository('FrontendBundle:Pago')
+                        ->findBy(array('usuario'=>$this->getUser()));
+        
+        return $this->render("FrontendBundle:Pago:pagos.html.twig", array(
             'entities' => $pagos,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
@@ -316,5 +347,27 @@ class PagoController extends BaseController
             'titulo' => 'Seleccionar usuario para pago',
         );
         
+    }
+    
+    /**
+     * Exportar los pagos.
+     *
+     * @Route("/exportar", name="pagos_exportar")
+     */
+    public function exportarAction(Request $request)
+    {
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        
+        $pagos = $this->getDoctrine()
+                ->getRepository('FrontendBundle:Pago')
+                ->findPagos("",$edificio->getId());
+
+        $response = $this->render(
+                'FrontendBundle:Pago:list.xls.twig', array('entities' => $pagos)
+        );
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export-pagos.xls"');
+        return $response;
     }
 }

@@ -13,7 +13,44 @@ use Richpolis\BackendBundle\Entity\Usuario;
  */
 class EstadoCuentaRepository extends EntityRepository
 {
-    public function getCargosAdeudoPorEdificio($edificio_id,$todos=false){
+    public function queryFindEstadoCuentas($buscar = "", $edificio)
+    {
+        $em = $this->getEntityManager();
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT t,u,e,r "
+                    . "FROM FrontendBundle:EstadoCuenta t "
+                    . "JOIN t.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE u.edificio=:edificio "
+                    . "ORDER BY t.isPaid DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT t,u,e,r "
+                    . "FROM FrontendBundle:EstadoCuenta t "
+                    . "JOIN t.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE u.edificio=:edificio "
+                    . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email) "
+                    . "ORDER BY t.isPaid DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio,
+                'numero' => $buscar,
+                'nombre' => "%".$buscar."%",
+                'email' => "%".$buscar."%"
+            ));
+        }
+        return $consulta;
+    }
+    
+    public function findEstadoCuentas($buscar = "", $edificio){
+        return $this->queryFindEstadoCuentas($buscar,$edificio)->getResult();
+    }
+    
+    public function queryCargosAdeudoPorEdificio($edificio_id,$todos=true){
         $em=$this->getEntityManager();
         $query = $em->createQueryBuilder();
         $query
@@ -30,10 +67,15 @@ class EstadoCuentaRepository extends EntityRepository
             $query->andWhere('t.isPaid=:is_paid')
                   ->setParameter('is_paid', false);
         }
-        return $query->getQuery()->getResult();
+        return $query->getQuery();
     }
     
-    public function getCargosAdeudoPorUsuario($usuario_id,$todos=false){
+    public function getCargosAdeudoPorEdificio($edificio_id,$todos=true){
+        $query = $this->queryCargosAdeudoPorEdificio($edificio_id, $todos);
+        return $query->getResult();
+    }
+    
+    public function getCargosAdeudoPorUsuario($usuario_id,$todos=true){
         $em=$this->getEntityManager();
         $query = $em->createQueryBuilder();
         $query

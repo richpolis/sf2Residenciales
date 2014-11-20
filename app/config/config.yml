@@ -85,7 +85,7 @@ knp_paginator:
     template:
         # estas opciones configuran la plantilla utilizada para la paginación
         # y para los controles que premiten reordenar los resultados
-        pagination: FrontendBundle:Default:pagination.html.twig
+        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
         sortable:   KnpPaginatorBundle:Pagination:sortable_link.html.twig
 
 liip_imagine:
