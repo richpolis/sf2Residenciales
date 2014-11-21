@@ -116,6 +116,7 @@
 
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+<script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
 
 <script>
 var editarRegistro = function(url){
@@ -149,12 +150,15 @@ var eliminarRegistro = function(){
         
         function guardar(){
             var $form = $("#modalBodyFormulario form");
-            var data = $form.serialize();
+            var data = $form.serializefiles();
             $.ajax({
                 url: $form.attr('action'),
                 type: 'POST',
                 data: data,
                 dataType: 'json',
+				cache: false,
+    			contentType: false,
+    			processData: false,
             }).done(function(data, textStatus,jqXHR){
                 debugger;
                 data = JSON.parse(data);
@@ -162,8 +166,8 @@ var eliminarRegistro = function(){
                     $("#modalBodyFormulario").html(data.form);
                     $("#modalBodyFormulario form").attr({'action': data.rutaAction});
                 }else if(data.respuesta == 'creado'){
-                    $("#historia-"+historiaActual).find(".comentarios").append(data.html);
                     $("#modalFormulario").modal("hide");
+					location.href='{{path('pagos')}}';
                 }
             }).fail(function(data){
                 console.log(data);

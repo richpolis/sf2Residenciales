@@ -19,25 +19,19 @@ class DefaultController extends BaseController {
      * @Template()
      */
     public function indexAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
         
-        $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $edificio = $this->getEdificioActual();
         $context = $this->get('security.context');
         if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
             return $this->redirect($this->generateUrl('residenciales'));
         }else if(true === $context->isGranted('ROLE_ADMIN')){
-            $comentarios = $em->getRepository('FrontendBundle:Comentario')
-                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
-            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAdeudoPorEdificio($edificio->getId());
+            
         }else{
             //true === $this->get('security.context')->isGranted('ROLE_USUARIO')
             $comentarios = $em->getRepository('FrontendBundle:Comentario')
                               ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), 
                                       array('createdAt'=>'DESC'), 3);
-           $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                     ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+			   $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+							->getCargosAdeudoPorUsuario($this->getUser()->getId());
         
         }
         
@@ -51,6 +45,18 @@ class DefaultController extends BaseController {
             'reservaciones' =>  $reservaciones,
         );
     }
+	
+	public function adminIndex(Request $request){
+		$em = $this->getDoctrine()->getManager();
+        
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+		
+		$comentarios = $em->getRepository('FrontendBundle:Comentario')
+                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                         ->getCargosAdeudoPorEdificio($edificio->getId());
+	}
     
     /**
      * @Route("/contacto", name="frontend_contacto")

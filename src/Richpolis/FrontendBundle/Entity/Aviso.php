@@ -39,6 +39,13 @@ class Aviso
      * @ORM\Column(name="aviso", type="text")
      */
     private $aviso;
+	
+	/**
+     * @var integer
+     *
+     * @ORM\Column(name="tipo_aviso", type="integer")
+     */
+    private $tipoAviso;
 
     /**
      * @var integer
@@ -112,22 +119,41 @@ class Aviso
     const TIPO_ACCESO_RESIDENCIAL=1;
     const TIPO_ACCESO_EDIFICIO=2;
     const TIPO_ACCESO_PRIVADO=3;
+	
+	const TIPO_AVISO=1;
+    const TIPO_NOTIFICACION=2;
         
     static public $sTipoAcceso=array(
         self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
         self::TIPO_ACCESO_EDIFICIO=>'Edificio',
         self::TIPO_ACCESO_PRIVADO=>'Privado',
     );
+	
+	static public $sTipoAviso = array(
+		self::TIPO_AVISO => 'Aviso',
+		self::TIPO_NOTIFICACION => 'Notificacion'
+	);
     
     public function getStringTipoAcceso(){
         return self::$sTipoAcceso[$this->getTipoAcceso()];
     }
+	
+	public function getStringTipoAviso(){
+        return self::$sTipoAviso[$this->getTipoAviso()];
+    }
+	
     static function getArrayTipoAcceso(){
         return self::$sTipoAcceso;
     }
+	
     static function getPreferedTipoAcceso(){
         return array(self::TIPO_ACCESO_RESIDENCIAL);
     }
+	
+	public function __construct(){
+		$this->tipoAviso = self::TIPO_AVISO;
+		$this->tipoAcceso = self::TIPO_ACCESO_RESIDENCIAL;
+	}
 
     /**
      * Get id
@@ -207,6 +233,30 @@ class Aviso
     {
         return $this->tipoAcceso;
     }
+	
+	/**
+     * Set tipoAviso
+     *
+     * @param integer $tipoAviso
+     * @return Aviso
+     */
+    public function setTipoAviso($tipoAviso)
+    {
+        $this->tipoAviso = $tipoAviso;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoAviso
+     *
+     * @return integer 
+     */
+    public function getTipoAviso()
+    {
+        return $this->tipoAviso;
+    }
+
 
     /**
      * Set link
@@ -276,6 +326,29 @@ class Aviso
     {
         return $this->residencial;
     }
+	
+	/**
+     * Set edificio
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @return Aviso
+     */
+    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    {
+        $this->edificio = $edificio;
+
+        return $this;
+    }
+
+    /**
+     * Get edificio
+     *
+     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     */
+    public function getEdificio()
+    {
+        return $this->edificio;
+    }
 
     /**
      * Set usuario
@@ -298,29 +371,6 @@ class Aviso
     public function getUsuario()
     {
         return $this->usuario;
-    }
-
-    /**
-     * Set edificio
-     *
-     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
-     * @return Aviso
-     */
-    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
-    {
-        $this->edificio = $edificio;
-
-        return $this;
-    }
-
-    /**
-     * Get edificio
-     *
-     * @return \Richpolis\BackendBundle\Entity\Edificio 
-     */
-    public function getEdificio()
-    {
-        return $this->edificio;
     }
     
     public function getStringNivel(){

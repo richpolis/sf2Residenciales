@@ -3,7 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -15,7 +15,7 @@ use Richpolis\FrontendBundle\Form\ComentarioType;
  *
  * @Route("/comentarios")
  */
-class ComentarioController extends Controller
+class ComentarioController extends BaseController
 {
 
     /**

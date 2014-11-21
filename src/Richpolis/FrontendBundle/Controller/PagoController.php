@@ -414,7 +414,6 @@ class PagoController extends BaseController
             $form->handleRequest($request);
             if($form->isValid()){
                 $entity = $form->getData();
-				var_dump($entity); die;
                 $em->persist($entity);
                 $em->flush();
 				foreach($cargos as $cargo){
