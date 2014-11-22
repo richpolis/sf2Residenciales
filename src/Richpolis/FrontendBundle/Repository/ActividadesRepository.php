@@ -14,27 +14,25 @@ use Richpolis\FrontendBundle\Entity\Actividad;
  */
 class ActividadesRepository extends EntityRepository
 {
-	public function queryFindActividadesPorEdificio(Edificio $edificio)
-    {
+    public function queryFindActividadesPorEdificio(Edificio $edificio) {
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT a,e,r "
-                    . "FROM FrontendBundle:Actividad a "
-                    . "JOIN a.edificio e "
-                    . "JOIN a.residencial r "
-                    . "WHERE (e.id=:edificio OR r.id =:residencial) "
-					. "AND a.tipoAcceso<=:tipoAcceso "
-					. "ORDER BY a.createdAt DESC");
-            $consulta->setParameters(array(
-                'edificio' => $edificio->getId(),
-				'residencial'=> $edificio->getResidencial()->getId(),
-				'tipoAcceso' => Acitividad::TIPO_ACCESO_EDIFICIO,
-            ));
+                . "FROM FrontendBundle:Actividad a "
+                . "JOIN a.edificio e "
+                . "JOIN a.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "ORDER BY a.createdAt DESC");
+        $consulta->setParameters(array(
+            'edificio' => $edificio->getId(),
+            'residencial' => $edificio->getResidencial()->getId(),
+            'tipoAcceso' => Acitividad::TIPO_ACCESO_EDIFICIO,
+        ));
         return $consulta;
     }
-    
-    public function findActividadesPorEdificio(Edificio $edificio){
+
+    public function findActividadesPorEdificio(Edificio $edificio) {
         return $this->queryFindActividadesPorEdificio($edificio)->getResult();
     }
-	
-	
+
 }

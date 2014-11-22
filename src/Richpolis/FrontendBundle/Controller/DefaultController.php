@@ -24,40 +24,67 @@ class DefaultController extends BaseController {
         if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
             return $this->redirect($this->generateUrl('residenciales'));
         }else if(true === $context->isGranted('ROLE_ADMIN')){
-            
+           return $this->adminIndex($request); 
         }else{
-            //true === $this->get('security.context')->isGranted('ROLE_USUARIO')
-            $comentarios = $em->getRepository('FrontendBundle:Comentario')
-                              ->findBy(array('residencial'=>$residencial,'nivel'=>0,'usuario'=>$this->getUser()), 
-                                      array('createdAt'=>'DESC'), 3);
-			   $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-							->getCargosAdeudoPorUsuario($this->getUser()->getId());
-        
+           return $this->usuariosIndex($request);
         }
+        
+    }
+	
+    public function adminIndex(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+
+        $queryComentarios = $em->getRepository('FrontendBundle:Comentario')
+                               ->queryComentariosPorEdificio("",$edificio);
+        
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosAdeudoPorEdificio($edificio->getId());
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                             ->getReservacionesPorEdificio($edificio->getId());
         
+        $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
+                          ->queryFindAvisosPorEdificio($edificio);
+
         
-        return array(
-            'comentarios'   =>  $comentarios,
+        return $this->render('FrontendBundle:Default:index.html.twig', array(
+            'comentarios'   =>  $queryComentarios->setMaxResults(10)->getResult(),
+            'avisos' => $queryAvisos->setMaxResults(10)->getResult(),
             'cargos'        =>  $cargos,
             'reservaciones' =>  $reservaciones,
-        );
+        ));
     }
-	
-	public function adminIndex(Request $request){
-		$em = $this->getDoctrine()->getManager();
-        
+    
+    public function usuariosIndex(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-		
-		$comentarios = $em->getRepository('FrontendBundle:Comentario')
-                              ->findBy(array('residencial'=>$residencial,'nivel'=>0), array('createdAt'=>'DESC'), 3);
+
+        $queryComentarios = $em->getRepository('FrontendBundle:Comentario')
+                               ->queryComentariosPorEdificio("",$edificio);
+        
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                         ->getCargosAdeudoPorEdificio($edificio->getId());
-	}
-    
+                     ->getCargosAdeudoPorUsuario($this->getUser()->getId());
+        
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                            ->getReservacionesPorEdificio($edificio->getId());
+        
+        $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
+                          ->queryFindAvisosPorEdificio($edificio);
+
+        
+        return $this->render('FrontendBundle:Default:index.html.twig', array(
+            'comentarios'   =>  $queryComentarios->setMaxResults(10)->getResult(),
+            'avisos' => $queryAvisos->setMaxResults(10)->getResult(),
+            'cargos'        =>  $cargos,
+            'reservaciones' =>  $reservaciones,
+        ));
+    }
+
     /**
      * @Route("/contacto", name="frontend_contacto")
      * @Method({"GET", "POST"})

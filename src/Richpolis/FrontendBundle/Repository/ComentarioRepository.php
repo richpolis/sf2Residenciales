@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Richpolis\BackendBundle\Entity\Edificio;
 
 /**
  * ComentarioRepository
@@ -12,5 +13,40 @@ use Doctrine\ORM\EntityRepository;
  */
 class ComentarioRepository extends EntityRepository
 {
-	
+    public function queryFindComentariosPorEdificio($buscar="",Edificio $edificio) {
+        $em = $this->getEntityManager();
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT c,u,e,r "
+                    . "FROM FrontendBundle:Comentario c "
+                    . "JOIN c.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE e.id=:edificio "
+                    . "ORDER BY c.createdAt DESC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT c,u,e,r "
+                    . "FROM FrontendBundle:Comentario c "
+                    . "JOIN c.usuario u "
+                    . "JOIN u.edificio e "
+                    . "JOIN e.residencial r "
+                    . "WHERE e.id=:edificio "
+                    . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR c.comentario LIKE :comentario) "
+                    . "ORDER BY c.createdAt DESC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+                'numero' => $buscar,
+                'nombre' => "%".$buscar."%",
+                'email' => "%".$buscar."%",
+                'comentario' => "%".$buscar."%",
+            ));
+        }
+        return $consulta;
+    }
+
+    public function findComentariosPorEdificio($buscar="",Edificio $edificio) {
+        return $this->queryFindComentariosPorEdificio($buscar="",$edificio)->getResult();
+    }
 }
