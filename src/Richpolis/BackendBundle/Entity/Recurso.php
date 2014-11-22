@@ -52,7 +52,7 @@ class Recurso
     /**
      * @var string
      *
-     * @ORM\Column(name="precio", type="decimal",nullable=true)
+     * @ORM\Column(name="precio", type="decimal", nullable=true)
      */
     private $precio;
 
@@ -78,6 +78,10 @@ class Recurso
     }
     static function getPreferedTipoAcceso(){
         return array(self::TIPO_ACCESO_RESIDENCIAL);
+    }
+    
+    public function __construct() {
+        $this->precio = 0;
     }
     
     /**
