@@ -20,7 +20,11 @@ class EdificioType extends AbstractType
 	        
         $builder
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
-            ->add('cuota','money',array('currency'=>'MXN','attr'=>array('class'=>'form-control')))    
+            ->add('cuota','money',array(
+                'label' => 'Cuota por departamento',
+                'currency'=>'MXN',
+                'attr'=>array('class'=>'form-control')
+                ))    
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
         ;
     }

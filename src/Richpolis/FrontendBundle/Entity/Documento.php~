@@ -51,9 +51,16 @@ class Documento
     /**
      * @var string
      *
-     * @ORM\Column(name="tipoArchivo", type="integer",nullable=false)
+     * @ORM\Column(name="tipo_archivo", type="integer",nullable=false)
      */
     private $tipoArchivo;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo_acceso", type="integer",nullable=false)
+     */
+    private $tipoAcceso;
 
     /**
      * @var \Residencial
@@ -67,11 +74,43 @@ class Documento
     private $residencial;
     
     /**
+     * @var integer
+     * @todo Edificios dentro de la residencial avisos. 
+     *
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="documentos")
+     * @ORM\JoinTable(name="documentos_edificios")
+     * @ORM\OrderBy({"nombre" = "DESC"})
+     */
+    private $edificios;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime",nullable=true)
      */
     private $createdAt;
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+	
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Edificio',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+	
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+	
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
+    }
     
     /*
      * Timestable
@@ -88,6 +127,125 @@ class Documento
         }
     }
     
+    /*** uploads ***/
+    
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
+    private $file;
+
+    /**
+     * Sets file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+        // check if we have an old image path
+        if (isset($this->archivo)) {
+            // store the old name to delete after the update
+            $this->temp = $this->archivo;
+            $this->archivo = null;
+        } else {
+            $this->archivo = 'initial';
+        }
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+    
+    /**
+    * @ORM\PrePersist
+    * @ORM\PreUpdate
+    */
+    public function preUpload()
+    {
+      if (null !== $this->getFile()) {
+            // do whatever you want to generate a unique name
+            $filename = sha1(uniqid(mt_rand(), true));
+            $this->archivo = $filename.'.'.$this->getFile()->guessExtension();
+            $this->setTipoArchivo(RpsStms::getTipoArchivo($this->archivo));
+        }
+    }
+
+    /**
+    * @ORM\PostPersist
+    * @ORM\PostUpdate
+    */
+    public function upload()
+    {
+      if (null === $this->getFile()) {
+            return;
+        }
+
+        // if there is an error when moving the file, an exception will
+        // be automatically thrown by move(). This will properly prevent
+        // the entity from being persisted to the database on error
+        $this->getFile()->move($this->getUploadRootDir(), $this->archivo);
+        
+
+        // check if we have an old image
+        if (isset($this->temp)) {
+            // delete the old image
+            unlink($this->getUploadRootDir().'/'.$this->temp);
+            // clear the temp image path
+            $this->temp = null;
+        }
+        $this->file = null;
+    }
+
+    /**
+    * @ORM\PostRemove
+    */
+    public function removeUpload()
+    {
+      if ($file = $this->getAbsolutePath()) {
+        if(file_exists($file)){
+            unlink($file);
+        }
+      }
+    }
+    
+    protected function getUploadDir()
+    {
+        return '/uploads/documentos';
+    }
+
+    protected function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../web'.$this->getUploadDir();
+    }
+    
+    public function getWebPath()
+    {
+        return null === $this->archivo ? null : $this->getUploadDir().'/'.$this->archivo;
+    }
+    
+    public function getAbsolutePath()
+    {
+        return null === $this->archivo ? null : $this->getUploadRootDir().'/'.$this->archivo;
+    }
+    
+    public function getIcoArchivo(){
+        return RpsStms::getIcoArchivo($this->getArchivo());
+    }
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tipoAcceso = self::TIPO_ACCESO_RESIDENCIAL;
+    }
 
     /**
      * Get id
@@ -236,115 +394,37 @@ class Documento
     {
         return $this->residencial;
     }
-    
-    /*** uploads ***/
-    
-    /**
-     * @Assert\File(maxSize="6000000")
-     */
-    private $file;
 
     /**
-     * Sets file.
+     * Add edificios
      *
-     * @param UploadedFile $file
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     * @return Documento
      */
-    public function setFile(UploadedFile $file = null)
+    public function addEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
     {
-        $this->file = $file;
-        // check if we have an old image path
-        if (isset($this->archivo)) {
-            // store the old name to delete after the update
-            $this->temp = $this->archivo;
-            $this->archivo = null;
-        } else {
-            $this->archivo = 'initial';
-        }
+        $this->edificios[] = $edificios;
+
+        return $this;
     }
 
     /**
-     * Get file.
+     * Remove edificios
      *
-     * @return UploadedFile
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
      */
-    public function getFile()
+    public function removeEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
     {
-        return $this->file;
-    }
-    
-    /**
-    * @ORM\PrePersist
-    * @ORM\PreUpdate
-    */
-    public function preUpload()
-    {
-      if (null !== $this->getFile()) {
-            // do whatever you want to generate a unique name
-            $filename = sha1(uniqid(mt_rand(), true));
-            $this->archivo = $filename.'.'.$this->getFile()->guessExtension();
-            $this->setTipoArchivo(RpsStms::getTipoArchivo($this->archivo));
-        }
+        $this->edificios->removeElement($edificios);
     }
 
     /**
-    * @ORM\PostPersist
-    * @ORM\PostUpdate
-    */
-    public function upload()
+     * Get edificios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEdificios()
     {
-      if (null === $this->getFile()) {
-            return;
-        }
-
-        // if there is an error when moving the file, an exception will
-        // be automatically thrown by move(). This will properly prevent
-        // the entity from being persisted to the database on error
-        $this->getFile()->move($this->getUploadRootDir(), $this->archivo);
-        
-
-        // check if we have an old image
-        if (isset($this->temp)) {
-            // delete the old image
-            unlink($this->getUploadRootDir().'/'.$this->temp);
-            // clear the temp image path
-            $this->temp = null;
-        }
-        $this->file = null;
-    }
-
-    /**
-    * @ORM\PostRemove
-    */
-    public function removeUpload()
-    {
-      if ($file = $this->getAbsolutePath()) {
-        if(file_exists($file)){
-            unlink($file);
-        }
-      }
-    }
-    
-    protected function getUploadDir()
-    {
-        return '/uploads/documentos';
-    }
-
-    protected function getUploadRootDir()
-    {
-        return __DIR__.'/../../../../web'.$this->getUploadDir();
-    }
-    
-    public function getWebPath()
-    {
-        return null === $this->archivo ? null : $this->getUploadDir().'/'.$this->archivo;
-    }
-    
-    public function getAbsolutePath()
-    {
-        return null === $this->archivo ? null : $this->getUploadRootDir().'/'.$this->archivo;
-    }
-    
-    public function getIcoArchivo(){
-        return RpsStms::getIcoArchivo($this->getArchivo());
+        return $this->edificios;
     }
 }

@@ -35,7 +35,7 @@
                 <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('pagos')}}" class="bread-current">Pago {{ pago.createdAt | date('M-Y') }}</a>
+                <a href="{{path('pagos')}}" class="bread-current">Pago {{ entity.createdAt | date('M-Y') }}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('pagos_edit',{'id':entity.id})}}" class="bread-current">Editar pago</a>
@@ -60,6 +60,12 @@
                                 <div class="padd contenido-formulario">
                                     {{ form(edit_form) }}
                                 </div>
+                                {% if entity.archivo | length > 0 %}
+                                <div class="padd">
+                                    Comprobante actual
+                                    <img src="{{entity.webPath}}" style="max-width: 100%"/>
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>

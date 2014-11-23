@@ -78,7 +78,11 @@
                                                 </tr>
                                                 <tr>                                                              <tr>
                                                     <th>Usuario</th>
-                                                    <td>{{ entity.usuario}}</td>
+                                                    <td>{{ entity.usuario.nombre}}</td>
+                                                </tr>
+                                                <tr>                                                              <tr>
+                                                    <th>Departemento</th>
+                                                    <td>{{ entity.usuario.numero}}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Fecha Pago</th>
@@ -89,16 +93,16 @@
                                                     <td>$ {{ entity.monto|number_format(2,".",",")}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Archivo</th>
-                                                    <td>
-                                                        {% if entity.archivo | length > 0 %}
-                                                            <img src="{{entity.webPath}}" />
-                                                        {% endif %}    
-                                                    </td>
-                                                </tr>
-                                                <tr>
                                                     <th>Aproado?</th>
                                                     <td>{{ entity.isAproved | isActive | raw }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Comprobante</th>
+                                                    <td>
+                                                        {% if entity.archivo | length > 0 %}
+                                                            <img src="{{entity.webPath}}" style="max-width: 100%;" />
+                                                        {% endif %}    
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -72,6 +72,10 @@
                                                     <th>Torre</th>
                                                     <td>{{ entity.nombre}}</td>
                                                 </tr>
+                                                <tr>
+                                                    <th>Cuota</th>
+                                                    <td>$ {{ entity.cuota|number_format(2,".",",")}}</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

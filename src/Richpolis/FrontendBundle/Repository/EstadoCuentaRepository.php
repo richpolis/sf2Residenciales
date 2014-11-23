@@ -13,7 +13,7 @@ use Richpolis\BackendBundle\Entity\Usuario;
  */
 class EstadoCuentaRepository extends EntityRepository
 {
-    public function queryFindEstadoCuentas($buscar = "", $edificio)
+    public function queryFindEstadoCuentas($buscar = "", $edificio, $pagadas)
     {
         $em = $this->getEntityManager();
         if(strlen($buscar)==0){
@@ -23,9 +23,11 @@ class EstadoCuentaRepository extends EntityRepository
                     . "JOIN u.edificio e "
                     . "JOIN e.residencial r "
                     . "WHERE u.edificio=:edificio "
-                    . "ORDER BY t.isPaid DESC, u.numero ASC");
+                    . "AND t.isPaid=:pagadas "
+                    . "ORDER BY t.createdAt DESC, u.numero ASC");
             $consulta->setParameters(array(
-                'edificio' => $edificio
+                'edificio' => $edificio,
+                'pagadas' => $pagadas,
             ));
         }else{
             $consulta = $em->createQuery("SELECT t,u,e,r "
@@ -34,10 +36,12 @@ class EstadoCuentaRepository extends EntityRepository
                     . "JOIN u.edificio e "
                     . "JOIN e.residencial r "
                     . "WHERE u.edificio=:edificio "
+                    . "AND t.isPaid=:pagadas "
                     . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email) "
-                    . "ORDER BY t.isPaid DESC, u.numero ASC");
+                    . "ORDER BY t.createdAt DESC, u.numero ASC");
             $consulta->setParameters(array(
                 'edificio' => $edificio,
+                'pagadas' => $pagadas,
                 'numero' => $buscar,
                 'nombre' => "%".$buscar."%",
                 'email' => "%".$buscar."%"
@@ -46,8 +50,8 @@ class EstadoCuentaRepository extends EntityRepository
         return $consulta;
     }
     
-    public function findEstadoCuentas($buscar = "", $edificio){
-        return $this->queryFindEstadoCuentas($buscar,$edificio)->getResult();
+    public function findEstadoCuentas($buscar = "", $edificio,$pagadas){
+        return $this->queryFindEstadoCuentas($buscar,$edificio,$pagadas)->getResult();
     }
     
     public function queryCargosAdeudoPorEdificio($edificio_id,$todos=true){
@@ -118,5 +122,22 @@ class EstadoCuentaRepository extends EntityRepository
        }else{
            return null;
        }
+    }
+    
+    public function getCargosAnteriores($fecha, Usuario $usuario){
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery(
+            "SELECT c "
+            . "FROM FrontendBundle:EstadoCuenta c "
+            . "JOIN c.usuario u "
+            . "WHERE c.createdAt<=:fecha "
+            . "AND c.isAcumulable=:acumulable "
+            . "AND u.id=:usuario");
+        $consulta->setParameters(array(
+            'fecha' => $fecha,
+            'acumulable' => true,
+            'usuario' => $usuario->getId(),
+        ));
+        return $consulta->getResult();
     }
 }

@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-
 /**
  * Pago
  *
@@ -26,22 +25,6 @@ class Pago
      */
     private $id;
 
-   /**
-     * @var Array 
-     * @todo Arreglo de cargos en un pago
-     *
-     * @ORM\OneToMany(targetEntity="EstadoCuenta",mappedBy="pago")
-     * @ORM\OrderBy({"createdAt" = "ASC"})
-     */
-    private $cargos;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_aproved", type="boolean")
-     */
-    private $isAproved;
-
     /**
      * @var string
      *
@@ -50,18 +33,18 @@ class Pago
     private $archivo;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime")
-     */
-    private $createdAt;
-
-    /**
      * @var float
      *
      * @ORM\Column(name="monto", type="float")
      */
     private $monto;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_aproved", type="boolean", nullable=true)
+     */
+    private $isAproved;
     
     /**
      * @var \Usuario
@@ -73,7 +56,23 @@ class Pago
      * })
      */
     private $usuario;
+    
+    /**
+     * @var Array 
+     * @todo Arreglo de cargos en un pago
+     *
+     * @ORM\OneToMany(targetEntity="EstadoCuenta",mappedBy="pago")
+     * @ORM\OrderBy({"createdAt" = "ASC"})
+     */
+    private $cargos;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+    
     /*
      * Timestable
      */
@@ -88,109 +87,16 @@ class Pago
           $this->createdAt = new \DateTime();
         }
     }
-    
+	
     /**
-     * Get id
-     *
-     * @return integer 
+     * Constructor
      */
-    public function getId()
+    public function __construct()
     {
-        return $this->id;
+        $this->cargos = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->isAproved = false;
     }
 
-    /**
-     * Set isAproved
-     *
-     * @param boolean $isAproved
-     * @return Pago
-     */
-    public function setIsAproved($isAproved)
-    {
-        $this->isAproved = $isAproved;
-
-        return $this;
-    }
-
-    /**
-     * Get isAproved
-     *
-     * @return boolean 
-     */
-    public function getIsAproved()
-    {
-        return $this->isAproved;
-    }
-
-    /**
-     * Set archivo
-     *
-     * @param string $archivo
-     * @return Pago
-     */
-    public function setArchivo($archivo)
-    {
-        $this->archivo = $archivo;
-
-        return $this;
-    }
-
-    /**
-     * Get archivo
-     *
-     * @return string 
-     */
-    public function getArchivo()
-    {
-        return $this->archivo;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Pago
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set monto
-     *
-     * @param float $monto
-     * @return Pago
-     */
-    public function setMonto($monto)
-    {
-        $this->monto = $monto;
-
-        return $this;
-    }
-
-    /**
-     * Get monto
-     *
-     * @return float 
-     */
-    public function getMonto()
-    {
-        return $this->monto;
-    }
-    
     /*** uploads ***/
     
     /**
@@ -236,7 +142,6 @@ class Pago
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
             $this->archivo = $filename.'.'.$this->getFile()->guessExtension();
-            $this->setTipoArchivo(RpsStms::getTipoArchivo($this->archivo));
         }
     }
 
@@ -300,5 +205,164 @@ class Pago
     
     public function getIcoArchivo(){
         return RpsStms::getIcoArchivo($this->getArchivo());
+    }
+    
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set archivo
+     *
+     * @param string $archivo
+     * @return Pago
+     */
+    public function setArchivo($archivo)
+    {
+        $this->archivo = $archivo;
+
+        return $this;
+    }
+
+    /**
+     * Get archivo
+     *
+     * @return string 
+     */
+    public function getArchivo()
+    {
+        return $this->archivo;
+    }
+
+    /**
+     * Set monto
+     *
+     * @param float $monto
+     * @return Pago
+     */
+    public function setMonto($monto)
+    {
+        $this->monto = $monto;
+
+        return $this;
+    }
+
+    /**
+     * Get monto
+     *
+     * @return float 
+     */
+    public function getMonto()
+    {
+        return $this->monto;
+    }
+
+    /**
+     * Set isAproved
+     *
+     * @param boolean $isAproved
+     * @return Pago
+     */
+    public function setIsAproved($isAproved)
+    {
+        $this->isAproved = $isAproved;
+
+        return $this;
+    }
+
+    /**
+     * Get isAproved
+     *
+     * @return boolean 
+     */
+    public function getIsAproved()
+    {
+        return $this->isAproved;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Pago
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Pago
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
+
+    /**
+     * Add cargos
+     *
+     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
+     * @return Pago
+     */
+    public function addCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
+    {
+        $this->cargos[] = $cargos;
+
+        return $this;
+    }
+
+    /**
+     * Remove cargos
+     *
+     * @param \Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos
+     */
+    public function removeCargo(\Richpolis\FrontendBundle\Entity\EstadoCuenta $cargos)
+    {
+        $this->cargos->removeElement($cargos);
+    }
+
+    /**
+     * Get cargos
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCargos()
+    {
+        return $this->cargos;
     }
 }

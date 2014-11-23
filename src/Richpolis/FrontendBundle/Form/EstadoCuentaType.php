@@ -33,8 +33,8 @@ class EstadoCuentaType extends AbstractType
                     'placeholder'=>'Tipo de cargo',
                     'data-bind'=>'value: tipoCargo'
                 )))
-            ->add('isPaid','checkbox',array('label'=>'Pagado?','attr'=>array('class'=>'form-control')))
-            ->add('paidAt',null,array('label'=>'Fecha del pago','attr'=>array('class'=>'form-control')))    
+            ->add('isPaid','hidden')
+            ->add('isAcumulable','checkbox',array('label'=>'Acumulable o morosidad?','attr'=>array('class'=>'form-control')))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
         ;
     }

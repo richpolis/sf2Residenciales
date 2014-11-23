@@ -80,6 +80,7 @@ class PagoController extends BaseController
             'edificio' => $edificioActual,
         ));
     }
+    
     /**
      * Creates a new Pago entity.
      *
@@ -89,6 +90,7 @@ class PagoController extends BaseController
      */
     public function createAction(Request $request)
     {
+        
         $entity = new Pago();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -97,6 +99,15 @@ class PagoController extends BaseController
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
+            $usuario = $this->getUsuarioActual();
+            //solo cargos por pagar
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                    ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+            foreach ($cargos as $cargo) {
+                $cargo->setPago($entity);
+                $em->persist($cargo);
+                $em->flush();
+            }
 
             return $this->redirect($this->generateUrl('pagos_show', array('id' => $entity->getId())));
         }
@@ -136,28 +147,28 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
-    {
-		$em = $this->getDoctrine()->getManager();
-		$usuario = $this->getUsuarioActual();
-		//solo cargos por pagar
-		$cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                              ->getCargosAdeudoPorUsuario($usuario->getId(),false);
-		$monto = 0;
-		foreach($cargos as $cargo){
-			$monto += $cargo->getMonto();
-		}
+    public function newAction() {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUsuarioActual();
+        //solo cargos por pagar
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+        $monto = 0;
+        foreach ($cargos as $cargo) {
+            $monto += $cargo->getMonto();
+        }
         $entity = new Pago();
-		$entity->setUsuario($usuario);
-		$entity->setMonto($monto);
-        $form   = $this->createCreateForm($entity);
-		
+        $entity->setUsuario($usuario);
+        $entity->setMonto($monto);
+                
+        $form = $this->createCreateForm($entity);
+
         return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-            'errores' => RpsStms::getErrorMessages($form),
-			'cargos' => $cargos,
-			'monto' => $monto,
+            'entity'    => $entity,
+            'form'      => $form->createView(),
+            'errores'   => RpsStms::getErrorMessages($form),
+            'cargos'    => $cargos,
+            'monto'     => $monto,
         );
     }
 
@@ -322,12 +333,12 @@ class PagoController extends BaseController
        
        foreach($pago->getCargos() as $cargo){
            $cargo->setIsPaid(true);
-           $cargo->setPaidAt(new \DateTime());
+           $em->persist($cargo);
            $em->flush();
        }
        $pago->setIsAproved(true);
        $em->flush();
-       return new JsonResponse(array('aprobado'=>'ok','pago'=>$id));
+       return $this->redirect($this->generateUrl('pagos_show',array('id'=>$pago->getId())));
     }
     
     /**
@@ -386,55 +397,56 @@ class PagoController extends BaseController
         return $response;
     }
 	
-	/**
+    /**
      * Formulario para realizar pago.
      *
      * @Route("/realizar/pago", name="pagos_realizar_pago")
      * @Method({"GET","POST"})
      */
-    public function realizarPagoAction(Request $request)
-    {
+    public function realizarPagoAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-		$usuario = $this->getUsuarioActual();
-		//solo cargos por pagar
-		$cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                              ->getCargosAdeudoPorUsuario($usuario->getId(),false);
-		$monto = 0;
-		foreach($cargos as $cargo){
-			$monto += $cargo->getMonto();
-		}
+        $usuario = $this->getUsuarioActual();
+        //solo cargos por pagar
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+        $monto = 0;
+        foreach ($cargos as $cargo) {
+            $monto += $cargo->getMonto();
+        }
         $entity = new Pago();
-		//var_dump($entity); die;
-		$entity->setUsuario($usuario);
-		$entity->setMonto($monto);
-		$entity->setIsAproved(false);
-        $form   = $this->createCreateForm($entity);
-		
-		if($request->isMethod('POST')){
+        $entity->setUsuario($usuario);
+        $entity->setMonto($monto);
+        $entity->setIsAproved(false);
+        $form = $this->createCreateForm($entity);
+
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
-            if($form->isValid()){
+            if ($form->isValid()) {
                 $entity = $form->getData();
+                $entity->setIsAproved(false);
                 $em->persist($entity);
                 $em->flush();
-				foreach($cargos as $cargo){
-					$cargo->setPago($entity);
-					$em->flush();
-				}
+                foreach ($cargos as $cargo) {
+                    $cargo->setPago($entity);
+                    $em->persist($cargo);
+                    $em->flush();
+                }
                 $response = new JsonResponse(json_encode(array(
-                    'html'=>'',
-                    'respuesta'=>'creado',
+                            'html' => '',
+                            'respuesta' => 'creado',
                 )));
                 return $response;
             }
         }
-		
-       $response = new JsonResponse(json_encode(array(
-            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                'rutaAction' => $this->generateUrl('pagos_realizar_pago'),
-                'form'=>$form->createView(),
-             )),
-            'respuesta' => 'nuevo',
+
+        $response = new JsonResponse(json_encode(array(
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('pagos_realizar_pago'),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
         )));
         return $response;
     }
+
 }

@@ -13,8 +13,6 @@
 <link rel="stylesheet" href="{{asset('css/admin.css')}}">
 {% endblock %}
 
-{% block body %}
-
   {% set route = app.request.get('_route') %}
 
   {% set homepage = "" %}
@@ -22,6 +20,7 @@
   {% set edificios = "" %}
   {% set recursos = "" %}   
   {% set usuarios = "" %}
+  {% set administradores = "" %}
   {% set configuraciones = "" %}
   {% set estadodecuentas = "" %}
   {% set actividades = "" %}
@@ -29,36 +28,55 @@
   {% set documentos = "" %}
   {% set reservaciones = "" %}
   {% set pagos = "" %}
-  
-  
-
+  {% set foros = "" %}
+  {% set pagina = "homepage" %}
   
   {% if route == "homepage" %}
     {% set homepage = "class=open" %}
+    {% set pagina = path('homepage') %}
   {% elseif route == "residenciales" %}
     {% set residenciales = "class=open" %}
+    {% set pagina = path('residenciales') %}
   {% elseif route == "usuarios" %}
     {% set usuarios = "class=open" %}
+    {% set pagina = path('usuarios') %}
+  {% elseif route == "administradores" %}
+    {% set administradores = "class=open" %}
+    {% set pagina = path('usuarios') %}
   {% elseif route == "edificios" %}
     {% set edificios = "class=open" %}
+    {% set pagina = path('edificios') %}
   {% elseif route == "recursos" %}
     {% set recursos = "class=open" %}
+    {% set pagina = path('recursos') %}
   {% elseif route == "configuraciones" %}
     {% set configuraciones = "class=open" %}
+    {% set pagina = path('configuraciones') %}
   {% elseif route == "estadodecuentas" %}
     {% set estadodecuentas = "class=open" %}
+    {% set pagina = path('estadodecuentas') %}
   {% elseif route == "actividades" %}
     {% set actividades = "class=open" %}
+    {% set pagina = path('actividades') %}
   {% elseif route == "avisos" %}
     {% set avisos = "class=open" %}
+    {% set pagina = path('avisos') %}
   {% elseif route == "documentos" %}
     {% set documentos = "class=open" %}
+    {% set pagina = path('documentos') %}
   {% elseif route == "reservaciones" %}
     {% set reservaciones = "class=open" %}
+    {% set pagina = path('reservaciones') %}
   {% elseif route == "pagos" %}
     {% set pagos = "class=open" %}
+    {% set pagina = path('pagos') %}
+  {% elseif route == "foros" %}
+    {% set foros = "class=open" %}
+    {% set pagina = path('foros') %}  
   {% endif %}
-      
+
+
+{% block body %}
 <header>
     <div class="navbar navbar-fixed-top bs-docs-nav" role="banner">
         <div class="container">
@@ -118,15 +136,12 @@
                     <i class="fa fa-home"></i> <span>Inicio</span>
                 </a>
             </li>
-            
-            {% if is_granted('ROLE_SUPER_ADMIN') %}
+            {% if is_granted('ROLE_ADMIN') %}
             <li>
                 <a {{residenciales}}  href="{{path('residenciales')}}">
                     <i class="fa fa-bank"></i> <span>Residenciales</span>
                 </a>
             </li>
-            {% endif %}
-            {% if is_granted('ROLE_ADMIN') %}
             <li>
                 <a {{edificios}}  href="{{path('edificios')}}">
                     <i class="fa fa-building"></i> <span>Torres</span>
@@ -142,6 +157,13 @@
                     <i class="fa fa-user"></i> <span>Usuarios</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <li>
+                <a {{administradores}} href="{{path('administradores')}}">
+                    <i class="fa fa-user"></i> <span>Administradores</span>
+                </a>
+            </li>
             <!--li>
                 <a {{configuraciones}} href="{{path('configuraciones')}}">
                     <i class="fa fa-gears"></i> <span>Configuraciones</span>
@@ -151,6 +173,11 @@
             <li>
                 <a {{estadodecuentas}} href="{{path('estadodecuentas')}}">
                     <i class="fa fa-money"></i> <span>Estado de cuentas</span>
+                </a>
+            </li>
+            <li>
+                <a {{pagos}} href="{{path('pagos')}}">
+                    <i class="fa fa-newspaper-o"></i> <span>Pagos</span>
                 </a>
             </li>
             <li>
@@ -174,8 +201,8 @@
                 </a>
             </li>
             <li>
-                <a {{pagos}} href="{{path('pagos')}}">
-                    <i class="fa fa-newspaper-o"></i> <span>Pagos</span>
+                <a {{foros}} href="{{path('foros')}}">
+                    <i class="fa fa-comments"></i> <span>Foros</span>
                 </a>
             </li>
         </ul>
@@ -190,7 +217,7 @@
         <div class="row">
             <div class="col-md-12">
                <!-- Copyright info -->
-                <!--p class="copy">Copyright &copy; 2012 | <a href="#">Your Site</a> </p-->
+                <p class="copy">Copyright &copy; 2014 | <a href="{{path('homepage')}}">Mosaicors</a></p>
                 <p></p>
             </div>
         </div>
@@ -214,10 +241,10 @@
             $(".loader").fadeOut();
         });
         function cambiarEdificio(){
-            debugger;
             var select = $('.cambiar-edificio');
             var url = select.find('option:selected').data('url');
-            location.href = url;
+            var actualUrl = '{{pagina}}';
+            location.href = url + "&pagina=" + actualUrl;
         }
     </script>
 {% endblock %}

@@ -1,0 +1,32 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Residencial</th>
+            <th>Torre</th>
+            <th>Departamento</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Creado</th>
+            <th>Actualizado</th>
+            <th>Activo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td>{{ entity.id }}</td>
+                <td>{{ entity.edificio.residencial }}</td>
+                <td>{{ entity.edificio }}</td>
+                <td>{{ entity.numero }}</td>
+                <td>{{ entity.nombre }}</td>
+                <td>{{ entity.email }}</td>
+                <td>{{ entity.telefono }}</td>
+                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+                <td>{{ entity.updatedAt | date('d-m-Y') }}</td>
+                <td>{{ (entity.isActive)?"Si":"No" }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

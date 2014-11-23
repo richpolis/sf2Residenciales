@@ -43,14 +43,22 @@ class EstadoCuentaController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $buscar = $request->query->get('buscar','');
+        $filtros = $this->getFilters();
+        
+        if($request->query->has('pagados')){
+            $filtro = $request->query->get('pagados',false);
+            $filtros['pagados'] = $filtro;
+            $this->setFilters($filtros);
+        }
         
         if(strlen($buscar)>0){
             $options = array('filterParam'=>'buscar','filterValue'=>$buscar);
         }else{
             $options = array();
         }
+        
         $query = $em->getRepository('FrontendBundle:EstadoCuenta')
-                              ->queryFindEstadoCuentas($buscar,$edificioActual->getId());
+                    ->queryFindEstadoCuentas($buscar,$edificioActual->getId(),$filtros['pagadas']);
         
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -61,6 +69,7 @@ class EstadoCuentaController extends BaseController
             'pagination' => $pagination,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
+            'pagados' => $filtros['pagados'],
         ));
     }
     
@@ -365,8 +374,64 @@ class EstadoCuentaController extends BaseController
                 $cargo->setMonto($edificio->getCuota());
                 $cargo->setUsuario($usuario);
                 $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_NORMAL);
+                $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
                 $cont++;
+            }
+        }
+        $em->flush();
+        $response = new JsonResponse(array('cargosAplicados'=>"Cargos aplicados ".$cont));
+        return $response;
+    }
+    
+    /**
+     * Aplicar cargo por adeudo.
+     *
+     * @Route("/aplicar/cargo/adeudo", name="estadodecuentas_aplicar_cargo_adeudo")
+     */
+    public function aplicarCargoAdeudoAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+        
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        $fecha = new \DateTime();
+        $mes = $fecha->format("m");
+        $year = $fecha->format("Y");
+        $fecha->modify("-1 month");
+        $cont = 0;
+        $nombreMes = $this->getMes($mes);
+        foreach($usuarios as $usuario){
+            $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
+                        ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_ADEUDO,$usuario);
+            if(!$cargo){
+                // llama a los cargos anteriores a la fecha y del usuario y que sean acumulables.
+                $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                            ->getCargosAnteriores($fecha,$usuario,true);
+                if(count($cargos)>0){
+                    //existen cargos en el mes
+                    $monto = 0;
+                    foreach($cargos as $registro){
+                        $monto += $registro->getMonto();
+                    }
+                    //aplicamos la morosidad de la residencial
+                    $cargo = new EstadoCuenta();
+                    $cargo->setCargo("Cargo por adeudo del ".$nombreMes." del ".$year);
+                    $cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
+                    $cargo->setUsuario($usuario);
+                    $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
+                    $cargo->setIsAcumulable(true);
+                    $em->persist($cargo);
+                    $cont++;
+                }
             }
         }
         $em->flush();
@@ -400,14 +465,16 @@ class EstadoCuentaController extends BaseController
     {
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
+        $filtros = $this->getFilters();
         
         $cargos = $this->getDoctrine()
                 ->getRepository('FrontendBundle:EstadoCuenta')
-                ->findEstadoCuentas("",$edificio->getId());
+                ->findEstadoCuentas("",$edificio->getId(),$filtros['pagadas']);
 
         $response = $this->render(
                 'FrontendBundle:EstadoCuenta:list.xls.twig', array('entities' => $cargos)
         );
+        
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="export-cargos.xls"');
         return $response;

@@ -43,7 +43,8 @@ class UsuarioController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $usuarios = $em->getRepository('BackendBundle:Usuario')->findBy(array(
-           'edificio' => $edificioActual, 
+            'edificio' => $edificioActual, 
+            'grupo' => Usuario::GRUPO_USUARIOS,
         ));
 
         return array(
@@ -114,6 +115,7 @@ class UsuarioController extends BaseController
     {
         $entity = new Usuario();
         $entity->setEdificio($this->getEdificioActual());
+        $entity->setGrupo(Usuario::GRUPO_USUARIOS);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -126,7 +128,7 @@ class UsuarioController extends BaseController
     /**
      * Finds and displays a Usuario entity.
      *
-     * @Route("/{id}", name="usuarios_show")
+     * @Route("/{id}", name="usuarios_show",requirements= {"id":"\d+    "})
      * @Method("GET")
      * @Template()
      */
@@ -291,5 +293,29 @@ class UsuarioController extends BaseController
                     $entity->getSalt()
         );
         $entity->setPassword($passwordCodificado);
+    }
+    
+    /**
+     * Exportar los usuarios.
+     *
+     * @Route("/exportar", name="usuarios_exportar")
+     */
+    public function exportarAction(Request $request)
+    {
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        
+        $usuarios = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
+                         ->findBy(array(
+            'edificio' => $edificio, 
+            'grupo' => Usuario::GRUPO_USUARIOS,
+        ));
+
+        $response = $this->render(
+                'BackendBundle:Usuario:list.xls.twig', array('entities' => $usuarios)
+        );
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export-usuarios.xls"');
+        return $response;
     }
 }

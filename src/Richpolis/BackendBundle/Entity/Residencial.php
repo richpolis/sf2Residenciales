@@ -34,14 +34,25 @@ class Residencial implements \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="porcentaje", type="decimal")
+     * @ORM\Column(name="morosidad", type="decimal")
      */
-    private $porcentaje;
-
-    public function __toString() {
-        return $this->nombre;
-    }
+    private $morosidad;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tipo_morosidad", type="integer")
+     */
+    private $tipoMorosidad;
+    
+    const TIPO_MOROSIDAD_PORCENTAJE=1;
+    const TIPO_MOROSIDAD_PRECIO=2;
+        
+    static public $sTipoMorosidad=array(
+        self::TIPO_MOROSIDAD_PORCENTAJE=>'Porcentaje',
+        self::TIPO_MOROSIDAD_PRECIO=>'Precio',
+    );
+
     /**
      * @var Array 
      * @todo Arreglo de edificios dentro de la residiencial
@@ -57,7 +68,44 @@ class Residencial implements \Serializable
     public function __construct()
     {
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tipoMorosidad = self::TIPO_MOROSIDAD_PORCENTAJE;
     }
+    
+    public function __toString() {
+        return $this->nombre;
+    }
+    
+    public function getStringTipoMorosidad(){
+        return self::$sTipoMorosidad[$this->getTipoMorosidad()];
+    }
+    static function getArrayTipoMorosidad(){
+        return self::$sTipoMorosidad;
+    }
+    static function getPreferedTipoMorosidad(){
+        return array(self::TIPO_MOROSIDAD_PORCENTAJE);
+    }
+    
+    public function getStringMorosidad(){
+        if($this->getTipoMorosidad()==self::TIPO_MOROSIDAD_PORCENTAJE){
+            return $this->getMorosidad() . "%";
+        }else{
+            return "$ ".number_format($this->getMorosidad(),2,".",",");
+        }
+    }
+    
+    public function getAplicarMorosidadAMonto($monto = 0){
+        $valorFinal = 0.0;
+        if($monto > 0 ){
+            if($this->getTipoMorosidad()==self::TIPO_MOROSIDAD_PORCENTAJE){
+                $valorMorosidad = ($this->getMorosidad / 100);
+                $valorFinal = $monto * $valorMorosidad; 
+            }else{
+                $valorFinal = $this->getMorosidad();
+            }
+        }
+        return $valorFinal;
+    }
+    
     
     /**
      * Get id
@@ -93,29 +141,6 @@ class Residencial implements \Serializable
     }
 
     /**
-     * Set porcentaje
-     *
-     * @param string $porcentaje
-     * @return Residencial
-     */
-    public function setPorcentaje($porcentaje)
-    {
-        $this->porcentaje = $porcentaje;
-
-        return $this;
-    }
-
-    /**
-     * Get porcentaje
-     *
-     * @return string 
-     */
-    public function getPorcentaje()
-    {
-        return $this->porcentaje;
-    }
-
-    /**
      * @see \Serializable::serialize()
      */
     public function serialize()
@@ -123,7 +148,8 @@ class Residencial implements \Serializable
         return serialize(array(
             $this->id,
             $this->nombre,
-            $this->porcentaje
+            $this->morosidad,
+            $this->tipoMorosidad
         ));
     }
 
@@ -135,7 +161,8 @@ class Residencial implements \Serializable
         list (
             $this->id,
             $this->nombre,
-            $this->porcentaje
+            $this->morosidad,
+            $this->tipoMorosidad
         ) = unserialize($serialized);
     }
 
@@ -174,4 +201,50 @@ class Residencial implements \Serializable
     }
     
 
+
+    /**
+     * Set morosidad
+     *
+     * @param string $morosidad
+     * @return Residencial
+     */
+    public function setMorosidad($morosidad)
+    {
+        $this->morosidad = $morosidad;
+
+        return $this;
+    }
+
+    /**
+     * Get morosidad
+     *
+     * @return string 
+     */
+    public function getMorosidad()
+    {
+        return $this->morosidad;
+    }
+
+    /**
+     * Set tipoMorosidad
+     *
+     * @param integer $tipoMorosidad
+     * @return Residencial
+     */
+    public function setTipoMorosidad($tipoMorosidad)
+    {
+        $this->tipoMorosidad = $tipoMorosidad;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoMorosidad
+     *
+     * @return integer 
+     */
+    public function getTipoMorosidad()
+    {
+        return $this->tipoMorosidad;
+    }
 }

@@ -37,7 +37,7 @@
                 <span class="divider">/</span>
                 <a href="{{path('usuarios_show',{'id': entity.id})}}" class="bread-current">{{entity.nombre}}</a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{path('usuarios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                            <a href="{{path('usuarios_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear usuario</a>
                         {% endif %}
                         </div>
 
@@ -77,6 +77,14 @@
                                                                 <tr>
                                                                     <th>Nombre</th>
                                                                     <td>{{ entity.nombre }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Email</th>
+                                                                    <td>{{ entity.email }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Telefono</th>
+                                                                    <td>{{ entity.telefono }}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Departamento</th>

@@ -59,6 +59,17 @@ class AvisoController extends BaseController
         $entity = new Aviso();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $form->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -115,11 +126,20 @@ class AvisoController extends BaseController
         }
         $entity->setTipoAcceso($filtros['nivel_aviso']);
         $entity->setResidencial($residencial);
-        $entity->setEdificio($edificio);
+        $entity->addEdificio($edificio);
         $entity->setUsuario($usuario);
-        
         $form   = $this->createCreateForm($entity);
-
+        if($filtros['nivel_aviso']==Actividad::TIPO_ACCESO_EDIFICIO){
+            $form->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -171,6 +191,18 @@ class AvisoController extends BaseController
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
+        
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $editForm->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
 
         return array(
             'entity'      => $entity,
@@ -219,6 +251,17 @@ class AvisoController extends BaseController
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $editForm->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
 
         if ($editForm->isValid()) {
             $em->flush();

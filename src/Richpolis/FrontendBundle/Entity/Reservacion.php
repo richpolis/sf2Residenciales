@@ -48,7 +48,7 @@ class Reservacion
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fechaEvento", type="datetime",nullable=true)
+     * @ORM\Column(name="fechaEvento", type="date",nullable=true)
      * @Assert\NotBlank(message="Ingresa la fecha del evento")
      * @Assert\Date()
      */
@@ -60,6 +60,20 @@ class Reservacion
      * @ORM\Column(name="duracion", type="integer")
      */
     private $duracion;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="desde", type="time")
+     */
+    private $desde;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="hasta", type="time")
+     */
+    private $hasta;
 
     /**
      * @var boolean
@@ -92,6 +106,11 @@ class Reservacion
     
     public function __construct() {
         $this->isAproved=false;
+    }
+    
+    public function getStringReservacion(){
+        return sprintf("Recurso %s reservacion por usuario %s - %s", 
+                $this->getRecurso(),$this->getUsuario()->getNumero(),$this->getUsuario());
     }
     
 
@@ -149,6 +168,75 @@ class Reservacion
     public function getDuracion()
     {
         return $this->duracion;
+    }
+
+    /**
+     * Set desde
+     *
+     * @param \DateTime $desde
+     * @return Reservacion
+     */
+    public function setDesde($desde)
+    {
+        $this->desde = $desde;
+
+        return $this;
+    }
+
+    /**
+     * Get desde
+     *
+     * @return \DateTime 
+     */
+    public function getDesde()
+    {
+        return $this->desde;
+    }
+
+    /**
+     * Set hasta
+     *
+     * @param \DateTime $hasta
+     * @return Reservacion
+     */
+    public function setHasta($hasta)
+    {
+        $this->hasta = $hasta;
+
+        return $this;
+    }
+
+    /**
+     * Get hasta
+     *
+     * @return \DateTime 
+     */
+    public function getHasta()
+    {
+        return $this->hasta;
+    }
+
+    /**
+     * Set isAproved
+     *
+     * @param boolean $isAproved
+     * @return Reservacion
+     */
+    public function setIsAproved($isAproved)
+    {
+        $this->isAproved = $isAproved;
+
+        return $this;
+    }
+
+    /**
+     * Get isAproved
+     *
+     * @return boolean 
+     */
+    public function getIsAproved()
+    {
+        return $this->isAproved;
     }
 
     /**
@@ -218,33 +306,5 @@ class Reservacion
     public function getUsuario()
     {
         return $this->usuario;
-    }
-
-    /**
-     * Set isAproved
-     *
-     * @param boolean $isAproved
-     * @return Reservacion
-     */
-    public function setIsAproved($isAproved)
-    {
-        $this->isAproved = $isAproved;
-
-        return $this;
-    }
-
-    /**
-     * Get isAproved
-     *
-     * @return boolean 
-     */
-    public function getIsAproved()
-    {
-        return $this->isAproved;
-    }
-    
-    public function getStringReservacion(){
-        return sprintf("Recurso %s reservacion por usuario %s - %s", 
-                $this->getRecurso(),$this->getUsuario()->getNumero(),$this->getUsuario());
     }
 }

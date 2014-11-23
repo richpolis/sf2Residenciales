@@ -26,6 +26,8 @@ security:
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/recuperar, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/registro, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/*, roles: ROLE_USER }
 
     encoders:
@@ -35,7 +37,7 @@ security:
     providers:
         # Usuarios del frontend
         usuarios:
-            entity: { class: Richpolis\BackendBundle\Entity\Usuario, property: username }
+            entity: { class: Richpolis\BackendBundle\Entity\Usuario, property: email }
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER

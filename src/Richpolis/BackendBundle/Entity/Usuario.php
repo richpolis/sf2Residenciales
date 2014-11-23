@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @ORM\Table(name="usuarios")
  * @ORM\Entity(repositoryClass="Richpolis\BackendBundle\Repository\UsuariosRepository")
  * @ORM\HasLifecycleCallbacks()
- * @UniqueEntity("username")
+ * @UniqueEntity("email")
  */
 class Usuario implements UserInterface, \Serializable
 {
@@ -26,14 +26,6 @@ class Usuario implements UserInterface, \Serializable
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="username", type="string", length=100, nullable=false)
-     * @Assert\NotBlank(message="Ingresar un nombre de usuario")
-     */
-    private $username;
 
     /**
      * @var string
@@ -78,7 +70,14 @@ class Usuario implements UserInterface, \Serializable
      * @ORM\Column(name="imagen", type="string", length=255, nullable=true)
      */
     private $imagen;
-
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="numero", type="string", length=100, nullable=true)
+     */
+    private $numero;
+    
     /**
      * @var \Edificio
      * @todo Edificio del usuario
@@ -89,14 +88,6 @@ class Usuario implements UserInterface, \Serializable
      * })
      */
     private $edificio;    
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="numero", type="string", length=100, nullable=true)
-     */
-    private $numero;
-    
     
     /**
      * @var string
@@ -126,12 +117,27 @@ class Usuario implements UserInterface, \Serializable
      */
     private $updatedAt;
     
+    /**
+     * @var integer
+     * @todo Residenciales asociadas al usuario administrador. 
+     *
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinTable(name="usuarios_residencial")
+     * @ORM\OrderBy({"nombre" = "ASC"})
+     */
+    private $residenciales;
+    
     const GRUPO_USUARIOS    =   1;
     const GRUPO_ADMIN       =   2;
     const GRUPO_SUPER_ADMIN =   3;
     
     public function __toString(){
-        return sprintf('%s | %s | %s', $this->getNumero(),$this->getNombre(),$this->getEdificio());
+        //return sprintf('%s | %s | %s', $this->getNumero(),$this->getNombre(),$this->getEdificio());
+        return $this->getNombre();
+    }
+    
+    public function getStringCompleto(){
+        return sprintf('%s | %s | %s', $this->getNombre(),$this->getNumero(),$this->getEdificio());
     }
     
     public function getStringTipoGrupo(){
@@ -208,6 +214,17 @@ class Usuario implements UserInterface, \Serializable
             return array('ROLE_ADMIN', 'ROLE_API');
         }
     }
+    
+    /**
+     * Get username
+     *
+     * @return string | email
+     */
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
 
     /*** uploads ***/
     
@@ -321,9 +338,9 @@ class Usuario implements UserInterface, \Serializable
     {
         return serialize(array(
             $this->id,
-            $this->username,
             $this->email,
-            $this->nombre
+            $this->nombre,
+            $this->numero,
         ));
     }
 
@@ -334,9 +351,9 @@ class Usuario implements UserInterface, \Serializable
     {
         list (
             $this->id,
-            $this->username,
             $this->email,
-            $this->nombre
+            $this->nombre,
+            $this->numero,
         ) = unserialize($serialized);
     }
 
@@ -351,29 +368,6 @@ class Usuario implements UserInterface, \Serializable
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     * @return Usuario
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string 
-     */
-    public function getUsername()
-    {
-        return $this->username;
     }
 
     /**
@@ -650,5 +644,38 @@ class Usuario implements UserInterface, \Serializable
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Add residenciales
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residenciales
+     * @return Usuario
+     */
+    public function addResidenciale(\Richpolis\BackendBundle\Entity\Residencial $residenciales)
+    {
+        $this->residenciales[] = $residenciales;
+
+        return $this;
+    }
+
+    /**
+     * Remove residenciales
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residenciales
+     */
+    public function removeResidenciale(\Richpolis\BackendBundle\Entity\Residencial $residenciales)
+    {
+        $this->residenciales->removeElement($residenciales);
+    }
+
+    /**
+     * Get residenciales
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getResidenciales()
+    {
+        return $this->residenciales;
     }
 }

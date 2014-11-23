@@ -1,0 +1,63 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block title %}Recuperar contraseña{% endblock %}
+
+{% if error is not defined %}
+    {% set error = false %}
+{% endif %} 
+
+{% block body %}
+    <!-- Form area -->
+    <div class="admin-form">
+        <div class="container">
+            <div class="encabezado-login">
+                <a href="{{path('homepage')}}">
+                    <img src="{{ asset('images/logo.png') }}" style="max-height: 80px;"/>
+                </a>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Widget starts -->
+                    <div class="widget">
+                        <!-- Widget head -->
+                        <div class="widget-head">
+                            <i class="icon-lock"></i> Recuperar contraseña
+                        </div>
+                        <div class="widget-content">
+                            <div class="padd contenido-formulario">
+                                <!-- Login form -->
+                                <form class="form-horizontal" action='{{ path('recuperar') }}'  method="post">
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-3" for="email">Email</label>
+                                        <div class="col-lg-9">
+                                            <input type="email" id="email" name="email" value="" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9 col-lg-offset-3">
+                                        <button type="submit" class="btn btn-danger">Recuperar contraseña</button>
+                                    </div>
+                                    <br />
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="widget-foot">
+                            <!--Not Registred? <a href="#">Register here</a>-->
+                            {% if error %}
+                                <div>{{ error.message }}</div>
+                            {% else %}
+                                <br/>
+                            {% endif %}
+                        </div>
+                    </div>  
+                </div>
+            </div>
+            <div class="pie-login">
+                <img src="{{asset('images/interactivevalley.png')}}"/>
+            </div>
+        </div> 
+    </div>
+
+{% endblock %}

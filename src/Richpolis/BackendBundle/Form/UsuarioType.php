@@ -21,11 +21,10 @@ class UsuarioType extends AbstractType
         $edificioTransformer = new EdificioToNumberTransformer($em);
         
         $builder
-            ->add('username','text',array('attr'=>array('class'=>'form-control')))
+            ->add('email','email',array('attr'=>array('class'=>'form-control')))
             ->add('password','password',array('attr'=>array('class'=>'form-control')))
             ->add('salt','hidden')
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
-            ->add('email','email',array('attr'=>array('class'=>'form-control')))
             ->add('telefono','text',array('attr'=>array('class'=>'form-control')))
             ->add('imagen','hidden')
             ->add('numero','text',array('label'=>'Departamento','attr'=>array('class'=>'form-control')))
@@ -35,15 +34,7 @@ class UsuarioType extends AbstractType
                 'placeholder'=>'Es activo',
                 'data-bind'=>'value: isActive'
                 )))
-            ->add('grupo','choice',array(
-                'label'=>'Grupo',
-                'empty_value'=>false,
-                'choices'=>Usuario::getArrayTipoGrupo(),
-                'preferred_choices'=>Usuario::getPreferedTipoGrupo(),
-                'attr'=>array(
-                    'class'=>'form-control',
-                    'placeholder'=>'Grupo',
-            )))    
+            ->add('grupo','hidden')    
         ;
     }
     

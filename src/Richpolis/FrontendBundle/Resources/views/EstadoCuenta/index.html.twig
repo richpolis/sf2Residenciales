@@ -45,6 +45,15 @@
 
       <div class="matter">
         <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="widget">
+                        <a class="btn btn-default" href="{{path('estadosdecuentas')}}?pagadas=0">No pagadas</a>
+                        &nbsp;
+                        <a class="btn btn-default" href="{{path('estadosdecuentas')}}?pagadas=1">Pagadas</a>
+                    </div>
+                </div>
+            </div>  
           <!-- Table -->
             <div class="row">
               <div class="col-md-12">
@@ -68,11 +77,11 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Residencial</th>
                                <th>Usuario</th>
                                <th>Cargo</th>
                                <th>Monto</th>
                                <th>Fecha</th>
+                               <th>Pagado</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -80,11 +89,11 @@
                        {% for entity in pagination %}
                            <tr>
                                <td><a href="{{ path('estadodecuentas_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.usuario.edificio.residencial }}</td>
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.cargo }}</td>
                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                               <td>{{ entity.isPaid|isActive|raw }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
@@ -179,7 +188,7 @@ $(document).ready(function() {
            },
            error: function(data){
                $(".loader").fadeOut();
-               console.log(JSON.parse(data));
+               console.log(data);
            }
         });
     });

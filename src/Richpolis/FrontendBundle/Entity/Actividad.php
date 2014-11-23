@@ -39,28 +39,6 @@ class Actividad
     private $descripcion;
 
     /**
-     * @var \Residencial
-     * @todo Administrador de la residencial
-     *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
-     * })
-     */
-    private $residencial;
-    
-    /**
-     * @var \Edificio
-     * @todo Edificio del aviso
-     *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
-     * })
-     */
-    private $edificio;
-    
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="fecha_actividad", type="date")
@@ -87,6 +65,27 @@ class Actividad
      * @ORM\Column(name="tipo_acceso", type="integer")
      */
     private $tipoAcceso;
+    
+    /**
+     * @var \Residencial
+     * @todo Administrador de la residencial
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var integer
+     * @todo Edificios dentro de la residencial asociados. 
+     *
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="actividades")
+     * @ORM\JoinTable(name="actividades_edificios")
+     * @ORM\OrderBy({"nombre" = "ASC"})
+     */
+    private $edificios;
     
     /**
      * @var \DateTime
@@ -129,6 +128,44 @@ class Actividad
     static function getPreferedTipoAcceso(){
         return array(self::TIPO_ACCESO_RESIDENCIAL);
     }
+    
+    public function diaSemana($dia){
+        switch($dia){
+            case 0: return "Dom";
+            case 1: return "Lun";
+            case 2: return "Mar";
+            case 3: return "Mie";
+            case 4: return "Jue";
+            case 5: return "Vie";
+            case 6: return "Sab";
+        }
+    }
+    
+    public function nombreMes($mes){
+        switch($mes){
+            case 1: return "Ene";
+            case 2: return "Feb";
+            case 3: return "Mar";
+            case 4: return "Abr";
+            case 5: return "May";
+            case 6: return "Jun";
+            case 7: return "Jul";
+            case 8: return "Ago";
+            case 9: return "Sep";
+            case 10: return "Oct";
+            case 11: return "Nov";
+            case 12: return "Dic";
+        }
+    }
+
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -144,7 +181,7 @@ class Actividad
      * Set nombre
      *
      * @param string $nombre
-     * @return Actividades
+     * @return Actividad
      */
     public function setNombre($nombre)
     {
@@ -167,7 +204,7 @@ class Actividad
      * Set descripcion
      *
      * @param string $descripcion
-     * @return Actividades
+     * @return Actividad
      */
     public function setDescripcion($descripcion)
     {
@@ -184,52 +221,6 @@ class Actividad
     public function getDescripcion()
     {
         return $this->descripcion;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Actividades
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set residencial
-     *
-     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
-     * @return Actividades
-     */
-    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
-    {
-        $this->residencial = $residencial;
-
-        return $this;
-    }
-
-    /**
-     * Get residencial
-     *
-     * @return \Richpolis\BackendBundle\Entity\Residencial 
-     */
-    public function getResidencial()
-    {
-        return $this->residencial;
     }
 
     /**
@@ -300,11 +291,6 @@ class Actividad
     {
         return $this->hasta;
     }
-    
-    
-    public function isFechaDesdeHasta(){
-        
-    }
 
     /**
      * Set tipoAcceso
@@ -330,54 +316,81 @@ class Actividad
     }
 
     /**
-     * Set edificio
+     * Set createdAt
      *
-     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
+     * @param \DateTime $createdAt
      * @return Actividad
      */
-    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
+    public function setCreatedAt($createdAt)
     {
-        $this->edificio = $edificio;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     /**
-     * Get edificio
+     * Get createdAt
      *
-     * @return \Richpolis\BackendBundle\Entity\Edificio 
+     * @return \DateTime 
      */
-    public function getEdificio()
+    public function getCreatedAt()
     {
-        return $this->edificio;
+        return $this->createdAt;
     }
-    
-    public function diaSemana($dia){
-        switch($dia){
-            case 0: return "Dom";
-            case 1: return "Lun";
-            case 2: return "Mar";
-            case 3: return "Mie";
-            case 4: return "Jue";
-            case 5: return "Vie";
-            case 6: return "Sab";
-        }
+
+    /**
+     * Set residencial
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
+     * @return Actividad
+     */
+    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    {
+        $this->residencial = $residencial;
+
+        return $this;
     }
-    
-    public function nombreMes($mes){
-        switch($mes){
-            case 1: return "Ene";
-            case 2: return "Feb";
-            case 3: return "Mar";
-            case 4: return "Abr";
-            case 5: return "May";
-            case 6: return "Jun";
-            case 7: return "Jul";
-            case 8: return "Ago";
-            case 9: return "Sep";
-            case 10: return "Oct";
-            case 11: return "Nov";
-            case 12: return "Dic";
-        }
+
+    /**
+     * Get residencial
+     *
+     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     */
+    public function getResidencial()
+    {
+        return $this->residencial;
+    }
+
+    /**
+     * Add edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     * @return Actividad
+     */
+    public function addEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios[] = $edificios;
+
+        return $this;
+    }
+
+    /**
+     * Remove edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     */
+    public function removeEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios->removeElement($edificios);
+    }
+
+    /**
+     * Get edificios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEdificios()
+    {
+        return $this->edificios;
     }
 }

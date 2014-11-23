@@ -30,8 +30,12 @@ class ResidencialController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('BackendBundle:Residencial')->findAll();
+        
+        if($this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')){
+            $entities = $em->getRepository('BackendBundle:Residencial')->findAll();
+        }else{
+            $entities = $this->getUser()->getResidenciales();
+        }
 
         return array(
             'entities' => $entities,

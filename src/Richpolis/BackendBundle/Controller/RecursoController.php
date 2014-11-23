@@ -43,7 +43,7 @@ class RecursoController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $recursos = $em->getRepository('BackendBundle:Recurso')->findBy(array(
-           'edificio' => $edificioActual, 
+           'edificios' => array($edificioActual), 
         ));
 
         return array(

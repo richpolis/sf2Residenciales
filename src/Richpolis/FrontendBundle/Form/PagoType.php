@@ -15,14 +15,14 @@ class PagoType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-		$em = $options['em'];
+	$em = $options['em'];
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
         $builder
             ->add('isAproved','hidden')
             ->add('archivo','hidden')
             ->add('file','file',array('label'=>'Comprobante','attr'=>array('class'=>'form-control')))
             ->add('monto','money',array('label'=>'Mnto','currency'=>'MXN','attr'=>array('class'=>'form-control')))
-			->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
+            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
                 
         ;
     }

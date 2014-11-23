@@ -32,15 +32,12 @@ class Recurso
     private $nombre;
 
     /**
-     * @var \Edificio
-     * @todo Edificio del recurso
+     * @var \Array de Edificio
+     * @todo Edificios del recurso
      *
-     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="recursos")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
-     * })
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", mappedBy="recursos")
      */
-    private $edificio;
+    private $edificios;
 
     /**
      * @var integer
@@ -55,6 +52,9 @@ class Recurso
      * @ORM\Column(name="precio", type="decimal", nullable=true)
      */
     private $precio;
+    
+    
+    
 
     public function __toString() {
         return $this->nombre;
@@ -81,6 +81,7 @@ class Recurso
     }
     
     public function __construct() {
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->precio = 0;
     }
     
@@ -185,5 +186,38 @@ class Recurso
     public function getEdificio()
     {
         return $this->edificio;
+    }
+
+    /**
+     * Add edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     * @return Recurso
+     */
+    public function addEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios[] = $edificios;
+
+        return $this;
+    }
+
+    /**
+     * Remove edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     */
+    public function removeEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios->removeElement($edificios);
+    }
+
+    /**
+     * Get edificios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEdificios()
+    {
+        return $this->edificios;
     }
 }

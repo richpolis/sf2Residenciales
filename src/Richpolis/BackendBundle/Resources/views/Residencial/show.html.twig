@@ -26,7 +26,7 @@
                         <span class="divider">/</span> 
                         <a href="{{path('residenciales')}}" class="bread-current">Residenciales</a>
                         {% if is_granted('ROLE_SUPER_ADMIN') %}
-                            <a href="{{path('residenciales_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                            <a href="{{path('residenciales_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear residencial</a>
                         {% endif %}
                         </div>
 
@@ -60,8 +60,8 @@
                                                                     <td>{{ entity.nombre }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Porcentaje:</th>
-                                                                    <td>{{ entity.porcentaje }}</td>
+                                                                    <th>Morosidad:</th>
+                                                                    <td>{{ entity.stringMorosidad }}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>

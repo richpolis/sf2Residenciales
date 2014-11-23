@@ -92,6 +92,10 @@
                                                     <th>Fecha</th>
                                                     <td>{{ entity.createdAt | date('d-m-Y') }}</td>
                                                 </tr>
+                                                <tr>
+                                                    <th>Pagado</th>
+                                                    <td>{{ entity.isPaid | isActive | raw }}</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

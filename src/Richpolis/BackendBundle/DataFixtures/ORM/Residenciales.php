@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Richpolis\BackendBundle\Entity\Residencial;
 
+
 /**
  * Fixtures de la entidad Residencial.
  * Crea dos residenciales de prueba
@@ -37,7 +38,8 @@ class Residenciales extends AbstractFixture implements OrderedFixtureInterface, 
         $residencial1 = new Residencial();
         
         $residencial1->setNombre("Residencial 1");
-        $residencial1->setPorcentaje(10);
+        $residencial1->setMorosidad(10);
+        $residencial1->setTipoMorosidad(Residencial::TIPO_MOROSIDAD_PORCENTAJE);
         $manager->persist($residencial1);
         
             
@@ -45,7 +47,8 @@ class Residenciales extends AbstractFixture implements OrderedFixtureInterface, 
         $residencial2 = new Residencial();
         
         $residencial2->setNombre("Residencial 2");
-        $residencial2->setPorcentaje(10);
+        $residencial2->setMorosidad(150);
+        $residencial2->setTipoMorosidad(Residencial::TIPO_MOROSIDAD_PRECIO);
         $manager->persist($residencial2);
         
         $manager->flush();

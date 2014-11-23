@@ -56,10 +56,21 @@ class ActividadController extends BaseController
      */
     public function createAction(Request $request)
     {
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $entity = new Actividad();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $form->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
@@ -110,9 +121,19 @@ class ActividadController extends BaseController
         $edificio = $this->getEdificioActual();
         $entity->setTipoAcceso($filtros['nivel_aviso']);
         $entity->setResidencial($residencial);
-        $entity->setEdificio($edificio);
         $form   = $this->createCreateForm($entity);
-
+        if($filtros['nivel_aviso']==Actividad::TIPO_ACCESO_EDIFICIO){
+            $form->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }           
+        
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -164,6 +185,18 @@ class ActividadController extends BaseController
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
+        
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $editForm->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
 
         return array(
             'entity'      => $entity,
@@ -213,7 +246,19 @@ class ActividadController extends BaseController
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
-
+        
+        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
+            $editForm->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
+        
         if ($editForm->isValid()) {
             $em->flush();
 
@@ -298,7 +343,7 @@ class ActividadController extends BaseController
         
         $arreglo = array(
             array('id'=>  Actividad::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Para Residencial'),
-            array('id'=>  Actividad::TIPO_ACCESO_EDIFICIO,'nombre'=>'Para torre'),
+            array('id'=>  Actividad::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por torre'),
         );
         
         return array(

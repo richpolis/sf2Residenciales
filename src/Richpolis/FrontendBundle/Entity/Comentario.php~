@@ -24,15 +24,15 @@ class Comentario
     private $id;
 
     /**
-     * @var \Residencial
-     * @todo Administrador de la residencial
+     * @var \Foro
+     * @todo Foro del comentario
      *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\ManyToOne(targetEntity="Foro", inversedBy="comentarios")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="foro_id", referencedColumnName="id")
      * })
      */
-    private $residencial;
+    private $foro;
     
     /**
      * @var \Usuario
@@ -44,7 +44,7 @@ class Comentario
      * })
      */
     private $usuario;
-
+    
     /**
      * @var string
      *
@@ -72,18 +72,19 @@ class Comentario
     private $children;
 
     /**
+     * @var \Boolean
+     *
+     * @ORM\Column(name="is_administrador", type="boolean")
+     */
+    private $isAdmin;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
     
-    /**
-     * @var \Boolean
-     *
-     * @ORM\Column(name="is_administrador", type="boolean")
-     */
-    private $isAdmin;
 
     /*
      * Timestable
@@ -99,6 +100,7 @@ class Comentario
           $this->createdAt = new \DateTime();
         }
     }
+    
     /**
      * Constructor
      */
@@ -106,6 +108,7 @@ class Comentario
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
 
     /**
      * Get id
@@ -164,29 +167,6 @@ class Comentario
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Comentario
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
      * Set isAdmin
      *
      * @param boolean $isAdmin
@@ -210,26 +190,49 @@ class Comentario
     }
 
     /**
-     * Set residencial
+     * Set createdAt
      *
-     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
+     * @param \DateTime $createdAt
      * @return Comentario
      */
-    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    public function setCreatedAt($createdAt)
     {
-        $this->residencial = $residencial;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     /**
-     * Get residencial
+     * Get createdAt
      *
-     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     * @return \DateTime 
      */
-    public function getResidencial()
+    public function getCreatedAt()
     {
-        return $this->residencial;
+        return $this->createdAt;
+    }
+
+    /**
+     * Set foro
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Foro $foro
+     * @return Comentario
+     */
+    public function setForo(\Richpolis\FrontendBundle\Entity\Foro $foro = null)
+    {
+        $this->foro = $foro;
+
+        return $this;
+    }
+
+    /**
+     * Get foro
+     *
+     * @return \Richpolis\FrontendBundle\Entity\Foro 
+     */
+    public function getForo()
+    {
+        return $this->foro;
     }
 
     /**

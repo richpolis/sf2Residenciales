@@ -7,7 +7,9 @@
     <div class="admin-form">
         <div class="container">
             <div class="encabezado-login">
-                <img src="{{ asset('images/heraldologo.png') }}"/>
+                <a href="{{path('homepage')}}">
+                    <img src="{{ asset('images/logo.png') }}" style="max-height: 80px;"/>
+                </a>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -56,7 +58,8 @@
                         </div>
 
                         <div class="widget-foot">
-                            <!--Not Registred? <a href="#">Register here</a>-->
+                            <!--No esta registrado? <a href="#">Registrarse aquí</a><br/>-->
+                            Recuperar constraseña <a href="{{path('recuperar')}}">Recuperar aquí</a><br/>
                             {% if error %}
                                 <div>{{ error.message }}</div>
                             {% else %}

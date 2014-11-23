@@ -40,10 +40,10 @@ class Edificios extends AbstractFixture implements OrderedFixtureInterface, Cont
         $residencial2 = $residencias[1];                        
 
        // areas comunes  residencial 1                      
-        $edificio = new Edificio();
-        $edificio->setNombre("Areas comunes");
-        $edificio->setResidencial($residencial1);
-        $manager->persist($edificio);
+        //$edificio = new Edificio();
+        //$edificio->setNombre("Areas comunes");
+        //$edificio->setResidencial($residencial1);
+        //$manager->persist($edificio);
 
         // Creando 10 edificios del residencial 1
         for($cont=0;$cont<10;$cont++){                        
@@ -54,10 +54,10 @@ class Edificios extends AbstractFixture implements OrderedFixtureInterface, Cont
         }
 
         // areas comunes  residencial 2                      
-        $edificio = new Edificio();
-        $edificio->setNombre("Areas comunes");
-        $edificio->setResidencial($residencial2);
-        $manager->persist($edificio);
+        //$edificio = new Edificio();
+        //$edificio->setNombre("Areas comunes");
+        //$edificio->setResidencial($residencial2);
+        //$manager->persist($edificio);
 
         // Creando 10 edificios del residencial 2
         for($cont=0;$cont<10;$cont++){                        

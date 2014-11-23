@@ -44,10 +44,11 @@ class Edificio
     private $residencial;    
 
     /**
-     * @var Array 
-     * @todo Arreglo de recursos dentro de un edificio
+     * @var integer
+     * @todo Recursos del edificio. 
      *
-     * @ORM\OneToMany(targetEntity="Recurso",mappedBy="edificio")
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Recurso", inversedBy="edificios")
+     * @ORM\JoinTable(name="edificio_recursos")
      * @ORM\OrderBy({"nombre" = "ASC"})
      */
     private $recursos;
@@ -79,6 +80,7 @@ class Edificio
     {
         $this->recursos = new \Doctrine\Common\Collections\ArrayCollection();
         $this->usuarios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->cuota = 0;
     }
 
     /**

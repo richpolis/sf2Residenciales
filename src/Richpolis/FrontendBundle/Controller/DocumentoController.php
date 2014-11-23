@@ -60,6 +60,17 @@ class DocumentoController extends BaseController
         $entity = new Documento();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
+        if($entity==Actividad::TIPO_ACCESO_EDIFICIO){
+            $editForm->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ));    
+        }
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();

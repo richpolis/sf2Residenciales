@@ -51,20 +51,6 @@ class EstadoCuenta
     private $tipoCargo;
     
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_paid", type="boolean")
-     */
-    private $isPaid;
-    
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="paid_at", type="date",nullable=true)
-     */
-    private $paidAt;
-    
-    /**
      * @var \Usuario
      * @todo Usuario del estado de cuenta
      *
@@ -85,8 +71,21 @@ class EstadoCuenta
      * })
      */
     private $pago;
-
-
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_paid", type="boolean")
+     */
+    private $isPaid;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_acumulable", type="boolean")
+     */
+    private $isAcumulable;
+    
     /**
      * @var \DateTime
      *
@@ -109,20 +108,18 @@ class EstadoCuenta
         }
     }
     
-    public function __construct() {
-        $this->isPaid = false;
-    }
-    
-    const TIPO_CARGO_NORMAL=1;
-    const TIPO_CARGO_ADEUDO=2;
-    const TIPO_CARGO_RESERVACION=3;
+    const TIPO_CARGO_NORMAL     =   1;
+    const TIPO_CARGO_ADEUDO     =   2;
+    const TIPO_CARGO_RESERVACION=   3;
+    const TIPO_CARGO_MULTA      =   4;
         
     static public $sTipoCargo=array(
-        self::TIPO_CARGO_NORMAL=>'Normal',
-        self::TIPO_CARGO_ADEUDO=>'Por adeudo',
-        self::TIPO_CARGO_RESERVACION=>'Reservación',
+        self::TIPO_CARGO_NORMAL     =>  'Normal',
+        self::TIPO_CARGO_ADEUDO     =>  'Por adeudo',
+        self::TIPO_CARGO_RESERVACION=>  'Reservación',
+        self::TIPO_CARGO_MULTA      =>  'Multa',
     );
-    
+
     public function getStringTipoCargo(){
         return self::$sTipoCargo[$this->getTipoCargo()];
     }
@@ -133,6 +130,14 @@ class EstadoCuenta
     
     static function getPreferedTipoCargo(){
         return array(self::TIPO_CARGO_NORMAL);
+    }
+    
+    /*
+     * Constructor
+     */
+    public function __construct() {
+        $this->isPaid       = false;
+        $this->isAcumulable = true;
     }
 
     /**
@@ -169,26 +174,95 @@ class EstadoCuenta
     }
 
     /**
-     * Set tipo
+     * Set monto
      *
-     * @param integer $tipoCargo
+     * @param string $monto
      * @return EstadoCuenta
      */
-    public function setTipoCargo($tipo)
+    public function setMonto($monto)
     {
-        $this->tipoCargo = $tipo;
+        $this->monto = $monto;
 
         return $this;
     }
 
     /**
-     * Get tipo
+     * Get monto
+     *
+     * @return string 
+     */
+    public function getMonto()
+    {
+        return $this->monto;
+    }
+
+    /**
+     * Set tipoCargo
+     *
+     * @param integer $tipoCargo
+     * @return EstadoCuenta
+     */
+    public function setTipoCargo($tipoCargo)
+    {
+        $this->tipoCargo = $tipoCargo;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoCargo
      *
      * @return integer 
      */
     public function getTipoCargo()
     {
         return $this->tipoCargo;
+    }
+
+    /**
+     * Set isPaid
+     *
+     * @param boolean $isPaid
+     * @return EstadoCuenta
+     */
+    public function setIsPaid($isPaid)
+    {
+        $this->isPaid = $isPaid;
+
+        return $this;
+    }
+
+    /**
+     * Get isPaid
+     *
+     * @return boolean 
+     */
+    public function getIsPaid()
+    {
+        return $this->isPaid;
+    }
+
+    /**
+     * Set isAcumulable
+     *
+     * @param boolean $isAcumulable
+     * @return EstadoCuenta
+     */
+    public function setIsAcumulable($isAcumulable)
+    {
+        $this->isAcumulable = $isAcumulable;
+
+        return $this;
+    }
+
+    /**
+     * Get isAcumulable
+     *
+     * @return boolean 
+     */
+    public function getIsAcumulable()
+    {
+        return $this->isAcumulable;
     }
 
     /**
@@ -235,75 +309,6 @@ class EstadoCuenta
     public function getUsuario()
     {
         return $this->usuario;
-    }
-
-    /**
-     * Set monto
-     *
-     * @param string $monto
-     * @return EstadoCuenta
-     */
-    public function setMonto($monto)
-    {
-        $this->monto = $monto;
-
-        return $this;
-    }
-
-    /**
-     * Get monto
-     *
-     * @return string 
-     */
-    public function getMonto()
-    {
-        return $this->monto;
-    }
-
-    /**
-     * Set isPaid
-     *
-     * @param boolean $isPaid
-     * @return EstadoCuenta
-     */
-    public function setIsPaid($isPaid)
-    {
-        $this->isPaid = $isPaid;
-
-        return $this;
-    }
-
-    /**
-     * Get isPaid
-     *
-     * @return boolean 
-     */
-    public function getIsPaid()
-    {
-        return $this->isPaid;
-    }
-
-    /**
-     * Set paidAt
-     *
-     * @param \DateTime $paidAt
-     * @return EstadoCuenta
-     */
-    public function setPaidAt($paidAt)
-    {
-        $this->paidAt = $paidAt;
-
-        return $this;
-    }
-
-    /**
-     * Get paidAt
-     *
-     * @return \DateTime 
-     */
-    public function getPaidAt()
-    {
-        return $this->paidAt;
     }
 
     /**

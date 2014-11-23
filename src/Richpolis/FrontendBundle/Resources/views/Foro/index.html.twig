@@ -1,0 +1,158 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <!-- Datatables -->
+  <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/style.css')}}">
+  <!-- Widgets stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+  <!-- Gritter Notifications stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+{% endblock %}
+
+{% block mainbar %}
+    <!-- Main bar -->
+    <div class="mainbar">
+      <!-- Page heading -->
+      <div class="page-head">
+        <h2 class="pull-left">Foros</h2>
+        <div class="clearfix"></div>
+        <!-- Breadcrumb -->
+        <div class="bread-crumb">
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{residencial}}</a>    
+                {% endif %}
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('foros')}}" class="bread-current">Foros</a>
+                <a href="{{path('foros_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <!-- Page heading ends -->
+
+      <!-- Matter -->
+
+      <div class="matter">
+        <div class="container">
+          <!-- Table -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="widget">
+                <div class="widget-head">
+                  <div class="pull-left">Registro de foros</div>
+                  <div class="pull-right">
+                      <form action="{{path('foros')}}" method="GET" role="search">  
+                          <div class="form-group pull-left">
+                              <input placeholder="departamento, nombre de inquilino o email" class="form-control" name="buscar"
+                                     type="text">
+                          </div>
+                          <input type="submit" class="btn btn-default" value="Buscar" />
+                      </form>
+                  </div>
+                  <div class="clearfix"></div>
+                </div>
+                  <div class="widget-content">
+                    <table id="Foros" class="table table-striped table-bordered table-hover">
+                       <thead>
+                           <tr>
+                               <th>Id</th>
+                               <th>Residencial</th>
+                               <th>Torre</th>
+                               <th>Usuario</th>
+                               <th>Titulo</th>
+                               <th>Fecha</th>
+                               <th>Actions</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                       {% for entity in pagination %}
+                           <tr>
+                               <td><a href="{{ path('foros_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                               <td>{{ entity.usuario.edificio.residencial }}</td>
+                               <td>{{ entity.usuario.edificio }}</td>
+                               <td>{{ entity.usuario }}</td>
+                               <td>{{ entity.titulo }}</td>
+                               <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+                               <td>
+                                    <button onclick="javascript:editarRegistro('{{ path('foros_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+                                    <button onclick="javascript:editarRegistro('{{ path('foros_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                </td>
+                           </tr>
+                           
+                       {% endfor %}
+                       </tbody>
+                   <tfoot>
+                           <tr>
+                               <td colspan="8">
+                                   <a href="{{path('foros_exportar')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Exportar</a>
+                                   
+                               </td>
+                           </tr>
+                       </tfoot>
+                   </table>
+                    <div class="widget-foot">
+                        <div class="container text-center">
+                            {{ knp_pagination_render(pagination) }}
+                        </div>
+                      <div class="clearfix"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    <!-- Matter ends -->
+    </div>
+   <!-- Mainbar ends -->        
+   <div class="clearfix"></div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+<script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+<!-- jQuery Notification - Noty -->
+<script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+<!-- jQuery Notification ends -->
+
+<script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
+<script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+
+<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+<script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+
+<script>
+var editarRegistro = function(url){
+        location.href=url;
+};
+
+var eliminarRegistro = function(){
+  {% if is_granted('ROLE_ADMIN') %}
+    bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
+      if(result){
+         $("#formEliminar").submit();
+      }
+    });
+  {% else %}
+    noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
+  {% endif %}      
+};
+
+</script>
+
+    
+{% endblock %}
+
