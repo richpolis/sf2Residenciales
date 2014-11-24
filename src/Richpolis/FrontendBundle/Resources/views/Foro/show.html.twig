@@ -25,19 +25,19 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.usuario.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.usuario.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
                 {% endif %}
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.usuario.edificio}}</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('foros')}}" class="bread-current">Foros</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('foros_show',{'id':entity.id})}}" class="bread-current">Pago id: {{entity.id}} </a>
+                <a href="{{path('foros_show',{'id':entity.id})}}" class="bread-current">Foro: {{entity.titulo}} </a>
                 {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{path('foros_select_usuario')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
                 {% endif %}
@@ -57,7 +57,7 @@
                         <div class="col-md-12">
                             <div class="widget">
                                 <div class="widget-head">
-                                    <div class="pull-left">Pago id: {{ entity.id }}</div>
+                                    <div class="pull-left">Foro:  {{ entity.titulo }}</div>
                                     <div class="clearfix"></div>
                                 </div>
 
@@ -70,18 +70,18 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Residencial</th>
-                                                    <td>{{ entity.usuario.edificio.residencial }}</td>
+                                                    <td>{{ entity.edificio.residencial }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Edificio</th>
-                                                    <td>{{ entity.usuario.edificio }}</td>
+                                                    <td>{{ entity.edificio }}</td>
                                                 </tr>
                                                 <tr>                                                              <tr>
-                                                    <th>Usuario</th>
+                                                    <th>Creado</th>
                                                     <td>{{ entity.usuario}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Fecha</th>
+                                                    <th>Fecha creacion</th>
                                                     <td>{{ entity.createdAt|date('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
@@ -90,7 +90,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Post</th>
-                                                    <td>{{ entity.contenido | raw }}</td>
+                                                    <td>{{ entity.comentario | raw }}</td>
                                                 </tr>
                                                 
                                             </tbody>

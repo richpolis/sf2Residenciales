@@ -29,50 +29,50 @@
   {% set reservaciones = "" %}
   {% set pagos = "" %}
   {% set foros = "" %}
-  {% set pagina = "homepage" %}
+  {% set pagina = 'homepage' %}
   
   {% if route == "homepage" %}
     {% set homepage = "class=open" %}
-    {% set pagina = path('homepage') %}
+    {% set pagina = route %}
   {% elseif route == "residenciales" %}
     {% set residenciales = "class=open" %}
-    {% set pagina = path('residenciales') %}
+    {% set pagina = route %}
   {% elseif route == "usuarios" %}
     {% set usuarios = "class=open" %}
-    {% set pagina = path('usuarios') %}
+    {% set pagina = route %}
   {% elseif route == "administradores" %}
     {% set administradores = "class=open" %}
-    {% set pagina = path('usuarios') %}
+    {% set pagina = route %}
   {% elseif route == "edificios" %}
     {% set edificios = "class=open" %}
-    {% set pagina = path('edificios') %}
+    {% set pagina = route %}
   {% elseif route == "recursos" %}
     {% set recursos = "class=open" %}
-    {% set pagina = path('recursos') %}
+    {% set pagina = route %}
   {% elseif route == "configuraciones" %}
     {% set configuraciones = "class=open" %}
-    {% set pagina = path('configuraciones') %}
+    {% set pagina = route %}
   {% elseif route == "estadodecuentas" %}
     {% set estadodecuentas = "class=open" %}
-    {% set pagina = path('estadodecuentas') %}
+    {% set pagina = route %}
   {% elseif route == "actividades" %}
     {% set actividades = "class=open" %}
-    {% set pagina = path('actividades') %}
+    {% set pagina = route %}
   {% elseif route == "avisos" %}
     {% set avisos = "class=open" %}
-    {% set pagina = path('avisos') %}
+    {% set pagina = route %}
   {% elseif route == "documentos" %}
     {% set documentos = "class=open" %}
-    {% set pagina = path('documentos') %}
+    {% set pagina = route %}
   {% elseif route == "reservaciones" %}
     {% set reservaciones = "class=open" %}
-    {% set pagina = path('reservaciones') %}
+    {% set pagina = route %}
   {% elseif route == "pagos" %}
     {% set pagos = "class=open" %}
-    {% set pagina = path('pagos') %}
+    {% set pagina = route %}
   {% elseif route == "foros" %}
     {% set foros = "class=open" %}
-    {% set pagina = path('foros') %}  
+    {% set pagina = route %}
   {% endif %}
 
 

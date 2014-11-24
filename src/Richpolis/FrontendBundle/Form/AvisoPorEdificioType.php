@@ -7,10 +7,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
-use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
+use Richpolis\BackendBundle\Entity\Residencial;
 
-class AvisoType extends AbstractType
+class AvisoPorEdificioType extends AbstractType
 {
+    private $residencial;
+    public function __construct(Residencial $residencial) {
+        $this->residencial = $residencial;
+    }
+    
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -20,7 +25,7 @@ class AvisoType extends AbstractType
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
-        $edificiosTransformer = new EdificiosToArrayTransformer($em);
+        
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control')))
             ->add('aviso',null,array(
@@ -34,8 +39,16 @@ class AvisoType extends AbstractType
             ->add('tipoAcceso','hidden')
             ->add('tipoAviso','hidden')
             ->add('link','hidden')
+            ->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $this->residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => false,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ))    
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
-            ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))                    
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))    
         ;
     }

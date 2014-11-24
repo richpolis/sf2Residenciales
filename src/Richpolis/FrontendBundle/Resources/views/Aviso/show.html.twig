@@ -71,10 +71,18 @@
                                                 </tr>
                                                 {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
                                                 <tr><th>Torre</th><td>General</td></tr>
-                                                {% else %}    
+                                                {% elseif entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_EDIFICIO') %}    
                                                 <tr>
                                                     <th>Torre</th>
-                                                    <td>{{ entity.edificio }}</td>
+                                                    <td>
+                                                        <ul>
+                                                            {% for edificio in entity.edificios %}
+                                                                <li>
+                                                                    {{ edificio }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>  
+                                                    </td>
                                                 </tr>
                                                 {% endif %}
                                                 <tr>

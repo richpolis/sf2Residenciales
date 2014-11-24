@@ -110,8 +110,8 @@ class Foro
     const TIPO_DISCUSION_PRIVADA=2;
         
     static public $sTipoDiscusion=array(
-        self::TIPO_CARGO_NORMAL=>'Normal',
-        self::TIPO_CARGO_ADEUDO=>'Por adeudo',
+        self::TIPO_DISCUSION_PUBLICA=>'Publica',
+        self::TIPO_DISCUSION_PRIVADA=>'Privada',
     );
     
     public function getStringTipoDiscusion(){

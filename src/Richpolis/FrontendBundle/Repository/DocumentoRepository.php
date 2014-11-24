@@ -3,6 +3,9 @@
 namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Richpolis\BackendBundle\Entity\Edificio;
+use Richpolis\BackendBundle\Entity\Residencial;
+use Richpolis\FrontendBundle\Entity\Documento;
 
 /**
  * DocumentoRepository
@@ -12,4 +15,42 @@ use Doctrine\ORM\EntityRepository;
  */
 class DocumentoRepository extends EntityRepository
 {
+    public function queryFindDocumentosPorEdificio(Edificio $edificio) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT d,e,r "
+                . "FROM FrontendBundle:Documento d "
+                . "JOIN d.edificios e "
+                . "JOIN d.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                . "AND d.tipoAcceso<=:tipoAcceso "
+                . "ORDER BY d.createdAt DESC");
+        $consulta->setParameters(array(
+            'edificio' => $edificio->getId(),
+            'residencial' => $edificio->getResidencial()->getId(),
+            'tipoAcceso' => Documento::TIPO_ACCESO_EDIFICIO,
+        ));
+        return $consulta;
+    }
+
+    public function findDocumentosPorEdificio(Edificio $edificio) {
+        return $this->queryFindDocumentosPorEdificio($edificio)->getResult();
+    }
+    
+    public function queryFindDocumentosPorResidencial(Residencial $residencial) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT d,e,r "
+                . "FROM FrontendBundle:Documento d "
+                . "JOIN d.edificios e "
+                . "JOIN d.residencial r "
+                . "WHERE r.id =:residencial "
+                . "ORDER BY d.createdAt DESC");
+        $consulta->setParameters(array(
+            'residencial' => $residencial->getId()
+        ));
+        return $consulta;
+    }
+
+    public function findDocumentosPorResidencial(Residencial $residencial) {
+        return $this->queryFindDocumentosPorResidencial($residencial)->getResult();
+    }
 }

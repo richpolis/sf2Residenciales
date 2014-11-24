@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Documento;
 use Richpolis\FrontendBundle\Form\DocumentoType;
+use Richpolis\FrontendBundle\Form\DocumentoPorEdificioType;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -27,26 +28,41 @@ class DocumentoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
+    {
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            return $this->adminIndex($request);
+        }else{
+            return $this->usuariosIndex($request);
+        }
+    }
+    
+    public function adminIndex(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-
-        //$entities = $em->getRepository('FrontendBundle:Documento')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        
+        $edificio = $this->getEdificioActual();
         $documentos = $em->getRepository('FrontendBundle:Documento')
-                         ->findBy(array('residencial'=>$residencialActual));
-
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            $pagina = 'index';
-        }else{
-            $pagina = 'documentos';
-        }
-        return $this->render("FrontendBundle:Documento:$pagina.html.twig", array(
+                     ->findDocumentosPorEdificio($edificio);
+        return $this->render("FrontendBundle:Documento:index.html.twig", array(
             'entities' => $documentos,
+            'edificio' => $edificio,
             'residencial' => $residencialActual,
         ));
-        
+    }
+    
+    public function usuariosIndex(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $documentos = $em->getRepository('FrontendBundle:Documento')
+                     ->findDocumentosPorUsuario($this->getUser());
+        return $this->render("FrontendBundle:Documento:documentos.html.twig", array(
+            'entities' => $documentos,
+            'edificio' => $edificio,
+            'residencial' => $residencialActual,
+        ));
     }
     /**
      * Creates a new Documento entity.
@@ -58,20 +74,12 @@ class DocumentoController extends BaseController
     public function createAction(Request $request)
     {
         $entity = new Documento();
+        $filtros = $this->getFilters();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($residencial);
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-        if($entity==Actividad::TIPO_ACCESO_EDIFICIO){
-            $editForm->add('edificios','entity',array(
-                'class'=>'BackendBundle:Edificio',
-                'choices' => $residencial->getEdificios(),
-                'label'=>'Edificios',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true,
-                'attr'=>array('class'=>'form-control')
-                ));    
-        }
-
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
@@ -96,7 +104,12 @@ class DocumentoController extends BaseController
      */
     private function createCreateForm(Documento $entity)
     {
-        $form = $this->createForm(new DocumentoType(), $entity, array(
+        if($entity->getTipoAcceso() == Actividad::TIPO_ACCESO_EDIFICIO){
+            $formType = new DocumentoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new DocumentoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('documentos_create'),
             'method' => 'POST',
             'em' => $this->getDoctrine()->getManager(),
@@ -117,8 +130,12 @@ class DocumentoController extends BaseController
     public function newAction()
     {
         $entity = new Documento();
+        $filtros = $this->getFilters();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
         $entity->setResidencial($residencial);
+        $entity->addEdificio($edificio);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -190,7 +207,12 @@ class DocumentoController extends BaseController
     */
     private function createEditForm(Documento $entity)
     {
-        $form = $this->createForm(new DocumentoType(), $entity, array(
+        if($entity->getTipoAcceso() == Actividad::TIPO_ACCESO_EDIFICIO){
+            $formType = new DocumentoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new DocumentoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('documentos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
             'em' => $this->getDoctrine()->getManager(),
@@ -275,5 +297,40 @@ class DocumentoController extends BaseController
             //->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar tipo acceso del documento.
+     *
+     * @Route("/seleccionar/nivel", name="documentos_select_nivel")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectNivelAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('nivel_aviso')){
+            $filtros = $this->getFilters();
+            $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('avisos_new'));
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $arreglo = array(
+            array('id'=> Documento::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Residencial'),
+            array('id'=> Documento::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por edificio')
+        );
+        
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'documentos_select_nivel',
+            'campo' => 'nivel_aviso',
+            'titulo' => 'Seleccionar nivel del documento',
+            'return' => 'documentos',
+        );
+        
     }
 }

@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Aviso;
 use Richpolis\FrontendBundle\Form\AvisoType;
+use Richpolis\FrontendBundle\Form\AvisoPorEdificioType;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -27,26 +28,43 @@ class AvisoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
+    {
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            return $this->adminIndex($request);
+        }else{
+            return $this->usuariosIndex($request);
+        }
+    }
+    
+    public function adminIndex(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-
-        //$entities = $em->getRepository('FrontendBundle:Aviso')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        
+        $edificio = $this->getEdificioActual();
         $avisos = $em->getRepository('FrontendBundle:Aviso')
-                          ->findBy(array('residencial'=>$residencialActual));
-        
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            $pagina = 'index';
-        }else{
-            $pagina = 'avisos';
-        }
-        return $this->render("FrontendBundle:Aviso:$pagina.html.twig", array(
+                     ->findAvisosPorEdificio($edificio);
+        return $this->render("FrontendBundle:Aviso:index.html.twig", array(
             'entities' => $avisos,
+            'edificio' => $edificio,
             'residencial' => $residencialActual,
         ));
     }
+    
+    public function usuariosIndex(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $avisos = $em->getRepository('FrontendBundle:Aviso')
+                     ->findAvisosPorUsuario($this->getUser());
+        return $this->render("FrontendBundle:Aviso:avisos.html.twig", array(
+            'entities' => $avisos,
+            'edificio' => $edificio,
+            'residencial' => $residencialActual,
+        ));
+    }
+    
     /**
      * Creates a new Aviso entity.
      *
@@ -57,28 +75,17 @@ class AvisoController extends BaseController
     public function createAction(Request $request)
     {
         $entity = new Aviso();
+        $filtros = $this->getFilters();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($this->getResidencialActual($this->getResidencialDefault()));
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
-            $form->add('edificios','entity',array(
-                'class'=>'BackendBundle:Edificio',
-                'choices' => $residencial->getEdificios(),
-                'label'=>'Edificios',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true,
-                'attr'=>array('class'=>'form-control')
-                ));    
-        }
-
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
             return $this->redirect($this->generateUrl('avisos_show', array('id' => $entity->getId())));
         }
-
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -95,7 +102,12 @@ class AvisoController extends BaseController
      */
     private function createCreateForm(Aviso $entity)
     {
-        $form = $this->createForm(new AvisoType(), $entity, array(
+        if($entity->getTipoAcceso() == Aviso::TIPO_ACCESO_EDIFICIO){
+            $formType = new AvisoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new AvisoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('avisos_create'),
             'method' => 'POST',
             'em' => $this->getDoctrine()->getManager(),
@@ -119,27 +131,16 @@ class AvisoController extends BaseController
         $entity = new Aviso();
         $filtros = $this->getFilters();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $edificio = $this->getEdificioActual();
         $usuario = null;
         if($filtros['nivel_aviso']==Aviso::TIPO_ACCESO_PRIVADO){
             $usuario = $em->find('BackendBundle:Usuario', $filtros['usuario']);
         }
         $entity->setTipoAcceso($filtros['nivel_aviso']);
         $entity->setResidencial($residencial);
-        $entity->addEdificio($edificio);
+        $entity->addEdificio($this->getEdificioActual());
         $entity->setUsuario($usuario);
-        $form   = $this->createCreateForm($entity);
-        if($filtros['nivel_aviso']==Actividad::TIPO_ACCESO_EDIFICIO){
-            $form->add('edificios','entity',array(
-                'class'=>'BackendBundle:Edificio',
-                'choices' => $residencial->getEdificios(),
-                'label'=>'Edificios',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true,
-                'attr'=>array('class'=>'form-control')
-                ));    
-        }
+        $form = $this->createCreateForm($entity);
+        
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -192,18 +193,6 @@ class AvisoController extends BaseController
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         
-        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
-            $editForm->add('edificios','entity',array(
-                'class'=>'BackendBundle:Edificio',
-                'choices' => $residencial->getEdificios(),
-                'label'=>'Edificios',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true,
-                'attr'=>array('class'=>'form-control')
-                ));    
-        }
-
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -221,7 +210,12 @@ class AvisoController extends BaseController
     */
     private function createEditForm(Aviso $entity)
     {
-        $form = $this->createForm(new AvisoType(), $entity, array(
+        if($entity->getTipoAcceso() == Aviso::TIPO_ACCESO_EDIFICIO){
+            $formType = new AvisoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new AvisoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('avisos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
             'em' => $this->getDoctrine()->getManager(),
@@ -251,18 +245,7 @@ class AvisoController extends BaseController
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
-        if($entity->getTipoAcceso()==Actividad::TIPO_ACCESO_EDIFICIO){
-            $editForm->add('edificios','entity',array(
-                'class'=>'BackendBundle:Edificio',
-                'choices' => $residencial->getEdificios(),
-                'label'=>'Edificios',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true,
-                'attr'=>array('class'=>'form-control')
-                ));    
-        }
-
+        
         if ($editForm->isValid()) {
             $em->flush();
 
@@ -357,48 +340,6 @@ class AvisoController extends BaseController
             'campo' => 'nivel_aviso',
             'titulo' => 'Seleccionar nivel del aviso',
             'return' => 'avisos',
-        );
-        
-    }
-    
-    /**
-     * Seleccionar edificio para el aviso.
-     *
-     * @Route("/seleccionar/edificio", name="avisos_select_edificio")
-     * @Template("FrontendBundle:Reservacion:select.html.twig")
-     */
-    public function selectEdificioAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $filtros = $this->getFilters();
-        if($request->query->has('edificio')){
-            $filtros['edificio'] = $request->query->get('edificio');
-            $this->setFilters($filtros);
-            switch($filtros['nivel_aviso']){
-                case Aviso::TIPO_ACCESO_EDIFICIO:
-                    return $this->redirect($this->generateUrl('avisos_new'));
-                case Aviso::TIPO_ACCESO_PRIVADO:
-                    return $this->redirect($this->generateUrl('avisos_select_usuario'));
-            }
-        }
-        
-        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        $edificios = $em->getRepository('BackendBundle:Edificio')
-                        ->findBy(array('residencial'=>$residencialActual));
-        
-        if($filtros['nivel_aviso']==Aviso::TIPO_ACCESO_PRIVADO){
-            $tit = "Aviso para usuario: seleccionar edificio del usuario";
-        }else{
-            $tit = "Aviso para edificio: seleccionar edificio";
-        }
-        
-        return array(
-            'entities'=>$edificios,
-            'residencial'=>$residencialActual,
-            'ruta' => 'avisos_select_edificio',
-            'campo' => 'edificio',
-            'titulo' => $tit,
-            'return' =>'avisos'
         );
         
     }

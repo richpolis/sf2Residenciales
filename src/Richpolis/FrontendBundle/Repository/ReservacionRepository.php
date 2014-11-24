@@ -12,19 +12,47 @@ use Doctrine\ORM\EntityRepository;
  */
 class ReservacionRepository extends EntityRepository
 {
-    public function getReservacionesPorEdificio($edificio_id){
-        $em=$this->getEntityManager();
-        $query = $em->createQueryBuilder();
-        $query
-                ->select('i,t,e,r')
-                ->from('Richpolis\FrontendBundle\Entity\Reservacion', 'i')
-                ->join('i.recurso', 't')
-                ->join('t.edificio', 'e')
-                ->join('e.residencial', 'r')
-                ->where('e.id=:edificio')
-                ->setParameter('edificio', $edificio_id)
-                ->orderBy('i.createdAt','DESC')
-        ;
-        return $query->getQuery()->getResult();
+    public function queryFindAvisosPorEdificio(Edificio $edificio) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT s,e,r "
+                . "FROM FrontendBundle:Aviso s "
+                . "JOIN s.edificios e "
+                . "JOIN s.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "ORDER BY a.createdAt DESC");
+        $consulta->setParameters(array(
+            'edificio' => $edificio->getId(),
+            'residencial' => $edificio->getResidencial()->getId(),
+            'tipoAcceso' => Aviso::TIPO_ACCESO_EDIFICIO,
+        ));
+        return $consulta;
+    }
+
+    public function findAvisosPorEdificio(Edificio $edificio) {
+        return $this->queryFindAvisosPorEdificio($edificio)->getResult();
+    }
+    
+    public function queryFindAvisosPorUsuario(Usuario $usuario) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT a,e,r "
+                . "FROM FrontendBundle:Aviso a "
+                . "JOIN a.usuario u "
+                . "JOIN a.edificios e "
+                . "JOIN a.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial OR u.id =:usuario) "
+                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "ORDER BY a.createdAt DESC");
+        $consulta->setParameters(array(
+            'usuario' => $usuario->getId(),
+            'edificio' => $usuario->getEdificio()->getId(),
+            'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
+            'tipoAcceso' => Aviso::TIPO_ACCESO_PRIVADO,
+        ));
+        return $consulta;
+    }
+
+    public function findAvisosPorUsuario(Usuario $usuario) {
+        return $this->queryFindAvisosPorUsuario($usuario)->getResult();
     }
 }

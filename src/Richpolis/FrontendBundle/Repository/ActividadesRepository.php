@@ -5,7 +5,7 @@ namespace Richpolis\FrontendBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Richpolis\BackendBundle\Entity\Edificio;
 use Richpolis\BackendBundle\Entity\Residencial;
-
+use Richpolis\FrontendBundle\Entity\Actividad;
 /**
  * ActividadesRepository
  *
@@ -18,7 +18,7 @@ class ActividadesRepository extends EntityRepository
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT a,e,r "
                 . "FROM FrontendBundle:Actividad a "
-                . "JOIN a.edificio e "
+                . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
                 . "WHERE (e.id=:edificio OR r.id =:residencial) "
                 . "AND a.tipoAcceso<=:tipoAcceso "
@@ -26,7 +26,7 @@ class ActividadesRepository extends EntityRepository
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Acitividad::TIPO_ACCESO_EDIFICIO,
+            'tipoAcceso' => Actividad::TIPO_ACCESO_EDIFICIO,
         ));
         return $consulta;
     }
@@ -44,14 +44,13 @@ class ActividadesRepository extends EntityRepository
                 . "WHERE r.id =:residencial "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
-            'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Acitividad::TIPO_ACCESO_EDIFICIO,
+            'residencial' => $residencial->getId()
         ));
         return $consulta;
     }
 
     public function findActividadesPorResidencial(Residencial $residencial) {
-        return $this->queryFindActividadesPorResidencial($edificio)->getResult();
+        return $this->queryFindActividadesPorResidencial($residencial)->getResult();
     }
 
 }

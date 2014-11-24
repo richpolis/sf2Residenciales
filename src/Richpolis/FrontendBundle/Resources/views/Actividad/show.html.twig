@@ -36,7 +36,7 @@
                 <span class="divider">/</span>
                 <a href="{{path('actividades_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('actividades_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                    <a href="{{path('actividades_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear actividad</a>
                 {% endif %}
             </div>
 
@@ -66,8 +66,20 @@
                                                     <td>{{ entity.id }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Residencial</th>
-                                                    <td>{{ entity.residencial }}</td>
+                                                    <th>Nivel</th>
+                                                    {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Actividad::TIPO_ACCESO_EDIFICIO') %}
+                                                    <td>
+                                                        <ul>
+                                                            {% for edificio in entity.edificios %}
+                                                                <li>
+                                                                    {{ edificio }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>  
+                                                    </td> 
+                                                    {% else %}
+                                                    <td>General</td>    
+                                                    {% endif %}
                                                 </tr>
                                                 <tr>
                                                     <th>Actividad</th>

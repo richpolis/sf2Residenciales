@@ -68,7 +68,7 @@
                                <th>Torre</th>
                                <th>Usuario</th>
                                <th>Titulo</th>
-                               <th>Fecha</th>
+                               <th>Fecha creacion</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -76,8 +76,8 @@
                        {% for entity in pagination %}
                            <tr>
                                <td><a href="{{ path('foros_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.usuario.edificio.residencial }}</td>
-                               <td>{{ entity.usuario.edificio }}</td>
+                               <td>{{ entity.edificio.residencial }}</td>
+                               <td>{{ entity.edificio }}</td>
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.titulo }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>

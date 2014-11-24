@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
+use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
 
 class DocumentoType extends AbstractType
 {
@@ -17,6 +18,7 @@ class DocumentoType extends AbstractType
     {
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
+        $edificiosTransformer = new EdificiosToArrayTransformer($em);
         
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control')))
@@ -31,6 +33,7 @@ class DocumentoType extends AbstractType
             ->add('file','file',array('label'=>'Archivo','attr'=>array('class'=>'form-control')))
             ->add('archivo','hidden')
             ->add('tipoArchivo','hidden')
+            ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))                    
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
         ;
     }

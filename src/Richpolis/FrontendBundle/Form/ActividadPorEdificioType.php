@@ -6,10 +6,16 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
-use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
+use Richpolis\BackendBundle\Entity\Residencial;
 
-class ActividadType extends AbstractType
+class ActividadPorEdificioType extends AbstractType
 {   
+    private $residencial; 
+    
+    public function __construct(Residencial $residencial) {
+        $this->residencial = $residencial;
+    }
+    
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -18,8 +24,6 @@ class ActividadType extends AbstractType
     {
         $em = $options['em'];
         $residencialTransformer = new ResidencialToNumberTransformer($em);
-        $edificiosTransformer = new EdificiosToArrayTransformer($em);
-        
         $builder
             ->add('nombre',null,array('attr'=>array('class'=>'form-control')))    
             ->add('descripcion',null,array(
@@ -46,7 +50,15 @@ class ActividadType extends AbstractType
                 'attr'=>array('class'=>'form-control')
                 ))
             ->add('tipoAcceso','hidden')
-            ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))                
+            ->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $this->residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => false,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ))
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))            
         ;
     }

@@ -21,7 +21,7 @@ class ForoType extends AbstractType
         $edificoTransformer = new EdificioToNumberTransformer($em);
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control'))) 
-            ->add('contenido',null,array(
+            ->add('comentario',null,array(
                 'label'=>'Descripcion',
                 'required'=>true,
                 'attr'=>array(

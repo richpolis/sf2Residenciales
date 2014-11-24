@@ -128,7 +128,7 @@ class UsuarioController extends BaseController
     /**
      * Finds and displays a Usuario entity.
      *
-     * @Route("/{id}", name="usuarios_show",requirements= {"id":"\d+    "})
+     * @Route("/{id}", name="usuarios_show",requirements= {"id":"\d+"})
      * @Method("GET")
      * @Template()
      */

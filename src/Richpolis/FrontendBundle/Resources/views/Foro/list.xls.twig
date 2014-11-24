@@ -13,8 +13,8 @@
         {% for entity in entities %}
             <tr>
                 <td>{{ entity.id }}</td>
-                <td>{{ entity.usuario.edificio.residencial }}</td>
-                <td>{{ entity.usuario.edificio }}</td>
+                <td>{{ entity.edificio.residencial }}</td>
+                <td>{{ entity.edificio }}</td>
                 <td>{{ entity.usuario }}</td>
                 <td>{{ entity.titulo }}</td>
                 <td>{{ entity.createdAt | date('d-m-Y') }}</td>

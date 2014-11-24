@@ -19,7 +19,7 @@ class AvisoRepository extends EntityRepository
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT a,e,r "
                 . "FROM FrontendBundle:Aviso a "
-                . "JOIN a.edificio e "
+                . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
                 . "WHERE (e.id=:edificio OR r.id =:residencial) "
                 . "AND a.tipoAcceso<=:tipoAcceso "
@@ -41,7 +41,7 @@ class AvisoRepository extends EntityRepository
         $consulta = $em->createQuery("SELECT a,e,r "
                 . "FROM FrontendBundle:Aviso a "
                 . "JOIN a.usuario u "
-                . "JOIN a.edificio e "
+                . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
                 . "WHERE (e.id=:edificio OR r.id =:residencial OR u.id =:usuario) "
                 . "AND a.tipoAcceso<=:tipoAcceso "
