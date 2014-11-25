@@ -50,7 +50,7 @@ class ForoController extends BaseController
             $options = array();
         }
         $query = $em->getRepository('FrontendBundle:Foro')
-                              ->queryFindForosPorEdificio($buscar,$edificioActual);
+                    ->queryFindForosPorResidencial($residencialActual,$buscar);
         
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -71,7 +71,7 @@ class ForoController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $foros = $em->getRepository('FrontendBundle:Foro')
-                        ->findBy(array('usuario'=>$this->getUser()));
+                    ->queryFindForosPorEdificio($edificioActual);
         
         return $this->render("FrontendBundle:Foro:foros.html.twig", array(
             'entities' => $foros,
@@ -90,6 +90,10 @@ class ForoController extends BaseController
     public function createAction(Request $request)
     {
         $entity = new Foro();
+        $filtros = $this->getFilters();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($residencial);
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -117,7 +121,12 @@ class ForoController extends BaseController
      */
     private function createCreateForm(Foro $entity)
     {
-        $form = $this->createForm(new ForoType(), $entity, array(
+        if($entity->getTipoAcceso() == Foro::TIPO_ACCESO_EDIFICIO){
+            $formType = new ForoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new ForoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('foros_create'),
             'method' => 'POST',
             'em' => $this->getDoctrine()->getManager(),
@@ -138,8 +147,13 @@ class ForoController extends BaseController
     public function newAction()
     {
         $entity = new Foro();
+        $filtros = $this->getFilters();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->setResidencial($residencial);
+        $entity->addEdificio($edificio);
         $entity->setUsuario($this->getUser());
-        $entity->setEdificio($this->getEdificioActual());
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -211,7 +225,12 @@ class ForoController extends BaseController
     */
     private function createEditForm(Foro $entity)
     {
-        $form = $this->createForm(new ForoType(), $entity, array(
+        if($entity->getTipoAcceso() == Foro::TIPO_ACCESO_EDIFICIO){
+            $formType = new ForoPorEdificioType($entity->getResidencial());
+        }else{
+            $formType = new ForoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('foros_update', array('id' => $entity->getId())),
             'method' => 'PUT',
             'em' => $this->getDoctrine()->getManager(),
@@ -318,5 +337,40 @@ class ForoController extends BaseController
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="export-foros.xls"');
         return $response;
+    }
+    
+    /**
+     * Seleccionar tipo acceso del foro.
+     *
+     * @Route("/seleccionar/nivel", name="foros_select_nivel")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectNivelAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('nivel_aviso')){
+            $filtros = $this->getFilters();
+            $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('foros_new'));
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $arreglo = array(
+            array('id'=> Foro::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Residencial'),
+            array('id'=> Foro::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por edificio')
+        );
+        
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'foros_select_nivel',
+            'campo' => 'nivel_aviso',
+            'titulo' => 'Seleccionar nivel del foro',
+            'return' => 'foros',
+        );
+        
     }
 }

@@ -46,15 +46,15 @@ class EdificiosToArrayTransformer implements DataTransformerInterface
      */
     public function reverseTransform($cadena)
     {
-		//convertir string en arreglo
-		$arreglo = explode(";",$cadena);
-		
-        if (count($arreglo)==0) {
+        //convertir string en arreglo
+        $arreglo = explode(";", $cadena);
+
+        if (count($arreglo) == 0) {
             return null;
         }
         $largo = count($arreglo)-1;
         $edificios = new \Doctrine\Common\Collections\ArrayCollection();
-        for($cont = 0; $cont < $largo; $cont++){
+        for($cont = 0; $cont <= $largo; $cont++){
             $id = $arreglo[$cont];
             $edificio = $this->om
                 ->getRepository('BackendBundle:Edificio')

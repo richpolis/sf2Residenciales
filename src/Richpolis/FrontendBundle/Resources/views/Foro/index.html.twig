@@ -32,7 +32,7 @@
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('foros')}}" class="bread-current">Foros</a>
-                <a href="{{path('foros_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
+                <a href="{{path('foros_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -76,8 +76,20 @@
                        {% for entity in pagination %}
                            <tr>
                                <td><a href="{{ path('foros_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.edificio.residencial }}</td>
-                               <td>{{ entity.edificio }}</td>
+                               <td>{{ entity.residencial }}</td>
+                               {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Foro::TIPO_ACCESO_RESIDENCIAL') %}
+                               <td>Todos</td>
+                               {% else %}
+                               <td>
+                                   <ul>
+                                       {% for edificio in entity.edificios %}
+                                           <li>
+                                               {{ edificio }}
+                                           </li>
+                                       {% endfor %}
+                                   </ul>  
+                               </td>  
+                               {% endif %}
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.titulo }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>

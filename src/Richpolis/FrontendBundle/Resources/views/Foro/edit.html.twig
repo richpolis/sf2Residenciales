@@ -28,13 +28,10 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{entity.residencial}}</a>    
                 {% endif %}
-                <!--Divider-->
-                <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('foros')}}" class="bread-current">Foro {{ foro.titulo }}</a>

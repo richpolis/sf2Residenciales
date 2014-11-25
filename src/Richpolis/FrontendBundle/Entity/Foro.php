@@ -46,6 +46,34 @@ class Foro
     private $tipoDiscusion;
     
     /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo_acceso", type="integer",nullable=false)
+     */
+    private $tipoAcceso;
+    
+    /**
+     * @var \Residencial
+     * @todo Administrador de la residencial
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var integer
+     * @todo Edificios dentro de la residencial avisos. 
+     *
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="foros")
+     * @ORM\JoinTable(name="foros_edificios")
+     * @ORM\OrderBy({"nombre" = "DESC"})
+     */
+    private $edificios;
+    
+    /**
      * @var \Usuario
      * @todo usuario que creo la discusion
      *
@@ -55,18 +83,6 @@ class Foro
      * })
      */
     private $usuario;
-    
-    /**
-     * @var \Edificio
-     * @todo edificio que pertenece la discusion
-     *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
-     * })
-     */
-    private $edificio;
-    
     
     /**
      * @var Array 
@@ -125,6 +141,28 @@ class Foro
     static function getPreferedTipoDiscusion(){
         return array(self::TIPO_DISCUSION_PUBLICA);
     }
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+	
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Edificio',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+	
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+	
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
+    }
 
     /**
      * Constructor
@@ -132,9 +170,10 @@ class Foro
     public function __construct()
     {
         $this->comentarios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isCerrado = false;
+        $this->tipoDiscusion = Foro::TIPO_DISCUSION_PUBLICA;
     }
-
 
     /**
      * Get id
@@ -216,6 +255,29 @@ class Foro
     }
 
     /**
+     * Set tipoAcceso
+     *
+     * @param integer $tipoAcceso
+     * @return Foro
+     */
+    public function setTipoAcceso($tipoAcceso)
+    {
+        $this->tipoAcceso = $tipoAcceso;
+
+        return $this;
+    }
+
+    /**
+     * Get tipoAcceso
+     *
+     * @return integer 
+     */
+    public function getTipoAcceso()
+    {
+        return $this->tipoAcceso;
+    }
+
+    /**
      * Set isCerrado
      *
      * @param boolean $isCerrado
@@ -262,6 +324,62 @@ class Foro
     }
 
     /**
+     * Set residencial
+     *
+     * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
+     * @return Foro
+     */
+    public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
+    {
+        $this->residencial = $residencial;
+
+        return $this;
+    }
+
+    /**
+     * Get residencial
+     *
+     * @return \Richpolis\BackendBundle\Entity\Residencial 
+     */
+    public function getResidencial()
+    {
+        return $this->residencial;
+    }
+
+    /**
+     * Add edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     * @return Foro
+     */
+    public function addEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios[] = $edificios;
+
+        return $this;
+    }
+
+    /**
+     * Remove edificios
+     *
+     * @param \Richpolis\BackendBundle\Entity\Edificio $edificios
+     */
+    public function removeEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificios)
+    {
+        $this->edificios->removeElement($edificios);
+    }
+
+    /**
+     * Get edificios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEdificios()
+    {
+        return $this->edificios;
+    }
+
+    /**
      * Set usuario
      *
      * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
@@ -282,29 +400,6 @@ class Foro
     public function getUsuario()
     {
         return $this->usuario;
-    }
-
-    /**
-     * Set edificio
-     *
-     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
-     * @return Foro
-     */
-    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
-    {
-        $this->edificio = $edificio;
-
-        return $this;
-    }
-
-    /**
-     * Get edificio
-     *
-     * @return \Richpolis\BackendBundle\Entity\Edificio 
-     */
-    public function getEdificio()
-    {
-        return $this->edificio;
     }
 
     /**

@@ -41,7 +41,7 @@ class Residencial implements \Serializable
     /**
      * @var integer
      *
-     * @ORM\Column(name="tipoMorosidad", type="integer")
+     * @ORM\Column(name="tipo_morosidad", type="integer")
      */
     private $tipoMorosidad;
     
@@ -87,9 +87,9 @@ class Residencial implements \Serializable
     
     public function getStringMorosidad(){
         if($this->getTipoMorosidad()==self::TIPO_MOROSIDAD_PORCENTAJE){
-            return sprintf('%d %', $this->getMorosidad());
+            return $this->getMorosidad() . "%";
         }else{
-            return number_format($this->getMorosidad(),2,".",",");
+            return "$ ".number_format($this->getMorosidad(),2,".",",");
         }
     }
     
@@ -141,29 +141,6 @@ class Residencial implements \Serializable
     }
 
     /**
-     * Set porcentaje
-     *
-     * @param string $porcentaje
-     * @return Residencial
-     */
-    public function setPorcentaje($porcentaje)
-    {
-        $this->porcentaje = $porcentaje;
-
-        return $this;
-    }
-
-    /**
-     * Get porcentaje
-     *
-     * @return string 
-     */
-    public function getPorcentaje()
-    {
-        return $this->porcentaje;
-    }
-
-    /**
      * @see \Serializable::serialize()
      */
     public function serialize()
@@ -171,7 +148,8 @@ class Residencial implements \Serializable
         return serialize(array(
             $this->id,
             $this->nombre,
-            $this->porcentaje
+            $this->morosidad,
+            $this->tipoMorosidad
         ));
     }
 
@@ -183,7 +161,8 @@ class Residencial implements \Serializable
         list (
             $this->id,
             $this->nombre,
-            $this->porcentaje
+            $this->morosidad,
+            $this->tipoMorosidad
         ) = unserialize($serialized);
     }
 

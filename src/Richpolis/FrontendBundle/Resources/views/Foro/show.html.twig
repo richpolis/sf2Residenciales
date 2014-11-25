@@ -25,13 +25,10 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{entity.residencial}}</a>    
                 {% endif %}
-                <!--Divider-->
-                <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('foros')}}" class="bread-current">Foros</a>
@@ -39,7 +36,7 @@
                 <span class="divider">/</span> 
                 <a href="{{path('foros_show',{'id':entity.id})}}" class="bread-current">Foro: {{entity.titulo}} </a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('foros_select_usuario')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
+                    <a href="{{path('foros_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear foro</a>
                 {% endif %}
             </div>
 
@@ -70,12 +67,24 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Residencial</th>
-                                                    <td>{{ entity.edificio.residencial }}</td>
+                                                    <td>{{ entity.residencial }}</td>
                                                 </tr>
+                                                {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Foro::TIPO_ACCESO_RESIDENCIAL') %}
+                                                <tr><th>Torre</th><td>General</td></tr>
+                                                {% elseif entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Foro::TIPO_ACCESO_EDIFICIO') %}    
                                                 <tr>
-                                                    <th>Edificio</th>
-                                                    <td>{{ entity.edificio }}</td>
+                                                    <th>Torre</th>
+                                                    <td>
+                                                        <ul>
+                                                            {% for edificio in entity.edificios %}
+                                                                <li>
+                                                                    {{ edificio }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>  
+                                                    </td>
                                                 </tr>
+                                                {% endif %}
                                                 <tr>                                                              <tr>
                                                     <th>Creado</th>
                                                     <td>{{ entity.usuario}}</td>
@@ -92,36 +101,17 @@
                                                     <th>Post</th>
                                                     <td>{{ entity.comentario | raw }}</td>
                                                 </tr>
-                                                
-                                            </tbody>
-                                        </table>
-                                                
-                                        <table id="datatable" class="table table-striped table-bordered table-hover">
-                                            <thead>
                                                 <tr>
-                                                    <th>Cargo</th>
-                                                    <th>Monto</th>
-                                                    <th>Fecha</th>
+                                                    <th>Cerrado?</th>
+                                                    <td>{{ entity.isCerrado | isActive | raw }}</td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for cargo in entity.cargos %}
-                                                <tr>
-                                                    <td>{{ cargo.cargo }}</td>
-                                                    <td>$ {{ cargo.monto | number_format(2,".",",") }}</td>
-                                                    <td>{{ cargo.createdAt|date('d-m-Y') }}</td>
-                                                </tr>
-                                            {% endfor %}
                                             </tbody>
-                                        </table>        
+                                        </table>   
                                     </div>
                                 </div>
                                 <div class="widget-foot">
                                     <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('foros')}}')">Regresar</button>
-                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('foros_edit',{id: entity.id})}}')">Editar</button>
-                                    {% if entity.isAproved == false %}
-                                        <button id="botonEditar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('foros_aprobar',{id: entity.id})}}')">Aprobar foro</button>
-                                    {% endif %}    
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('foros_edit',{id: entity.id})}}')">Editar</button>   
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('foros_delete', { 'id': entity.id }) }}" method="post">
                                             {{ form_widget(delete_form) }}
@@ -131,6 +121,27 @@
                                 </div>
                             </div>  
                         </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Widget content -->
+                            <div class="widget">
+                                <div class="widget-content">
+                                    <ul class="lista lista-comentarios">
+                                        {% for registro in entity.comentarios %}
+                                            <li class="item item-comentario">
+                                                <div class="item-comentario-fecha">
+                                                    {{ registro.createdAt | date('d-M-Y') }} - {{registro.usuario}}
+                                                </div>
+                                                <div class="item-descripcion item-comentario-descripcion"> {{ registro.comentario|raw }}</div>
+                                            </li>
+                                        {% endfor%}    
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Widget ends -->
+
+                        </div>
                     </div>
                 </div>
             </div>

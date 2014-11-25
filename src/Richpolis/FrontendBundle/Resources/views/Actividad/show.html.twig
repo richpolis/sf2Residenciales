@@ -89,6 +89,10 @@
                                                     <th>Descripcion</th>
                                                     <td>{{ entity.descripcion | raw }}</td>
                                                 </tr>
+                                                <tr>
+                                                    <th>Fecha y hora</th>
+                                                    <td>{{ entity.fechaActividad | date('d/m/Y') }} <br/> {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

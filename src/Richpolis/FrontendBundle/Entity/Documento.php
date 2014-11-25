@@ -238,6 +238,10 @@ class Documento
         return RpsStms::getIcoArchivo($this->getArchivo());
     }
     
+    public function getIsImagen(){
+        return $this->getTipoArchivo() == RpsStms::TIPO_ARCHIVO_IMAGEN;
+    }
+    
     /**
      * Constructor
      */

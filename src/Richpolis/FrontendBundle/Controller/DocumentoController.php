@@ -104,7 +104,7 @@ class DocumentoController extends BaseController
      */
     private function createCreateForm(Documento $entity)
     {
-        if($entity->getTipoAcceso() == Actividad::TIPO_ACCESO_EDIFICIO){
+        if($entity->getTipoAcceso() == Documento::TIPO_ACCESO_EDIFICIO){
             $formType = new DocumentoPorEdificioType($entity->getResidencial());
         }else{
             $formType = new DocumentoType();
@@ -207,7 +207,7 @@ class DocumentoController extends BaseController
     */
     private function createEditForm(Documento $entity)
     {
-        if($entity->getTipoAcceso() == Actividad::TIPO_ACCESO_EDIFICIO){
+        if($entity->getTipoAcceso() == Documento::TIPO_ACCESO_EDIFICIO){
             $formType = new DocumentoPorEdificioType($entity->getResidencial());
         }else{
             $formType = new DocumentoType();

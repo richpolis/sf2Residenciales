@@ -5,6 +5,7 @@ namespace Richpolis\FrontendBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Richpolis\FrontendBundle\Entity\Foro;
 use Richpolis\BackendBundle\Entity\Edificio;
+use Richpolis\BackendBundle\Entity\Residencial;
 
 /**
  * ForoRepository
@@ -14,44 +15,83 @@ use Richpolis\BackendBundle\Entity\Edificio;
  */
 class ForoRepository extends EntityRepository
 {
-    public function queryFindForosPorEdificio($buscar="",Edificio $edificio) {
+    public function queryFindForosPorEdificio(Edificio $edificio,$buscar="") {
         $em = $this->getEntityManager();
         if(strlen($buscar)==0){
-            $consulta = $em->createQuery("SELECT f,e,r "
+            $consulta = $em->createQuery("SELECT f,u,e,r "
                     . "FROM FrontendBundle:Foro f "
                     . "JOIN f.usuario u "
-                    . "JOIN f.edificio e "
-                    . "JOIN e.residencial r "
-                    . "WHERE e.id=:edificio "
-                    . "AND f.tipoDiscusion=:tipo "
+                    . "JOIN f.edificios e "
+                    . "JOIN f.residencial r "
+                    . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                    . "AND f.tipoAcceso<=:tipoAcceso "
                     . "ORDER BY f.createdAt DESC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
-                'tipo' => Foro::TIPO_DISCUSION_PUBLICA,
+                'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAcceso' => Foro::TIPO_ACCESO_EDIFICIO,
             ));
         }else{
-            $consulta = $em->createQuery("SELECT f,e,r "
+            $consulta = $em->createQuery("SELECT f,u,e,r "
                     . "FROM FrontendBundle:Foro f "
                     . "JOIN f.usuario u "
-                    . "JOIN f.edificio e "
-                    . "JOIN e.residencial r "
-                    . "WHERE e.id=:edificio "
-                    . "AND f.tipoDiscusion=:tipo "
+                    . "JOIN f.edificios e "
+                    . "JOIN f.residencial r "
+                    . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                    . "AND f.tipoAcceso<=:tipoAcceso "
                     . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR f.titulo LIKE :titulo) "
-                    . "ORDER BY f.createdAt DESC");
+                    . "ORDER BY f.createdAt DESC, u.numero ASC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
-                'tipo' => Foro::TIPO_DISCUSION_PUBLICA,
+                'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAcceso' => Foro::TIPO_ACCESO_EDIFICIO,
                 'numero' => $buscar,
-                'nombre' => "%".$buscar."%",
-                'email' => "%".$buscar."%",
-                'titulo' => "%".$buscar."%",
+                'nombre' => "%" . $buscar . "%",
+                'email' => "%" . $buscar . "%",
+                'titulo' => "%" . $buscar . "%"
             ));
         }
         return $consulta;
     }
 
-    public function findForosPorEdificio($buscar="",Edificio $edificio) {
-        return $this->queryFindForosPorEdificio($buscar="",$edificio)->getResult();
+    public function findForosPorEdificio(Edificio $edificio,$buscar="") {
+        return $this->queryFindForosPorEdificio($edificio,$buscar)->getResult();
+    }
+    
+    public function queryFindForosPorResidencial(Residencial $residencial,$buscar="") {
+        $em = $this->getEntityManager();
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT f,u,e,r "
+                . "FROM FrontendBundle:Foro f "
+                . "JOIN f.usuario u "
+                . "JOIN f.edificios e "
+                . "JOIN f.residencial r "
+                . "WHERE r.id =:residencial "
+                . "ORDER BY f.createdAt DESC");
+            $consulta->setParameters(array(
+                'residencial' => $residencial->getId()
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT f,u,e,r "
+                . "FROM FrontendBundle:Foro f "
+                . "JOIN f.usuario u "
+                . "JOIN f.edificios e "
+                . "JOIN f.residencial r "
+                . "WHERE r.id =:residencial "
+                . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR f.titulo LIKE :titulo) "
+                . "ORDER BY f.createdAt DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'residencial' => $residencial->getId(),
+                'numero' => $buscar,
+                'nombre' => "%" . $buscar . "%",
+                'email' => "%" . $buscar . "%",
+                'titulo' => "%" . $buscar . "%"
+            ));
+        } 
+        return $consulta;
+    }
+
+    public function findForosPorResidencial(Residencial $residencial,$buscar="") {
+        return $this->queryFindForosPorResidencial($residencial,$buscar)->getResult();
     }
 }

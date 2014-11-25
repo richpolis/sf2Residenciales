@@ -69,6 +69,22 @@
                                                     <th>Residencial</th>
                                                     <td>{{ entity.residencial }}</td>
                                                 </tr>
+                                                {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Documento::TIPO_ACCESO_RESIDENCIAL') %}
+                                                <tr><th>Torre</th><td>General</td></tr>
+                                                {% elseif entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Documento::TIPO_ACCESO_EDIFICIO') %}    
+                                                <tr>
+                                                    <th>Torre</th>
+                                                    <td>
+                                                        <ul>
+                                                            {% for edificio in entity.edificios %}
+                                                                <li>
+                                                                    {{ edificio }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>  
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
                                                 <tr>
                                                     <th>Titulo</th>
                                                     <td>{{ entity.titulo}}</td>
@@ -77,6 +93,16 @@
                                                     <th>Descripcion</th>
                                                     <td>{{ entity.descripcion | raw }}</td>
                                                 </tr>
+                                                {% if entity.isImagen %}
+                                                <tr>
+                                                    <th>Archivo adjunto</th>
+                                                    <td>
+                                                        {% if entity.archivo | length > 0 %}
+                                                            <img src="{{entity.webPath}}" style="max-width: 100%;" />
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>    
+                                                {% endif %}    
                                             </tbody>
                                         </table>
                                     </div>

@@ -46,6 +46,34 @@ class Foro
     private $tipoDiscusion;
     
     /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo_acceso", type="integer",nullable=false)
+     */
+    private $tipoAcceso;
+    
+    /**
+     * @var \Residencial
+     * @todo Administrador de la residencial
+     *
+     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Residencial")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     * })
+     */
+    private $residencial;
+    
+    /**
+     * @var integer
+     * @todo Edificios dentro de la residencial avisos. 
+     *
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="foros")
+     * @ORM\JoinTable(name="foros_edificios")
+     * @ORM\OrderBy({"nombre" = "DESC"})
+     */
+    private $edificios;
+    
+    /**
      * @var \Usuario
      * @todo usuario que creo la discusion
      *
@@ -55,18 +83,6 @@ class Foro
      * })
      */
     private $usuario;
-    
-    /**
-     * @var \Edificio
-     * @todo edificio que pertenece la discusion
-     *
-     * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="edificio_id", referencedColumnName="id")
-     * })
-     */
-    private $edificio;
-    
     
     /**
      * @var Array 
@@ -110,8 +126,8 @@ class Foro
     const TIPO_DISCUSION_PRIVADA=2;
         
     static public $sTipoDiscusion=array(
-        self::TIPO_CARGO_NORMAL=>'Normal',
-        self::TIPO_CARGO_ADEUDO=>'Por adeudo',
+        self::TIPO_DISCUSION_PUBLICA=>'Publica',
+        self::TIPO_DISCUSION_PRIVADA=>'Privada',
     );
     
     public function getStringTipoDiscusion(){
@@ -125,6 +141,28 @@ class Foro
     static function getPreferedTipoDiscusion(){
         return array(self::TIPO_DISCUSION_PUBLICA);
     }
+    
+    const TIPO_ACCESO_RESIDENCIAL=1;
+    const TIPO_ACCESO_EDIFICIO=2;
+    const TIPO_ACCESO_PRIVADO=3;
+	
+    static public $sTipoAcceso=array(
+        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Edificio',
+        self::TIPO_ACCESO_PRIVADO=>'Privado',
+    );
+
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+	
+    static function getArrayTipoAcceso(){
+        return self::$sTipoAcceso;
+    }
+	
+    static function getPreferedTipoAcceso(){
+        return array(self::TIPO_ACCESO_RESIDENCIAL);
+    }
 
     /**
      * Constructor
@@ -132,211 +170,8 @@ class Foro
     public function __construct()
     {
         $this->comentarios = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isCerrado = false;
-    }
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set titulo
-     *
-     * @param string $titulo
-     * @return Foro
-     */
-    public function setTitulo($titulo)
-    {
-        $this->titulo = $titulo;
-
-        return $this;
-    }
-
-    /**
-     * Get titulo
-     *
-     * @return string 
-     */
-    public function getTitulo()
-    {
-        return $this->titulo;
-    }
-
-    /**
-     * Set comentario
-     *
-     * @param string $comentario
-     * @return Foro
-     */
-    public function setComentario($comentario)
-    {
-        $this->comentario = $comentario;
-
-        return $this;
-    }
-
-    /**
-     * Get comentario
-     *
-     * @return string 
-     */
-    public function getComentario()
-    {
-        return $this->comentario;
-    }
-
-    /**
-     * Set tipoDiscusion
-     *
-     * @param integer $tipoDiscusion
-     * @return Foro
-     */
-    public function setTipoDiscusion($tipoDiscusion)
-    {
-        $this->tipoDiscusion = $tipoDiscusion;
-
-        return $this;
-    }
-
-    /**
-     * Get tipoDiscusion
-     *
-     * @return integer 
-     */
-    public function getTipoDiscusion()
-    {
-        return $this->tipoDiscusion;
-    }
-
-    /**
-     * Set isCerrado
-     *
-     * @param boolean $isCerrado
-     * @return Foro
-     */
-    public function setIsCerrado($isCerrado)
-    {
-        $this->isCerrado = $isCerrado;
-
-        return $this;
-    }
-
-    /**
-     * Get isCerrado
-     *
-     * @return boolean 
-     */
-    public function getIsCerrado()
-    {
-        return $this->isCerrado;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Foro
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
-     * @return Foro
-     */
-    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return \Richpolis\BackendBundle\Entity\Usuario 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
-
-    /**
-     * Set edificio
-     *
-     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
-     * @return Foro
-     */
-    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
-    {
-        $this->edificio = $edificio;
-
-        return $this;
-    }
-
-    /**
-     * Get edificio
-     *
-     * @return \Richpolis\BackendBundle\Entity\Edificio 
-     */
-    public function getEdificio()
-    {
-        return $this->edificio;
-    }
-
-    /**
-     * Add comentarios
-     *
-     * @param \Richpolis\FrontendBundle\Entity\Comentario $comentarios
-     * @return Foro
-     */
-    public function addComentario(\Richpolis\FrontendBundle\Entity\Comentario $comentarios)
-    {
-        $this->comentarios[] = $comentarios;
-
-        return $this;
-    }
-
-    /**
-     * Remove comentarios
-     *
-     * @param \Richpolis\FrontendBundle\Entity\Comentario $comentarios
-     */
-    public function removeComentario(\Richpolis\FrontendBundle\Entity\Comentario $comentarios)
-    {
-        $this->comentarios->removeElement($comentarios);
-    }
-
-    /**
-     * Get comentarios
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getComentarios()
-    {
-        return $this->comentarios;
+        $this->tipoDiscusion = Foro::TIPO_DISCUSION_PUBLICA;
     }
 }

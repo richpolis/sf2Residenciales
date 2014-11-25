@@ -160,7 +160,7 @@ class Aviso
             case self::TIPO_ACCESO_RESIDENCIAL:
                 return 'Aviso nivel residencial';
             case self::TIPO_ACCESO_EDIFICIO: 
-                return 'Aviso nivel edificio: ' . $this->getEdificio();
+                return 'Aviso por edificio ';
             case self::TIPO_ACCESO_PRIVADO:
                 return 'Aviso nivel usuario: ' . $this->getUsuario()->getNumero() . ' - ' .
                     $this->getUsuario()->getNombre();

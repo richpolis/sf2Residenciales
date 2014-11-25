@@ -6,11 +6,17 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
-use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
+use Richpolis\BackendBundle\Entity\Residencial;
 
-class ForoType extends AbstractType
+class ForoPorEdificioType extends AbstractType
 {
+    private $residencial;
+    
+    public function __construct(Residencial $residencial) {
+        $this->residencial = $residencial;
+    }
+    
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -19,7 +25,6 @@ class ForoType extends AbstractType
     {
         $em = $options['em'];
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
-        $edificiosTransformer = new EdificiosToArrayTransformer($em);
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         $builder
             ->add('titulo',null,array('attr'=>array('class'=>'form-control'))) 
@@ -35,8 +40,16 @@ class ForoType extends AbstractType
             ->add('tipoAcceso','hidden')
             ->add('isCerrado',null,array('label'=>'Es cerrado?'))
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
-            ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))
-            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))   
+            ->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $this->residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => false,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
         ;
     }
     
