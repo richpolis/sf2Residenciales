@@ -37,7 +37,7 @@
                 <span class="divider">/</span>
                 <a href="{{path('recursos_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{path('recursos_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear configuracion</a>
+                            <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear recurso</a>
                         {% endif %}
                         </div>
 

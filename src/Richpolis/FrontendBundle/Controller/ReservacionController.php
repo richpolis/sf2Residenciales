@@ -29,22 +29,41 @@ class ReservacionController extends BaseController
      */
     public function indexAction()
     {
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            return $this->adminIndex();
+        }else{
+            return $this->usuariosIndex();
+        }
+    }
+    
+    public function adminIndex()
+    {
         $em = $this->getDoctrine()->getManager();
 
-        //$entities = $em->getRepository('FrontendBundle:Reservacion')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            $pagina = 'index';
-        }else{
-            $pagina = 'reservaciones';
-        }
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                        ->findReservacionesPorEdificio($edificioActual);
+
+        return $this->render("FrontendBundle:Reservacion:index.html.twig", array(
+            'entities' => $reservaciones,
+            'residencial'=>$residencialActual,
+            'edificio'=>$edificioActual,
+        ));
+    }
+    
+    public function usuariosIndex()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                        ->getReservacionesPorEdificio($edificioActual->getId());
+                        ->findReservacionesPorUsuario($this->getUser());
 
-        return $this->render("FrontendBundle:Reservacion:$pagina.html.twig", array(
+        return $this->render("FrontendBundle:Reservacion:reservaciones.html.twig", array(
             'entities' => $reservaciones,
             'residencial'=>$residencialActual,
             'edificio'=>$edificioActual,

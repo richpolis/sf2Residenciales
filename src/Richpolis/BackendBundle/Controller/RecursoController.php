@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\BackendBundle\Entity\Recurso;
 use Richpolis\BackendBundle\Form\RecursoType;
+use Richpolis\BackendBundle\Form\RecursoPorEdificioType;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -61,6 +62,8 @@ class RecursoController extends BaseController
     public function createAction(Request $request)
     {
         $entity = new Recurso();
+        $filtros = $this->getFilters();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -88,7 +91,12 @@ class RecursoController extends BaseController
      */
     private function createCreateForm(Recurso $entity)
     {
-        $form = $this->createForm(new RecursoType(), $entity, array(
+        if($entity->getTipoAcceso() == Recurso::TIPO_ACCESO_EDIFICIO){
+            $formType = new RecursoPorEdificioType($this->getResidencialActual($this->getResidencialDefault()));
+        }else{
+            $formType = new RecursoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('recursos_create'),
             'method' => 'POST',
             'em'=>$this->getDoctrine()->getManager(),
@@ -110,7 +118,10 @@ class RecursoController extends BaseController
     {
         $entity = new Recurso();
         $entity->setEdificio($this->getEdificioActual());
-        
+        $filtros = $this->getFilters();
+        $edificio = $this->getEdificioActual();
+        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        $entity->addEdificio($edificio);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -182,7 +193,12 @@ class RecursoController extends BaseController
     */
     private function createEditForm(Recurso $entity)
     {
-        $form = $this->createForm(new RecursoType(), $entity, array(
+        if($entity->getTipoAcceso() == Recurso::TIPO_ACCESO_EDIFICIO){
+            $formType = new RecursoPorEdificioType($this->getResidencialActual($this->getResidencialDefault()));
+        }else{
+            $formType = new RecursoType();
+        }
+        $form = $this->createForm($formType, $entity, array(
             'action' => $this->generateUrl('recursos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
             'em'=>$this->getDoctrine()->getManager(),
@@ -267,5 +283,40 @@ class RecursoController extends BaseController
             ////->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar tipo acceso del recurso.
+     *
+     * @Route("/seleccionar/nivel", name="recursos_select_nivel")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectNivelAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        if($request->query->has('nivel_aviso')){
+            $filtros = $this->getFilters();
+            $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
+            $this->setFilters($filtros);
+            switch($filtros['nivel_aviso']){
+                case Actividad::TIPO_ACCESO_RESIDENCIAL:
+                case Actividad::TIPO_ACCESO_EDIFICIO:
+                    return $this->redirect($this->generateUrl('recursos_new'));
+            }
+        }
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $arreglo = array(
+            array('id'=>  Recurso::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Para Residencial'),
+            array('id'=>  Recurso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por torre'),
+        );
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'recursos_select_nivel',
+            'campo' => 'nivel_aviso',
+            'titulo' => 'Seleccionar nivel del recurso',
+            'return' => 'recursos',
+        );
     }
 }

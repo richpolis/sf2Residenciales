@@ -3,6 +3,8 @@
 namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Richpolis\BackendBundle\Entity\Edificio;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 /**
  * ReservacionRepository
@@ -12,47 +14,41 @@ use Doctrine\ORM\EntityRepository;
  */
 class ReservacionRepository extends EntityRepository
 {
-    public function queryFindAvisosPorEdificio(Edificio $edificio) {
+    public function queryFindReservacionesPorEdificio(Edificio $edificio) {
         $em = $this->getEntityManager();
-        $consulta = $em->createQuery("SELECT s,e,r "
-                . "FROM FrontendBundle:Aviso s "
-                . "JOIN s.edificios e "
-                . "JOIN s.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
-                . "ORDER BY a.createdAt DESC");
+        $consulta = $em->createQuery("SELECT s,i,u,e "
+                . "FROM FrontendBundle:Reservacion s "
+                . "JOIN s.recurso i "
+                . "JOIN s.usuario u "
+                . "JOIN u.edificio e "
+                . "WHERE e.id=:edificio "
+                . "ORDER BY s.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
-            'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Aviso::TIPO_ACCESO_EDIFICIO,
         ));
         return $consulta;
     }
 
-    public function findAvisosPorEdificio(Edificio $edificio) {
-        return $this->queryFindAvisosPorEdificio($edificio)->getResult();
+    public function findReservacionesPorEdificio(Edificio $edificio) {
+        return $this->queryFindReservacionesPorEdificio($edificio)->getResult();
     }
     
-    public function queryFindAvisosPorUsuario(Usuario $usuario) {
+    public function queryFindReservacionesPorUsuario(Usuario $usuario) {
         $em = $this->getEntityManager();
-        $consulta = $em->createQuery("SELECT a,e,r "
-                . "FROM FrontendBundle:Aviso a "
-                . "JOIN a.usuario u "
-                . "JOIN a.edificios e "
-                . "JOIN a.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial OR u.id =:usuario) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
-                . "ORDER BY a.createdAt DESC");
+        $consulta = $em->createQuery("SELECT s,i,u,e "
+                . "FROM FrontendBundle:Reservacion s "
+                . "JOIN s.recurso i "
+                . "JOIN s.usuario u "
+                . "JOIN u.edificio e "
+                . "WHERE u.id=:usuario "
+                . "ORDER BY s.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),
-            'edificio' => $usuario->getEdificio()->getId(),
-            'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
-            'tipoAcceso' => Aviso::TIPO_ACCESO_PRIVADO,
         ));
         return $consulta;
     }
 
-    public function findAvisosPorUsuario(Usuario $usuario) {
-        return $this->queryFindAvisosPorUsuario($usuario)->getResult();
+    public function findReservacionesPorUsuario(Usuario $usuario) {
+        return $this->queryFindReservacionesPorUsuario($usuario)->getResult();
     }
 }

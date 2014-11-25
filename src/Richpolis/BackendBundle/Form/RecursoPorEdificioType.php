@@ -10,14 +10,20 @@ use Richpolis\BackendBundle\Entity\Recurso;
 
 class RecursoType extends AbstractType
 {
-        /**
+    private $residencial; 
+    
+    public function __construct(Residencial $residencial) {
+        $this->residencial = $residencial;
+    }
+
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $em = $options['em'];
-        $edificiosTransformer = new EdificiosToArrayTransformer($em);
+        
         
         $builder
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
@@ -33,7 +39,15 @@ class RecursoType extends AbstractType
                     'data-bind'=>'value: tipoAcceso'
                 )))
             ->add('precio','money',array('label'=>'cuota','currency'=>'MXN','attr'=>array('class'=>'form-control')))
-            ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer)) 
+            ->add('edificios','entity',array(
+                'class'=>'BackendBundle:Edificio',
+                'choices' => $this->residencial->getEdificios(),
+                'label'=>'Edificios',
+                'expanded' => false,
+                'multiple' => true,
+                'required' => true,
+                'attr'=>array('class'=>'form-control')
+                ))
         ;
     }
     
