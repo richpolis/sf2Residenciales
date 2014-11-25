@@ -47,11 +47,23 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="widget">
-                        <a class="btn btn-default" href="{{path('estadosdecuentas')}}?pagadas=0">No pagadas</a>
-                        &nbsp;
-                        <a class="btn btn-default" href="{{path('estadosdecuentas')}}?pagadas=1">Pagadas</a>
-                    </div>
+					<!-- Widget content -->
+					<div class="widget">
+						<div class="widget-content">
+							<div class="padd">
+								<div data-toggle="buttons" class="btn-group">
+									<a href="{{path('estadodecuentas')}}?pagados=0" class="btn btn-default boton-control {{ (pagados)?'':'active' }}">
+										Adeudos
+									</a>
+									<a href="{{path('estadodecuentas')}}?pagados=1" class="btn btn-default boton-control {{ (pagados)?'active':'' }}">
+										Al corriente
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Widget ends -->
+
                 </div>
             </div>  
           <!-- Table -->

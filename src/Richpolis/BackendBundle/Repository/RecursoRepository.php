@@ -13,37 +13,19 @@ use Richpolis\BackendBundle\Entity\Recurso;
  */
 class RecursoRepository extends EntityRepository
 {
-    /*public function getRecursosPorEdificio($edificio_id,$residencial_id){
-        $em=$this->getEntityManager();
-        $query = $em->createQueryBuilder();
-        $query
-                ->select('i,e,r')
-                ->from('Richpolis\FrontendBundle\Entity\Recurso', 'i')
-                ->join('i.edificio', 'e')
-                ->join('e.residencial', 'r')
-                ->where('e.id=:edificio')
-                ->setParameter('edificio', $edificio_id)
-                ->orWhere('i.tipoAcceso=:publico')
-                ->setParameter('publico', Recurso::TIPO_ACCESO_RESIDENCIAL)
-                
-                ->orderBy('r.nombre','ASC')
-        ;
-        return $query->getResult();
-    }*/
-    
     public function getRecursosPorEdificio($edificio_id,$residencial_id){
         $em=$this->getEntityManager();
         $query=$em->createQuery('
                SELECT i,e,r 
                FROM BackendBundle:Recurso i 
-               JOIN i.edificio e 
+               JOIN i.edificios e 
                JOIN e.residencial r 
-               WHERE (e.id = :edificio OR i.tipoAcceso=:publico) 
+               WHERE (e.id = :edificio OR i.tipoAcceso<=:publico) 
                AND r.id = :residencial 
                ORDER BY i.nombre ASC
         ')->setParameters(array(
             'edificio'=> $edificio_id,
-            'publico'=>Recurso::TIPO_ACCESO_RESIDENCIAL,
+            'publico'=>Recurso::TIPO_ACCESO_EDIFICIO,
             'residencial'=>$residencial_id
         ));
         return $query->getResult();

@@ -31,7 +31,10 @@ class EdificiosToArrayTransformer implements DataTransformerInterface
         foreach($edificios as $edificio){
             $arreglo[] = $edificio->getId();
         }
-        return $arreglo;
+		//convertir en cadena el arreglo
+		$cadena = implode(";",$arreglo);
+		
+        return $cadena;
     }
     
     /**
@@ -41,8 +44,11 @@ class EdificiosToArrayTransformer implements DataTransformerInterface
      *
      * @return ArrayCollection
      */
-    public function reverseTransform($arreglo)
+    public function reverseTransform($cadena)
     {
+		//convertir string en arreglo
+		$arreglo = explode(";",$cadena);
+		
         if (count($arreglo)==0) {
             return null;
         }

@@ -58,7 +58,7 @@ class EstadoCuentaController extends BaseController
         }
         
         $query = $em->getRepository('FrontendBundle:EstadoCuenta')
-                    ->queryFindEstadoCuentas($buscar,$edificioActual->getId(),$filtros['pagadas']);
+                    ->queryFindEstadoCuentas($buscar,$edificioActual->getId(),$filtros['pagados']);
         
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -128,7 +128,6 @@ class EstadoCuentaController extends BaseController
      */
     private function createCreateForm(EstadoCuenta $entity)
     {
-        $residencial = $this->getResidencialDefault();
         
         $form = $this->createForm(new EstadoCuentaType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_create'),
@@ -480,4 +479,86 @@ class EstadoCuentaController extends BaseController
         return $response;
     }
     
+	/**
+     * Seleccionar el tipo de acceso del cargo.
+     *
+     * @Route("/seleccionar/tipo", name="estadodecuentas_select_tipo")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function selectTipoAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        if($request->query->has('tipo_cargo')){
+            $filtros = $this->getFilters();
+            $filtros['tipo_cargo'] = $request->query->get('tipo_cargo');
+            $this->setFilters($filtros);
+            switch($filtros['tipo_cargo']){
+                case 1:
+					return $this->redirect($this->generateUrl('estadodecuentas_cargos_automaticos'));
+				case 2: 
+					return $this->redirect($this->generateUrl('estadodecuentas_cargo_a_residencial'));
+                case 3:
+                    return $this->redirect($this->generateUrl('estadodecuentas_cargo_por_edificio'));
+                case 4:
+                    return $this->redirect($this->generateUrl('estadodecuentas_select'));
+            }
+        }
+        
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $arreglo = array(
+			array('id'=>1,'nombre'=>'Cargos automaticos'),
+            array('id'=>2,'nombre'=>'Cargo general a residencial'),
+            array('id'=>3,'nombre'=>'Cargo por edificio'),
+            array('id'=>4,'nombre'=>'Cargo a inquilino'),
+        );
+        
+        return array(
+            'entities'=>$arreglo,
+            'residencial'=>$residencialActual,
+            'ruta' => 'estadodecuentas_select_tipo',
+            'campo' => 'tipo_cargo',
+            'titulo' => 'Seleccionar el tipo de cargo',
+            'return' => 'estadodecuentas',
+        );
+        
+    }
+	
+	/**
+     * Cargos automaticos.
+     *
+     * @Route("/cargos/automaticos", name="estadodecuentas_cargos_automaticos")
+     * @Template("FrontendBundle:EstadoCuenta:cargosAutomaticos.html.twig")
+     */
+    public function cargosAutomaticosAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        return array();
+    }
+	
+	/**
+     * Cargo a residencial.
+     *
+     * @Route("/cargo/a/residencial", name="estadodecuentas_cargo_a_residencial")
+     * @Template("FrontendBundle:EstadoCuenta:cargoAResidencial.html.twig")
+     */
+    public function cargoAResidencialAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        return array();
+    }
+	
+	/**
+     * Cargo por edificio.
+     *
+     * @Route("/cargo/por/edificio", name="estadodecuentas_cargo_por_edificio")
+     * @Template("FrontendBundle:EstadoCuenta:cargoPorEdificio.html.twig")
+     */
+    public function cargoPorEdificioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        return array();
+    }
+	
+	
 }

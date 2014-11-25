@@ -42,9 +42,8 @@ class RecursoController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
-        $recursos = $em->getRepository('BackendBundle:Recurso')->findBy(array(
-           'edificios' => array($edificioActual), 
-        ));
+        $recursos = $em->getRepository('BackendBundle:Recurso')
+					   ->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
 
         return array(
             'entities'      => $recursos,
