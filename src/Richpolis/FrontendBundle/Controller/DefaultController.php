@@ -38,13 +38,13 @@ class DefaultController extends BaseController {
         $edificio = $this->getEdificioActual();
 
         $queryForos = $em->getRepository('FrontendBundle:Foro')
-                               ->queryFindForosPorEdificio("",$edificio);
+                               ->queryFindForosPorEdificio($edificio);
         
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorEdificio($edificio->getId());
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->getReservacionesPorEdificio($edificio->getId());
+                            ->findReservacionesPorEdificio($edificio);
         
         $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
                           ->queryFindAvisosPorEdificio($edificio);
@@ -64,13 +64,13 @@ class DefaultController extends BaseController {
         $edificio = $this->getEdificioActual();
 
         $queryForos = $em->getRepository('FrontendBundle:Foro')
-                               ->queryFindForosPorEdificio("",$edificio);
+                               ->queryFindForosPorEdificio($edificio);
         
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->getReservacionesPorEdificio($edificio->getId());
+                            ->findReservacionesPorUsuario($this->getUser());
         
         $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
                           ->queryFindAvisosPorEdificio($edificio);
