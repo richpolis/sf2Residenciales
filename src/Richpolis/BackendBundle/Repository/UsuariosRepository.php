@@ -22,6 +22,11 @@ class UsuariosRepository extends EntityRepository
               ->where('r.id=:residencial')
               ->setParameter('residencial', $residencial)
               ->orderBy('u.nombre', 'ASC');
-        return $query;
+        return $query->getQuery();
+    }
+	
+	public function findUsuariosResidencial($residencial){
+        $query = $this->queryUsuariosResidencial($residencial);
+		return $query->getResult();
     }
 }

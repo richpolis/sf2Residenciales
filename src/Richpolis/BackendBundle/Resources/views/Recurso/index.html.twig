@@ -17,22 +17,22 @@
     <div class="mainbar">
       <!-- Page heading -->
       <div class="page-head">
-        <h2 class="pull-left">Recursos</h2>
+        <h2 class="pull-left">Amenidades</h2> <!-- Recusos -->
         <div class="clearfix"></div>
         <!-- Breadcrumb -->
         <div class="bread-crumb">
           <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
           <span class="divider">/</span>
           {% if is_granted('ROLE_SUPER_ADMIN') %}
-          <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+          <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
           {% else %}
-          <a href="#" class="bread-current">{{residencial}}</a>    
+          <a href="#" class="bread-current">{{edificio.residencial}}</a>    
           {% endif %}
           <span class="divider">/</span>
           <a href="{{ path('edificios')}}" class="bread-current">{{edificio}}</a>
           <span class="divider">/</span> 
-          <a href="{{path('recursos')}}" class="bread-current">Recursos</a>
-          <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear recurso</a>
+          <a href="{{path('recursos')}}" class="bread-current">Amenidades</a> <!-- Recursos -->
+          <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear amenidad</a> <!-- recurso -->
         </div>
         <div class="clearfix"></div>
       </div>
@@ -56,10 +56,10 @@
                            <tr>
                                <th>Id</th>
                                <th>Residencial</th>
-                               <th>Edificio</th>
-                               <th>Recurso</th>
+                               <th>Torre(s)</th>
+                               <th>Amenidad</th>
                                <th>Tipo acceso</th>
-                               <th>Precio</th>
+                               <th>Cuota</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -67,8 +67,20 @@
                        {% for entity in entities %}
                            <tr>
                                <td><a href="{{ path('recursos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.edificio.residencial }}</td>
-                               <td>{{ entity.edificio }}</td>
+                               <td>{{ entity.edificios[0].residencial }}</td>
+                               {% if entity.tipoAcceso == constant('Richpolis\\BackendBundle\\Entity\\Recurso::TIPO_ACCESO_EDIFICIO') %}
+								<td>
+									<ul>
+										{% for edificio in entity.edificios %}
+											<li>
+												{{ edificio }}
+											</li>
+										{% endfor %}
+									</ul>  
+								</td> 
+								{% else %}
+									<td>General</td>    
+								{% endif %}
                                <td>{{ entity.nombre }}</td>
                                <td>{{ entity.stringTipoAcceso }}</td>
                                <td>$ {{ entity.precio|number_format(2, '.', ',') }}</td>

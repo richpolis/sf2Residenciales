@@ -75,16 +75,23 @@ class EstadoCuenta
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_paid", type="boolean")
+     * @ORM\Column(name="is_paid", type="boolean", nullable=true)
      */
-    private $isPaid;
+    private $isPaid = false;
     
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_acumulable", type="boolean")
+     * @ORM\Column(name="is_acumulable", type="boolean", nullable=true)
      */
-    private $isAcumulable;
+    private $isAcumulable = true;
+	
+	/**
+     * @var boolean
+     *
+     * @ORM\Column(name="aviso_enviado", type="boolean", nullable=true)
+     */
+    private $avisoEnviado = false;
     
     /**
      * @var \DateTime
@@ -138,6 +145,7 @@ class EstadoCuenta
     public function __construct() {
         $this->isPaid       = false;
         $this->isAcumulable = true;
+		$this->avisoEnviado = false;
     }
 
     /**

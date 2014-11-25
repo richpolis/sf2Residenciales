@@ -7,8 +7,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
 use Richpolis\BackendBundle\Entity\Recurso;
+use Richpolis\BackendBundle\Entity\Residencial;
 
-class RecursoType extends AbstractType
+
+class RecursoPorEdificioType extends AbstractType
 {
     private $residencial; 
     
@@ -27,18 +29,8 @@ class RecursoType extends AbstractType
         
         $builder
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
-            ->add('tipoAcceso','choice',array(
-                'label'=>'Tipo acceso',
-                'empty_value'=>false,
-                'read_only'=> true,
-                'choices'=> Recurso::getArrayTipoAcceso(),
-                'preferred_choices'=> Recurso::getPreferedTipoAcceso(),
-                'attr'=>array(
-                    'class'=>'validate[required] form-control placeholder',
-                    'placeholder'=>'Tipo acceso',
-                    'data-bind'=>'value: tipoAcceso'
-                )))
-            ->add('precio','money',array('label'=>'cuota','currency'=>'MXN','attr'=>array('class'=>'form-control')))
+            ->add('tipoAcceso','hidden')
+            ->add('precio','money',array('label'=>'Cuota por evento','currency'=>'MXN','attr'=>array('class'=>'form-control')))
             ->add('edificios','entity',array(
                 'class'=>'BackendBundle:Edificio',
                 'choices' => $this->residencial->getEdificios(),

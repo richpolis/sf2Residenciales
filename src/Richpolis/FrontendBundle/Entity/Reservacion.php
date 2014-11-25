@@ -53,34 +53,45 @@ class Reservacion
      * @Assert\Date()
      */
     private $fechaEvento;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="duracion", type="integer")
-     */
-    private $duracion;
     
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="desde", type="time")
+     * @ORM\Column(name="desde", type="time",nullable=true)
      */
     private $desde;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="hasta", type="time")
+     * @ORM\Column(name="hasta", type="time",nullable=true)
      */
     private $hasta;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_aproved", type="boolean")
+     * @ORM\Column(name="is_aproved", type="boolean", nullable=true)
      */
-    private $isAproved;
+    private $isAproved = false;
+	
+	/**
+     * @var decimal
+     *
+     * @ORM\Column(name="monto", type="decimal", nullable=true)
+     */
+    private $monto;
+	
+	/**
+     * @var \Pago
+     * @todo Pago de la reservacion
+     *
+     * @ORM\ManyToOne(targetEntity="Pago")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="pago_id", referencedColumnName="id")
+     * })
+     */
+    private $pago;
     
     /**
      * @var \DateTime
@@ -105,7 +116,8 @@ class Reservacion
     }
     
     public function __construct() {
-        $this->isAproved=false;
+        $this->isAproved = false;
+		$this->monto = 0;
     }
     
     public function getStringReservacion(){
@@ -113,6 +125,8 @@ class Reservacion
                 $this->getRecurso(),$this->getUsuario()->getNumero(),$this->getUsuario());
     }
     
+
+   
 
     /**
      * Get id
@@ -145,29 +159,6 @@ class Reservacion
     public function getFechaEvento()
     {
         return $this->fechaEvento;
-    }
-
-    /**
-     * Set duracion
-     *
-     * @param integer $duracion
-     * @return Reservacion
-     */
-    public function setDuracion($duracion)
-    {
-        $this->duracion = $duracion;
-
-        return $this;
-    }
-
-    /**
-     * Get duracion
-     *
-     * @return integer 
-     */
-    public function getDuracion()
-    {
-        return $this->duracion;
     }
 
     /**
@@ -240,6 +231,29 @@ class Reservacion
     }
 
     /**
+     * Set monto
+     *
+     * @param string $monto
+     * @return Reservacion
+     */
+    public function setMonto($monto)
+    {
+        $this->monto = $monto;
+
+        return $this;
+    }
+
+    /**
+     * Get monto
+     *
+     * @return string 
+     */
+    public function getMonto()
+    {
+        return $this->monto;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -306,5 +320,28 @@ class Reservacion
     public function getUsuario()
     {
         return $this->usuario;
+    }
+
+    /**
+     * Set pago
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Pago $pago
+     * @return Reservacion
+     */
+    public function setPago(\Richpolis\FrontendBundle\Entity\Pago $pago = null)
+    {
+        $this->pago = $pago;
+
+        return $this;
+    }
+
+    /**
+     * Get pago
+     *
+     * @return \Richpolis\FrontendBundle\Entity\Pago 
+     */
+    public function getPago()
+    {
+        return $this->pago;
     }
 }

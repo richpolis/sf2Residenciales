@@ -75,16 +75,23 @@ class EstadoCuenta
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_paid", type="boolean")
+     * @ORM\Column(name="is_paid", type="boolean", nullable=true)
      */
-    private $isPaid;
+    private $isPaid = false;
     
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_acumulable", type="boolean")
+     * @ORM\Column(name="is_acumulable", type="boolean", nullable=true)
      */
-    private $isAcumulable;
+    private $isAcumulable = true;
+	
+	/**
+     * @var boolean
+     *
+     * @ORM\Column(name="aviso_enviado", type="boolean", nullable=true)
+     */
+    private $avisoEnviado = false;
     
     /**
      * @var \DateTime
@@ -112,12 +119,14 @@ class EstadoCuenta
     const TIPO_CARGO_ADEUDO     =   2;
     const TIPO_CARGO_RESERVACION=   3;
     const TIPO_CARGO_MULTA      =   4;
+	const TIPO_CARGO_MTTO       =   5;
         
     static public $sTipoCargo=array(
         self::TIPO_CARGO_NORMAL     =>  'Normal',
         self::TIPO_CARGO_ADEUDO     =>  'Por adeudo',
         self::TIPO_CARGO_RESERVACION=>  'Reservación',
         self::TIPO_CARGO_MULTA      =>  'Multa',
+		self::TIPO_CARGO_MTTO      	=>  'Mantenimiento',
     );
 
     public function getStringTipoCargo(){
@@ -138,7 +147,16 @@ class EstadoCuenta
     public function __construct() {
         $this->isPaid       = false;
         $this->isAcumulable = true;
+		$this->avisoEnviado = false;
     }
+	
+	private $edificios = array();
+ 	public function getEdificios(){
+		return $this->edificios;
+ 	}
+	public function setEdificios($edificios){
+		$this->edificios = $edificios;
+	}
 
     /**
      * Get id
@@ -332,5 +350,28 @@ class EstadoCuenta
     public function getPago()
     {
         return $this->pago;
+    }
+
+    /**
+     * Set avisoEnviado
+     *
+     * @param boolean $avisoEnviado
+     * @return EstadoCuenta
+     */
+    public function setAvisoEnviado($avisoEnviado)
+    {
+        $this->avisoEnviado = $avisoEnviado;
+
+        return $this;
+    }
+
+    /**
+     * Get avisoEnviado
+     *
+     * @return boolean 
+     */
+    public function getAvisoEnviado()
+    {
+        return $this->avisoEnviado;
     }
 }

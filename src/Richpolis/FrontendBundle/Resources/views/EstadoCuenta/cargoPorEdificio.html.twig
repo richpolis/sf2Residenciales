@@ -18,7 +18,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Amenidades</h2> <!-- Recusos -->
+            <h2 class="pull-left">Cargos</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -26,17 +26,12 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{residencial}}</a>    
                 {% endif %}    
-                <!--Divider-->
-                <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
-                <span class="divider">/</span>
-                <a href="{{path('recursos')}}" class="bread-current">Amenidades</a> <!-- Recursos -->
-                <span class="divider">/</span> 
-                <a href="{{path('recursos_new')}}" class="bread-current">Nuevo amenidad</a> <!-- recurso -->
+                <span class="divider">/</span>  
+                <a href="{{path('estadodecuentas_cargo_a_residencial')}}" class="bread-current">Cargo por Torre</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -50,7 +45,7 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Nuevo recurso</div>
+                                <div class="pull-left">Nuevo cargo por Torre</div>
                                 <div class="clearfix"></div>
                             </div>
 
@@ -59,12 +54,14 @@
                                     <!-- Form starts.  -->
                                     {{ form(form) }}
                                 </div>
+								<br/>
+								<div class="monto-cargo-usuario">
+									Cargo individual: 
+								</div>
                             </div>
-                                
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
-                                <button id="botonGuardar" class="btn btn-primary">Crear recurso</button>
-
+                                <button id="botonGuardar" class="btn btn-primary">Crear cargos</button>
                             </div>
                         </div>  
 
@@ -90,7 +87,7 @@
     <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
     <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
     <!-- jQuery Notification ends -->
-
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
     <script src="{{asset('js/languages/jquery.validationEngine-es.js')}}"></script> <!-- jQuery Validation Engine Language File -->
     <script src="{{asset('js/jquery.validationEngine.js')}}"></script> <!-- jQuery Validation Engine -->
     <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
@@ -98,16 +95,40 @@
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 
     <script>
+		var usuarios = 0;
         $(document).ready(function () {
             $(".validate").validationEngine();
 
             $("#botonRegresar").on("click", function () {
-                location.href = "{{path('recursos')}}";
+                location.href = "{{path('estadodecuentas')}}";
             });
 
             $("#botonGuardar").on("click", function () {
                 $(".contenido-formulario form").submit();
             });
+			
+			$("#richpolis_frontendbundle_estadocuenta_monto").on("change",function(){
+				if(usuarios>0){
+					$(".monto-cargo-usuario").html("Monto por usuario: $ "+($(this).val()/usuarios));
+				}
+			});
+			
+			$("#richpolis_frontendbundle_estadocuenta_edificios").on("change",function(){
+				$.ajax({
+					type: "POST",
+					url: '{{path('estadodecuentas_usuarios_por_edificio')}}',
+					data: $(".contenido-formulario form").serialize(),
+					success: function(data){
+						alert("Usuarios "+ data.usuarios);
+						usuarios = data.usuarios;
+						$(".monto-cargo-usuario").html("Monto por usuario: $ "+($("#richpolis_frontendbundle_estadocuenta_monto").val()/usuarios));
+					},
+					error: function(data){
+						alert("error");
+						console.log("Error "+ data);
+					}
+				});
+			});
 
         {% if errores | length > 0 %}
             {% for error in errores %}

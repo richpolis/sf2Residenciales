@@ -85,8 +85,11 @@ class ReservacionController extends BaseController
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+			if($entity->getMonto()==0){
+				$entity->setIsAproved(true);
+			}
             $em->persist($entity);
-            $em->flush();
+			$em->flush();
 
             return $this->redirect($this->generateUrl('reservaciones_show', array('id' => $entity->getId())));
         }
@@ -134,12 +137,14 @@ class ReservacionController extends BaseController
         $usuario = $em->find('BackendBundle:Usuario', $filtros['usuario']);
         $entity->setRecurso($recurso);
         $entity->setUsuario($usuario);
+		$entity->setMonto($recurso->getPrecio());
         $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'errores' => RpsStms::getErrorMessages($form)
+            'errores' => RpsStms::getErrorMessages($form),
+			'edificio' => $this->getEdificioActual(),
         );
     }
 
@@ -165,6 +170,7 @@ class ReservacionController extends BaseController
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+			'edificio' => $this->getEdificioActual(),
         );
     }
 
@@ -192,7 +198,8 @@ class ReservacionController extends BaseController
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'errores' => RpsStms::getErrorMessages($editForm)
+            'errores' => RpsStms::getErrorMessages($editForm),
+			'edificio' => $this->getEdificioActual(),
         );
     }
 
@@ -246,7 +253,8 @@ class ReservacionController extends BaseController
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'errores' => RpsStms::getErrorMessages($editForm)
+            'errores' => RpsStms::getErrorMessages($editForm),
+			'edificio' => $this->getEdificioActual(),
         );
     }
     /**
@@ -389,6 +397,7 @@ class ReservacionController extends BaseController
             'ruta' => 'reservaciones_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Seleccionar usuario que hace la reservacion',
+            'return' => 'reservaciones_select_recurso',
         );
         
     }

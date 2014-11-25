@@ -26,13 +26,13 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.recurso.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.recurso.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{{edificio.residencial}}</a>    
                 {% endif %}    
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.recurso.edificio}}</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
                 <!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('recursos')}}" class="bread-current">{{ entity.recurso }}</a>
@@ -87,6 +87,8 @@
     {{ parent() }}
 
     <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+    <script src="{{asset('js/jquery-ui-timepicker-addon.js')}}"></script>
+	
     <!-- jQuery Notification - Noty -->
     <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
     <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -124,6 +126,26 @@
 
             $("#botonGuardar").on("click", function () {
                 $(".contenido-formulario form").submit();
+            });
+			
+			$("#richpolis_frontendbundle_reservacion_fechaEvento").datepicker({
+                dateFormat: "yy-mm-dd",
+                {% if is_granted('ROLE_SUPER_ADMIN') == false %}    
+                minDate: 0,       
+                maxDate: "+3M"
+                {% endif %}
+            });
+            
+            $('#richpolis_frontendbundle_reservacion_desde').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
+            });
+            
+            $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
             });
 
         {% if errores | length > 0 %}

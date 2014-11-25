@@ -79,6 +79,7 @@ class RecursoController extends BaseController
             'entity' => $entity,
             'form'   => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
+			'edificio'=> $this->getEdificioActual(),
         );
     }
 
@@ -117,7 +118,6 @@ class RecursoController extends BaseController
     public function newAction()
     {
         $entity = new Recurso();
-        $entity->setEdificio($this->getEdificioActual());
         $filtros = $this->getFilters();
         $edificio = $this->getEdificioActual();
         $entity->setTipoAcceso($filtros['nivel_aviso']);
@@ -128,6 +128,7 @@ class RecursoController extends BaseController
             'entity' => $entity,
             'form'   => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
+			'edificio' => $edificio,
         );
     }
 
@@ -153,6 +154,7 @@ class RecursoController extends BaseController
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+			'edificio'=> $this->getEdificioActual(),
         );
     }
 
@@ -181,6 +183,7 @@ class RecursoController extends BaseController
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
+			'edificio'=> $this->getEdificioActual(),
         );
     }
 
@@ -240,6 +243,7 @@ class RecursoController extends BaseController
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
+			'edificio'=> $this->getEdificioActual(),
         );
     }
     /**
@@ -300,8 +304,9 @@ class RecursoController extends BaseController
             $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
             $this->setFilters($filtros);
             switch($filtros['nivel_aviso']){
-                case Actividad::TIPO_ACCESO_RESIDENCIAL:
-                case Actividad::TIPO_ACCESO_EDIFICIO:
+                case Recurso::TIPO_ACCESO_RESIDENCIAL:
+                case Recurso::TIPO_ACCESO_EDIFICIO:
+				case Recurso::TIPO_ACCESO_PRIVADO:
                     return $this->redirect($this->generateUrl('recursos_new'));
             }
         }
@@ -309,6 +314,7 @@ class RecursoController extends BaseController
         $arreglo = array(
             array('id'=>  Recurso::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Para Residencial'),
             array('id'=>  Recurso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por torre'),
+			array('id'=>  Recurso::TIPO_ACCESO_PRIVADO,'nombre'=>'Privado (solo administración)'),
         );
         return array(
             'entities'=>$arreglo,

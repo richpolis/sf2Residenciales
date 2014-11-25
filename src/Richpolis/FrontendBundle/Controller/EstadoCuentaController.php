@@ -9,6 +9,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\EstadoCuentaType;
+use Richpolis\FrontendBundle\Form\CargoAResidencialType;
+use Richpolis\FrontendBundle\Form\CargoPorEdificioType;
+
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
@@ -541,11 +544,46 @@ class EstadoCuentaController extends BaseController
      *
      * @Route("/cargo/a/residencial", name="estadodecuentas_cargo_a_residencial")
      * @Template("FrontendBundle:EstadoCuenta:cargoAResidencial.html.twig")
+     * @Method({"GET","POST"})
      */
     public function cargoAResidencialAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        return array();
+		$residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+					   ->findUsuariosResidencial($residencial->getId());
+		$entity = new EstadoCuenta();
+        $form = $this->createForm(new CargoAResidencialType(), $entity, array(
+            'action' => $this->generateUrl('estadodecuentas_cargo_a_residencial'),
+            'method' => 'POST'
+        ));
+        if($request->isMethod('POST')){
+            $form->handleRequest($request);
+            $data = $form->getData();
+			$descripcion = $data->getCargo();
+			$monto = $data->getMonto();
+			$montoPorUsuario = $monto / count($usuarios);
+			$tipoCargo = $data->getTipoCargo();
+			$isAcumulable = $data->getIsAcumulable();
+			foreach($usuarios as $usuario){
+				$cargo = new EstadoCuenta();
+				$cargo->setCargo($descripcion);
+				$cargo->setMonto($montoPorUsuario);
+				$cargo->setUsuario($usuario);
+				$cargo->setTipoCargo($tipoCargo);
+				$cargo->setIsAcumulable($isAcumulable);
+				$em->persist($cargo);
+			}
+			$em->flush();
+			return $this->redirect($this->generateUrl('estadodecuentas'));
+        }
+        return array(
+            'entity' => $entity,
+			'residencial' => $residencial,
+			'contUsuarios' => count($usuarios),
+            'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
+        );
     }
 	
 	/**
@@ -553,12 +591,81 @@ class EstadoCuentaController extends BaseController
      *
      * @Route("/cargo/por/edificio", name="estadodecuentas_cargo_por_edificio")
      * @Template("FrontendBundle:EstadoCuenta:cargoPorEdificio.html.twig")
+     * @Method({"GET","POST"})
      */
     public function cargoPorEdificioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        return array();
+		$residencial = $this->getResidencialActual($this->getResidencialDefault());
+		$entity = new EstadoCuenta();
+        $form = $this->createForm(new CargoPorEdificioType($residencial), $entity, array(
+            'action' => $this->generateUrl('estadodecuentas_cargo_por_edificio'),
+            'method' => 'POST'
+        ));
+        
+        if($request->isMethod('POST')){
+            $form->handleRequest($request);
+            $data = $form->getData();
+			$descripcion = $data->getCargo();
+			$usuarios = $this->getUsuariosPorEdificios($data->getEdificios());
+			$monto = $data->getMonto();
+			$montoPorUsuario = $monto / count($usuarios);
+			$tipoCargo = $data->getTipoCargo();
+			$isAcumulable = $data->getIsAcumulable();
+			foreach($usuarios as $usuario){
+				$cargo = new EstadoCuenta();
+				$cargo->setCargo($descripcion);
+				$cargo->setMonto($montoPorUsuario);
+				$cargo->setUsuario($usuario);
+				$cargo->setTipoCargo($tipoCargo);
+				$cargo->setIsAcumulable($isAcumulable);
+				$em->persist($cargo);
+			}
+			$em->flush();
+			return $this->redirect($this->generateUrl('estadodecuentas'));
+        }
+        return array(
+            'entity' => $entity,
+			'residencial' => $residencial,
+            'form'   => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
+        );
     }
 	
+	/**
+     * Usuarios por edificios.
+     *
+     * @Route("/usuarios/por/edificio", name="estadodecuentas_usuarios_por_edificio")
+     * @Method("POST")
+     */
+    public function usuariosPorEdificioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+		$residencial = $this->getResidencialActual($this->getResidencialDefault());
+		$entity = new EstadoCuenta();
+        $form = $this->createForm(new CargoPorEdificioType(), $entity, array(
+            'action' => $this->generateUrl('estadodecuentas_usuarios_por_edificio'),
+            'method' => 'POST'
+        ));
+        
+        if($request->isMethod('POST')){
+            $form->handleRequest($request);
+			$data = $form->getData();
+			$usuarios = $this->getUsuariosPorEdificios($data->getEdificios());
+			$response = new JsonResponse(json_encode(array('usuarios'=>count($usuarios))));
+        	return $response;
+        }
+		$response = new JsonResponse(json_encode(array('usuarios'=>0)));
+        return $response;
+    }
 	
+	public function getUsuariosPorEdificios($edificios){
+		$usuarios = new \Doctrine\Common\Collections\ArrayCollection();
+		foreach($edificios as $edificio){
+			foreach($edificio->getUsuarios() as $usuario){
+				$usuarios[] = $usuario;
+			}
+		}
+		return $usuarios;
+	}
 }

@@ -99,9 +99,9 @@ class Usuario implements UserInterface, \Serializable
     /**
      * @var \Booolean
      *
-     * @ORM\Column(name="is_active", type="boolean")
+     * @ORM\Column(name="is_active", type="boolean",nullable=true)
      */
-    private $isActive;
+    private $isActive = true;
 
     /**
      * @var \DateTime

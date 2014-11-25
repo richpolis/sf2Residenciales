@@ -96,9 +96,9 @@ class Foro
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_cerrado", type="boolean")
+     * @ORM\Column(name="is_cerrado", type="boolean", nullable=true)
      */
-    private $isCerrado;
+    private $isCerrado = false;
 
     /**
      * @var \DateTime

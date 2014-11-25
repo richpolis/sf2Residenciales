@@ -20,9 +20,23 @@ class ReservacionType extends AbstractType
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
         $recursoTransformer = new RecursoToNumberTransformer($em);
         $builder
-            ->add('fechaEvento',null,array('attr'=>array('class'=>'form-control')))
-            ->add('duracion',null,array('attr'=>array('class'=>'form-control')))
-            ->add('isAproved',null,array('label'=>'Aprobado?'))    
+            ->add('fechaEvento','date',array(
+                'widget' => 'single_text', 
+                'format' => 'yyyy-MM-dd',
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('desde','time',array(
+                'widget' => 'single_text',
+                'with_seconds'=> false,
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('hasta','time',array(
+                'widget' => 'single_text',
+                'with_seconds'=> false,
+                'attr'=>array('class'=>'form-control')
+                ))
+            ->add('isAproved','hidden')
+			->add('monto','hidden')
             ->add($builder->create('recurso', 'hidden')->addModelTransformer($recursoTransformer))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
         ;

@@ -44,7 +44,7 @@ class Pago
      *
      * @ORM\Column(name="is_aproved", type="boolean", nullable=true)
      */
-    private $isAproved;
+    private $isAproved = false;
     
     /**
      * @var \Usuario

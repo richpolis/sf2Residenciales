@@ -44,12 +44,10 @@ class Edificio
     private $residencial;    
 
     /**
-     * @var integer
-     * @todo Recursos del edificio. 
+     * @var \Array de Recurso
+     * @todo Recursos del edificio
      *
-     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Recurso", inversedBy="edificios")
-     * @ORM\JoinTable(name="edificio_recursos")
-     * @ORM\OrderBy({"nombre" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Recurso")
      */
     private $recursos;
    
@@ -97,7 +95,7 @@ class Edificio
      * Set nombre
      *
      * @param string $nombre
-     * @return Usuario
+     * @return Edificio
      */
     public function setNombre($nombre)
     {
@@ -115,13 +113,35 @@ class Edificio
     {
         return $this->nombre;
     }
-    
+
+    /**
+     * Set cuota
+     *
+     * @param string $cuota
+     * @return Edificio
+     */
+    public function setCuota($cuota)
+    {
+        $this->cuota = $cuota;
+
+        return $this;
+    }
+
+    /**
+     * Get cuota
+     *
+     * @return string 
+     */
+    public function getCuota()
+    {
+        return $this->cuota;
+    }
 
     /**
      * Set residencial
      *
      * @param \Richpolis\BackendBundle\Entity\Residencial $residencial
-     * @return Usuario
+     * @return Edificio
      */
     public function setResidencial(\Richpolis\BackendBundle\Entity\Residencial $residencial = null)
     {
@@ -144,7 +164,7 @@ class Edificio
      * Add recursos
      *
      * @param \Richpolis\BackendBundle\Entity\Recurso $recursos
-     * @return Usuario
+     * @return Edificio
      */
     public function addRecurso(\Richpolis\BackendBundle\Entity\Recurso $recursos)
     {
@@ -177,7 +197,7 @@ class Edificio
      * Add usuarios
      *
      * @param \Richpolis\BackendBundle\Entity\Usuario $usuarios
-     * @return Usuario
+     * @return Edificio
      */
     public function addUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuarios)
     {
@@ -204,28 +224,5 @@ class Edificio
     public function getUsuarios()
     {
         return $this->usuarios;
-    }
-
-    /**
-     * Set cuota
-     *
-     * @param string $cuota
-     * @return Edificio
-     */
-    public function setCuota($cuota)
-    {
-        $this->cuota = $cuota;
-
-        return $this;
-    }
-
-    /**
-     * Get cuota
-     *
-     * @return string 
-     */
-    public function getCuota()
-    {
-        return $this->cuota;
     }
 }

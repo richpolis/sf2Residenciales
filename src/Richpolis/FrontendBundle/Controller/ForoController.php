@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Foro;
 use Richpolis\FrontendBundle\Form\ForoType;
+use Richpolis\FrontendBundle\Form\ForoPorEdificioType;
+
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 

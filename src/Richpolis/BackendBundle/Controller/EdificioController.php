@@ -36,6 +36,7 @@ class EdificioController extends BaseController
             if($request->query->has('residencial')){
                 $filters = $this->getFilters();
                 $filters['residencial'] = $request->query->get('residencial');
+				unset($filters['edificio']);
                 $this->setFilters($filters);
             }
         }

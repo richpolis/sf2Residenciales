@@ -17,7 +17,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Recursos</h2>
+            <h2 class="pull-left">Amenidades</h2> <!-- Recusos -->
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -25,21 +25,21 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.edificio.residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{entity.edificio.residencial}}</a>    
+                <a href="#" class="bread-current">{edificio.residencial}}</a>    
                 {% endif %}    
                 <!--Divider-->
                 <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{entity.edificio}}</a>
+                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
                 <span class="divider">/</span>
-                <a href="{{path('recursos')}}" class="bread-current">Recursos</a>
+                <a href="{{path('recursos')}}" class="bread-current">Amenidades</a> <!-- Recursos -->
                 <span class="divider">/</span>
                 <a href="{{path('recursos_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear recurso</a>
-                        {% endif %}
-                        </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear amenidad</a> <!-- recurso -->
+                {% endif %}
+                </div>
 
                         <div class="clearfix"></div>
 
@@ -60,7 +60,8 @@
                                                 </div>
 
                                                 <div class="widget-content">
-                                                    <div class="padd contenido-formulario">    <table class="record_properties">
+                                                    <div class="padd contenido-formulario">    
+													<table class="record_properties">
                                                             <tbody>
                                                                 <tr>
                                                                     <th>Id</th>
@@ -68,14 +69,26 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Residencial</th>
-                                                                    <td>{{ entity.edificio.residencial }}</td>
+                                                                    <td>{{ entity.edificios[0].residencial }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Edificio</th>
-                                                                    <td>{{ entity.edificio }}</td>
+                                                                    <th>Torres</th>
+                                                                    {% if entity.tipoAcceso == constant('Richpolis\\BackendBundle\\Entity\\Recurso::TIPO_ACCESO_EDIFICIO') %}
+																	<td>
+																		<ul>
+																			{% for edificio in entity.edificios %}
+																				<li>
+																					{{ edificio }}
+																				</li>
+																			{% endfor %}
+																		</ul>  
+																	</td> 
+																	{% else %}
+																	<td>General</td>    
+																	{% endif %}
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Recurso</th>
+                                                                    <th>Amenidad</th><!-- recurso -->
                                                                     <td>{{ entity.nombre }}</td>
                                                                 </tr>
                                                                 <tr>
@@ -83,7 +96,7 @@
                                                                     <td>{{ entity.stringTipoAcceso }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Precio</th>
+                                                                    <th>Cuota por evento</th>
                                                                     <td>$ {{ entity.precio|number_format(2, '.', ',') }}</td>
                                                                 </tr>
                                                             </tbody>

@@ -25,11 +25,14 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+                <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{{residencial}}</a>    
+                <a href="#" class="bread-current">{{edificio.residencial}}</a>    
                 {% endif %}    
                 <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
+				<!--Divider-->
                 <span class="divider">/</span> 
                 <a href="{{path('reservaciones')}}" class="bread-current">Reservaciones</a>
                 <a href="{{path('reservaciones_select_recurso')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear reservacion</a>

@@ -53,34 +53,45 @@ class Reservacion
      * @Assert\Date()
      */
     private $fechaEvento;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="duracion", type="integer")
-     */
-    private $duracion;
     
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="desde", type="time")
+     * @ORM\Column(name="desde", type="time",nullable=true)
      */
     private $desde;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="hasta", type="time")
+     * @ORM\Column(name="hasta", type="time",nullable=true)
      */
     private $hasta;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_aproved", type="boolean")
+     * @ORM\Column(name="is_aproved", type="boolean", nullable=true)
      */
-    private $isAproved;
+    private $isAproved = false;
+	
+	/**
+     * @var decimal
+     *
+     * @ORM\Column(name="monto", type="decimal", nullable=true)
+     */
+    private $monto;
+	
+	/**
+     * @var \Pago
+     * @todo Pago de la reservacion
+     *
+     * @ORM\ManyToOne(targetEntity="Pago")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="pago_id", referencedColumnName="id")
+     * })
+     */
+    private $pago;
     
     /**
      * @var \DateTime
@@ -105,7 +116,8 @@ class Reservacion
     }
     
     public function __construct() {
-        $this->isAproved=false;
+        $this->isAproved = false;
+		$this->monto = 0;
     }
     
     public function getStringReservacion(){
@@ -114,197 +126,5 @@ class Reservacion
     }
     
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set fechaEvento
-     *
-     * @param \DateTime $fechaEvento
-     * @return Reservacion
-     */
-    public function setFechaEvento($fechaEvento)
-    {
-        $this->fechaEvento = $fechaEvento;
-
-        return $this;
-    }
-
-    /**
-     * Get fechaEvento
-     *
-     * @return \DateTime 
-     */
-    public function getFechaEvento()
-    {
-        return $this->fechaEvento;
-    }
-
-    /**
-     * Set duracion
-     *
-     * @param integer $duracion
-     * @return Reservacion
-     */
-    public function setDuracion($duracion)
-    {
-        $this->duracion = $duracion;
-
-        return $this;
-    }
-
-    /**
-     * Get duracion
-     *
-     * @return integer 
-     */
-    public function getDuracion()
-    {
-        return $this->duracion;
-    }
-
-    /**
-     * Set desde
-     *
-     * @param \DateTime $desde
-     * @return Reservacion
-     */
-    public function setDesde($desde)
-    {
-        $this->desde = $desde;
-
-        return $this;
-    }
-
-    /**
-     * Get desde
-     *
-     * @return \DateTime 
-     */
-    public function getDesde()
-    {
-        return $this->desde;
-    }
-
-    /**
-     * Set hasta
-     *
-     * @param \DateTime $hasta
-     * @return Reservacion
-     */
-    public function setHasta($hasta)
-    {
-        $this->hasta = $hasta;
-
-        return $this;
-    }
-
-    /**
-     * Get hasta
-     *
-     * @return \DateTime 
-     */
-    public function getHasta()
-    {
-        return $this->hasta;
-    }
-
-    /**
-     * Set isAproved
-     *
-     * @param boolean $isAproved
-     * @return Reservacion
-     */
-    public function setIsAproved($isAproved)
-    {
-        $this->isAproved = $isAproved;
-
-        return $this;
-    }
-
-    /**
-     * Get isAproved
-     *
-     * @return boolean 
-     */
-    public function getIsAproved()
-    {
-        return $this->isAproved;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Reservacion
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set recurso
-     *
-     * @param \Richpolis\BackendBundle\Entity\Recurso $recurso
-     * @return Reservacion
-     */
-    public function setRecurso(\Richpolis\BackendBundle\Entity\Recurso $recurso = null)
-    {
-        $this->recurso = $recurso;
-
-        return $this;
-    }
-
-    /**
-     * Get recurso
-     *
-     * @return \Richpolis\BackendBundle\Entity\Recurso 
-     */
-    public function getRecurso()
-    {
-        return $this->recurso;
-    }
-
-    /**
-     * Set usuario
-     *
-     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
-     * @return Reservacion
-     */
-    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    /**
-     * Get usuario
-     *
-     * @return \Richpolis\BackendBundle\Entity\Usuario 
-     */
-    public function getUsuario()
-    {
-        return $this->usuario;
-    }
+   
 }

@@ -31,11 +31,13 @@ class Recurso
      */
     private $nombre;
 
-    /**
-     * @var \Array de Edificio
-     * @todo Edificios del recurso
+   /**
+     * @var integer
+     * @todo Edificios del recurso. 
      *
-     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", mappedBy="recursos")
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
+     * @ORM\JoinTable(name="edificios_recursos")
+     * @ORM\OrderBy({"nombre" = "ASC"})
      */
     private $edificios;
 
@@ -52,9 +54,6 @@ class Recurso
      * @ORM\Column(name="precio", type="decimal", nullable=true)
      */
     private $precio;
-    
-    
-    
 
     public function __toString() {
         return $this->nombre;
@@ -65,9 +64,9 @@ class Recurso
     const TIPO_ACCESO_PRIVADO=3;
         
     static public $sTipoAcceso=array(
-        self::TIPO_ACCESO_RESIDENCIAL=>'Residencial',
-        self::TIPO_ACCESO_EDIFICIO=>'Torre',
-        self::TIPO_ACCESO_PRIVADO=>'Privado',
+        self::TIPO_ACCESO_RESIDENCIAL=>'A residencial',
+        self::TIPO_ACCESO_EDIFICIO=>'Por torre',
+        self::TIPO_ACCESO_PRIVADO=>'Privado (solo administración)',
     );
     
     public function getStringTipoAcceso(){
@@ -84,7 +83,7 @@ class Recurso
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->precio = 0;
     }
-    
+
     /**
      * Get id
      *
@@ -94,7 +93,6 @@ class Recurso
     {
         return $this->id;
     }
-    
 
     /**
      * Set nombre
@@ -122,7 +120,7 @@ class Recurso
     /**
      * Set tipoAcceso
      *
-     * @param boolean $tipoAcceso
+     * @param integer $tipoAcceso
      * @return Recurso
      */
     public function setTipoAcceso($tipoAcceso)
@@ -135,7 +133,7 @@ class Recurso
     /**
      * Get tipoAcceso
      *
-     * @return boolean 
+     * @return integer 
      */
     public function getTipoAcceso()
     {
@@ -163,29 +161,6 @@ class Recurso
     public function getPrecio()
     {
         return $this->precio;
-    }
-
-    /**
-     * Set edificio
-     *
-     * @param \Richpolis\BackendBundle\Entity\Edificio $edificio
-     * @return Recurso
-     */
-    public function setEdificio(\Richpolis\BackendBundle\Entity\Edificio $edificio = null)
-    {
-        $this->edificio = $edificio;
-
-        return $this;
-    }
-
-    /**
-     * Get edificio
-     *
-     * @return \Richpolis\BackendBundle\Entity\Edificio 
-     */
-    public function getEdificio()
-    {
-        return $this->edificio;
     }
 
     /**
