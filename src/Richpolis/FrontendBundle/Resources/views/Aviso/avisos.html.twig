@@ -34,7 +34,7 @@
                                             {% if registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
                                                 {% set nivel = "General" %}
                                             {% elseif registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_EDIFICIO') %}
-                                                {% set nivel = registro.edificio %}
+                                                {% set nivel = app.user.edificio %}
                                             {% else %}
                                                 {% set nivel = registro.usuario %}    
                                             {% endif %}

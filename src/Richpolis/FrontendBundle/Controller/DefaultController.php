@@ -63,8 +63,8 @@ class DefaultController extends BaseController {
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
 
-        $queryForos = $em->getRepository('FrontendBundle:Foro')
-                               ->queryFindForosPorEdificio($edificio);
+        $foros = $em->getRepository('FrontendBundle:Foro')
+                         ->findForosPorEdificio($edificio);
         
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());
@@ -72,12 +72,12 @@ class DefaultController extends BaseController {
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                             ->findReservacionesPorUsuario($this->getUser());
         
-        $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
-                          ->queryFindAvisosPorEdificio($edificio);
+        $avisos = $em->getRepository('FrontendBundle:Aviso')
+                     ->findAvisosPorUsuario($this->getUser());
 
         return $this->render('FrontendBundle:Default:index.html.twig', array(
-            'foros'   =>  $queryForos->setMaxResults(10)->getResult(),
-            'avisos' => $queryAvisos->setMaxResults(10)->getResult(),
+            'foros'         =>  $foros,
+            'avisos'        =>  $avisos,
             'cargos'        =>  $cargos,
             'reservaciones' =>  $reservaciones,
         ));

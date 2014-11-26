@@ -67,7 +67,7 @@ class Foro
      * @var integer
      * @todo Edificios dentro de la residencial avisos. 
      *
-     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="foros")
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
      * @ORM\JoinTable(name="foros_edificios")
      * @ORM\OrderBy({"nombre" = "DESC"})
      */

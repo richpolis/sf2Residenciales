@@ -57,7 +57,7 @@ class DocumentoController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $documentos = $em->getRepository('FrontendBundle:Documento')
-                     ->findDocumentosPorUsuario($this->getUser());
+                     ->findDocumentosPorEdificio($edificio);
         return $this->render("FrontendBundle:Documento:documentos.html.twig", array(
             'entities' => $documentos,
             'edificio' => $edificio,

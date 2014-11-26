@@ -50,7 +50,7 @@ class Edificio
      * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Recurso")
      */
     private $recursos;
-   
+  
     /**
      * @var Array 
      * @todo Arreglo de usuarios dentro del edificio

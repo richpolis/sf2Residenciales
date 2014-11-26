@@ -23,13 +23,12 @@ class ForoRepository extends EntityRepository
                     . "JOIN f.usuario u "
                     . "JOIN f.edificios e "
                     . "JOIN f.residencial r "
-                    . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                    . "AND f.tipoAcceso<=:tipoAcceso "
+                    . "WHERE (r.id =:residencial AND f.tipoAcceso=1) "
+                    . "OR (e.id=:edificio AND f.tipoAcceso=2 ) "
                     . "ORDER BY f.createdAt DESC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
-                'residencial' => $edificio->getResidencial()->getId(),
-                'tipoAcceso' => Foro::TIPO_ACCESO_EDIFICIO,
+                'residencial' => $edificio->getResidencial()->getId()
             ));
         }else{
             $consulta = $em->createQuery("SELECT f,u,e,r "
@@ -37,14 +36,13 @@ class ForoRepository extends EntityRepository
                     . "JOIN f.usuario u "
                     . "JOIN f.edificios e "
                     . "JOIN f.residencial r "
-                    . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                    . "AND f.tipoAcceso<=:tipoAcceso "
+                    . "WHERE (r.id =:residencial AND f.tipoAcceso=1) "
+                    . "OR (e.id=:edificio AND f.tipoAcceso=2 ) "
                     . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR f.titulo LIKE :titulo) "
                     . "ORDER BY f.createdAt DESC, u.numero ASC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
                 'residencial' => $edificio->getResidencial()->getId(),
-                'tipoAcceso' => Foro::TIPO_ACCESO_EDIFICIO,
                 'numero' => $buscar,
                 'nombre' => "%" . $buscar . "%",
                 'email' => "%" . $buscar . "%",

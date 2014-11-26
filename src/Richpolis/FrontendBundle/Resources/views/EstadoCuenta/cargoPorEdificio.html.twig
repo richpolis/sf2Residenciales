@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}">
     <!-- jQuery Validation Engine stylesheet -->
     <link rel="stylesheet" href="{{asset('css/validationEngine.jquery.css')}}">
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">
+    
 {% endblock %}
 
 {% block mainbar %}
@@ -54,10 +56,10 @@
                                     <!-- Form starts.  -->
                                     {{ form(form) }}
                                 </div>
-								<br/>
-								<div class="monto-cargo-usuario">
-									Cargo individual: 
-								</div>
+                                <br/>
+                                <div class="monto-cargo-usuario">
+                                    Cargo individual: 
+                                </div>
                             </div>
                             <div class="widget-foot">
                                 <button id="botonRegresar" class="btn btn-default">Regresar</button>
@@ -95,7 +97,7 @@
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 
     <script>
-		var usuarios = 0;
+	var usuarios = 0;
         $(document).ready(function () {
             $(".validate").validationEngine();
 
@@ -107,28 +109,29 @@
                 $(".contenido-formulario form").submit();
             });
 			
-			$("#richpolis_frontendbundle_estadocuenta_monto").on("change",function(){
-				if(usuarios>0){
-					$(".monto-cargo-usuario").html("Monto por usuario: $ "+($(this).val()/usuarios));
-				}
-			});
+            $("#richpolis_frontendbundle_estadocuenta_monto").on("change",function(){
+		if(usuarios>0){
+                    $(".monto-cargo-usuario").html("Monto por usuario: $ "+($(this).val()/usuarios));
+                }
+            });
 			
-			$("#richpolis_frontendbundle_estadocuenta_edificios").on("change",function(){
-				$.ajax({
-					type: "POST",
-					url: '{{path('estadodecuentas_usuarios_por_edificio')}}',
-					data: $(".contenido-formulario form").serialize(),
-					success: function(data){
-						alert("Usuarios "+ data.usuarios);
-						usuarios = data.usuarios;
-						$(".monto-cargo-usuario").html("Monto por usuario: $ "+($("#richpolis_frontendbundle_estadocuenta_monto").val()/usuarios));
-					},
-					error: function(data){
-						alert("error");
-						console.log("Error "+ data);
-					}
-				});
-			});
+            $("#richpolis_frontendbundle_estadocuenta_edificios").on("change",function(){
+		$.ajax({
+                    type: "POST",
+                    url: '{{path('estadodecuentas_usuarios_por_edificio')}}',
+                    data: $(".contenido-formulario form").serialize(),
+                    success: function(data){
+                        var dato = JSON.parse(data);
+			usuarios = dato.usuarios;
+			$(".monto-cargo-usuario").html("Monto por usuario: $ "
+                            +($("#richpolis_frontendbundle_estadocuenta_monto").val()/usuarios));
+                    },
+                    error: function(data){
+			alert("error");
+			console.log("Error "+ data);
+                    }
+                });
+            });
 
         {% if errores | length > 0 %}
             {% for error in errores %}

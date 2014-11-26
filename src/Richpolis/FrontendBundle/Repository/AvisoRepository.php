@@ -38,24 +38,28 @@ class AvisoRepository extends EntityRepository
     
     public function queryFindAvisosPorUsuario(Usuario $usuario) {
         $em = $this->getEntityManager();
-        $consulta = $em->createQuery("SELECT a,e,r "
+        $consulta = $em->createQuery("SELECT a,u,e,r "
                 . "FROM FrontendBundle:Aviso a "
                 . "JOIN a.usuario u "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial OR u.id =:usuario) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "WHERE (r.id =:residencial AND a.tipoAcceso=1) "
+                . "OR (e.id=:edificio AND a.tipoAcceso=2 ) "
+                . "OR (u.id=:usuario AND a.tipoAcceso=3 ) "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),
             'edificio' => $usuario->getEdificio()->getId(),
             'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
-            'tipoAcceso' => Aviso::TIPO_ACCESO_PRIVADO,
         ));
         return $consulta;
     }
 
-    public function findAvisosPorUsuario(Usuario $usuario) {
-        return $this->queryFindAvisosPorUsuario($usuario)->getResult();
+    public function findAvisosPorUsuario(Usuario $usuario,$max = 0) {
+        if($max>0){
+            return $this->queryFindAvisosPorUsuario($usuario)->setMaxResults($max)->getResult();
+        }else{
+            return $this->queryFindAvisosPorUsuario($usuario)->getResult();
+        }
     }
 }

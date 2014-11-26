@@ -11,6 +11,7 @@ use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\EstadoCuentaType;
 use Richpolis\FrontendBundle\Form\CargoAResidencialType;
 use Richpolis\FrontendBundle\Form\CargoPorEdificioType;
+use Richpolis\FrontendBundle\Entity\Aviso;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -379,6 +380,16 @@ class EstadoCuentaController extends BaseController
                 $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
                 $cont++;
+                $aviso = new Aviso();
+                $aviso->setTitulo("Cargo automatico de ".$nombreMes." del ".$year);
+                $aviso->setAviso("Cargo automatico de ".$nombreMes." del ".$year);
+                $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                $aviso->setResidencial($residencial);
+                $aviso->addEdificio($edificio);
+                $aviso->setUsuario($usuario);
+                $em->persist($aviso);
+                
             }
         }
         $em->flush();
@@ -433,6 +444,17 @@ class EstadoCuentaController extends BaseController
                     $cargo->setIsAcumulable(true);
                     $em->persist($cargo);
                     $cont++;
+                    
+                    $aviso = new Aviso();
+                    $aviso->setTitulo("Cargo por adeudo del ".$nombreMes." del ".$year);
+                    $aviso->setAviso("Cargo por adeudo del ".$nombreMes." del ".$year);
+                    $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                    $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                    $aviso->setResidencial($residencial);
+                    $aviso->addEdificio($edificio);
+                    $aviso->setUsuario($usuario);
+                    $em->persist($aviso);
+                    
                 }
             }
         }
@@ -491,40 +513,39 @@ class EstadoCuentaController extends BaseController
     public function selectTipoAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        if($request->query->has('tipo_cargo')){
+        if ($request->query->has('tipo_cargo')) {
             $filtros = $this->getFilters();
             $filtros['tipo_cargo'] = $request->query->get('tipo_cargo');
             $this->setFilters($filtros);
-            switch($filtros['tipo_cargo']){
+            switch ($filtros['tipo_cargo']) {
                 case 1:
-					return $this->redirect($this->generateUrl('estadodecuentas_cargos_automaticos'));
-				case 2: 
-					return $this->redirect($this->generateUrl('estadodecuentas_cargo_a_residencial'));
+                    return $this->redirect($this->generateUrl('estadodecuentas_cargos_automaticos'));
+                case 2:
+                    return $this->redirect($this->generateUrl('estadodecuentas_cargo_a_residencial'));
                 case 3:
                     return $this->redirect($this->generateUrl('estadodecuentas_cargo_por_edificio'));
                 case 4:
                     return $this->redirect($this->generateUrl('estadodecuentas_select'));
             }
         }
-        
+
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        
+
         $arreglo = array(
-			array('id'=>1,'nombre'=>'Cargos automaticos'),
-            array('id'=>2,'nombre'=>'Cargo general a residencial'),
-            array('id'=>3,'nombre'=>'Cargo por edificio'),
-            array('id'=>4,'nombre'=>'Cargo a inquilino'),
+            array('id' => 1, 'nombre' => 'Cargos automaticos'),
+            array('id' => 2, 'nombre' => 'Cargo general a residencial'),
+            array('id' => 3, 'nombre' => 'Cargo por edificio'),
+            array('id' => 4, 'nombre' => 'Cargo a inquilino'),
         );
-        
+
         return array(
-            'entities'=>$arreglo,
-            'residencial'=>$residencialActual,
+            'entities' => $arreglo,
+            'residencial' => $residencialActual,
             'ruta' => 'estadodecuentas_select_tipo',
             'campo' => 'tipo_cargo',
             'titulo' => 'Seleccionar el tipo de cargo',
             'return' => 'estadodecuentas',
         );
-        
     }
 	
 	/**
@@ -549,39 +570,52 @@ class EstadoCuentaController extends BaseController
     public function cargoAResidencialAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-		$residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-					   ->findUsuariosResidencial($residencial->getId());
-		$entity = new EstadoCuenta();
+                ->findUsuariosResidencial($residencial->getId());
+        $entity = new EstadoCuenta();
         $form = $this->createForm(new CargoAResidencialType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_cargo_a_residencial'),
             'method' => 'POST'
         ));
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             $data = $form->getData();
-			$descripcion = $data->getCargo();
-			$monto = $data->getMonto();
-			$montoPorUsuario = $monto / count($usuarios);
-			$tipoCargo = $data->getTipoCargo();
-			$isAcumulable = $data->getIsAcumulable();
-			foreach($usuarios as $usuario){
-				$cargo = new EstadoCuenta();
-				$cargo->setCargo($descripcion);
-				$cargo->setMonto($montoPorUsuario);
-				$cargo->setUsuario($usuario);
-				$cargo->setTipoCargo($tipoCargo);
-				$cargo->setIsAcumulable($isAcumulable);
-				$em->persist($cargo);
-			}
-			$em->flush();
-			return $this->redirect($this->generateUrl('estadodecuentas'));
+            $descripcion = $data->getCargo();
+            $monto = $data->getMonto();
+            $montoPorUsuario = $monto / count($usuarios);
+            $tipoCargo = $data->getTipoCargo();
+            $isAcumulable = $data->getIsAcumulable();
+            $cont = 0;
+            foreach ($usuarios as $usuario) {
+                $cargo = new EstadoCuenta();
+                $cargo->setCargo($descripcion);
+                $cargo->setMonto($montoPorUsuario);
+                $cargo->setUsuario($usuario);
+                $cargo->setTipoCargo($tipoCargo);
+                $cargo->setIsAcumulable($isAcumulable);
+                $em->persist($cargo);
+                $cont++;
+            }
+            if($cont>0){
+                $aviso = new Aviso();
+                $aviso->setTitulo($descripcion);
+                $aviso->setAviso($descripcion);
+                $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_RESIDENCIAL);
+                $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                $aviso->setResidencial($residencial);
+                $aviso->addEdificio($this->getEdificioActual());
+                $aviso->setUsuario($this->getUser());
+                $em->persist($aviso);
+            }
+            $em->flush();
+            return $this->redirect($this->generateUrl('estadodecuentas'));
         }
         return array(
             'entity' => $entity,
-			'residencial' => $residencial,
-			'contUsuarios' => count($usuarios),
-            'form'   => $form->createView(),
+            'residencial' => $residencial,
+            'contUsuarios' => count($usuarios),
+            'form' => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
         );
     }
@@ -596,38 +630,52 @@ class EstadoCuentaController extends BaseController
     public function cargoPorEdificioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-		$residencial = $this->getResidencialActual($this->getResidencialDefault());
-		$entity = new EstadoCuenta();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity = new EstadoCuenta();
         $form = $this->createForm(new CargoPorEdificioType($residencial), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_cargo_por_edificio'),
             'method' => 'POST'
         ));
-        
-        if($request->isMethod('POST')){
+
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             $data = $form->getData();
-			$descripcion = $data->getCargo();
-			$usuarios = $this->getUsuariosPorEdificios($data->getEdificios());
-			$monto = $data->getMonto();
-			$montoPorUsuario = $monto / count($usuarios);
-			$tipoCargo = $data->getTipoCargo();
-			$isAcumulable = $data->getIsAcumulable();
-			foreach($usuarios as $usuario){
-				$cargo = new EstadoCuenta();
-				$cargo->setCargo($descripcion);
-				$cargo->setMonto($montoPorUsuario);
-				$cargo->setUsuario($usuario);
-				$cargo->setTipoCargo($tipoCargo);
-				$cargo->setIsAcumulable($isAcumulable);
-				$em->persist($cargo);
-			}
-			$em->flush();
-			return $this->redirect($this->generateUrl('estadodecuentas'));
+            $edificios = $data->getEdificios();
+            $usuarios = $this->getUsuariosPorEdificios($edificios);
+            if(count($usuarios)){
+                $descripcion = $data->getCargo();
+                $monto = $data->getMonto();
+                $montoPorUsuario = $monto / count($usuarios);
+                $tipoCargo = $data->getTipoCargo();
+                $isAcumulable = $data->getIsAcumulable();
+                foreach ($usuarios as $usuario) {
+                    $cargo = new EstadoCuenta();
+                    $cargo->setCargo($descripcion);
+                    $cargo->setMonto($montoPorUsuario);
+                    $cargo->setUsuario($usuario);
+                    $cargo->setTipoCargo($tipoCargo);
+                    $cargo->setIsAcumulable($isAcumulable);
+                    $em->persist($cargo);
+                }
+                $aviso = new Aviso();
+                $aviso->setTitulo($descripcion);
+                $aviso->setAviso($descripcion);
+                $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_EDIFICIO);
+                $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                $aviso->setResidencial($residencial);
+                foreach($edificios as $edificio){
+                    $aviso->addEdificio($edificio);
+                }
+                $aviso->setUsuario($this->getUser());
+                $em->persist($aviso);
+                $em->flush();
+            }
+            return $this->redirect($this->generateUrl('estadodecuentas'));
         }
         return array(
             'entity' => $entity,
-			'residencial' => $residencial,
-            'form'   => $form->createView(),
+            'residencial' => $residencial,
+            'form' => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
         );
     }
@@ -641,31 +689,33 @@ class EstadoCuentaController extends BaseController
     public function usuariosPorEdificioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-		$residencial = $this->getResidencialActual($this->getResidencialDefault());
-		$entity = new EstadoCuenta();
-        $form = $this->createForm(new CargoPorEdificioType(), $entity, array(
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $entity = new EstadoCuenta();
+        $form = $this->createForm(new CargoPorEdificioType($residencial), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_usuarios_por_edificio'),
             'method' => 'POST'
         ));
-        
-        if($request->isMethod('POST')){
+
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
-			$data = $form->getData();
-			$usuarios = $this->getUsuariosPorEdificios($data->getEdificios());
-			$response = new JsonResponse(json_encode(array('usuarios'=>count($usuarios))));
-        	return $response;
+            $data = $form->getData();
+            $usuarios = $this->getUsuariosPorEdificios($data->getEdificios());
+            $response = new JsonResponse(json_encode(array('usuarios' => count($usuarios))));
+            return $response;
         }
-		$response = new JsonResponse(json_encode(array('usuarios'=>0)));
+        $response = new JsonResponse(json_encode(array('usuarios' => 0)));
         return $response;
     }
 	
-	public function getUsuariosPorEdificios($edificios){
-		$usuarios = new \Doctrine\Common\Collections\ArrayCollection();
-		foreach($edificios as $edificio){
-			foreach($edificio->getUsuarios() as $usuario){
-				$usuarios[] = $usuario;
-			}
-		}
-		return $usuarios;
-	}
+    public function getUsuariosPorEdificios($edificios) 
+    {
+        $usuarios = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($edificios as $edificio) {
+            foreach ($edificio->getUsuarios() as $usuario) {
+                $usuarios[] = $usuario;
+            }
+        }
+        return $usuarios;
+    }
+
 }

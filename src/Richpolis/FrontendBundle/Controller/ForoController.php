@@ -73,7 +73,7 @@ class ForoController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $foros = $em->getRepository('FrontendBundle:Foro')
-                    ->queryFindForosPorEdificio($edificioActual);
+                    ->findForosPorEdificio($edificioActual);
         
         return $this->render("FrontendBundle:Foro:foros.html.twig", array(
             'entities' => $foros,
