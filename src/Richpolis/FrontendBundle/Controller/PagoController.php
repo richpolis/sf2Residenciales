@@ -71,13 +71,21 @@ class PagoController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
+		
         $pagos = $em->getRepository('FrontendBundle:Pago')
-                        ->findBy(array('usuario'=>$this->getUser()));
+                    ->findPagosPorUsuarioPorFecha($this->getUser(),$month,$year);
         
         return $this->render("FrontendBundle:Pago:pagos.html.twig", array(
             'entities' => $pagos,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     

@@ -72,7 +72,8 @@
                                 <button id="botonGuardar" class="btn btn-primary">Guardar cambios</button>
                                 <div style="float: left; margin-right: 3px;">
                                    <form id="formEliminar" action="{{ path('pagos_delete', { 'id': entity.id }) }}" method="post">
-                                   {{ form_widget(delete_form) }}
+                                   <input name="_method" value="DELETE" type="hidden"/>
+								   {{ form_widget(delete_form) }}
                                    </form>
                                    <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
                                 </div>        

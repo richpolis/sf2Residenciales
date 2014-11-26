@@ -59,14 +59,22 @@ class ActividadController extends BaseController
         //$entities = $em->getRepository('FrontendBundle:Actividad')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
         
         $actividades = $em->getRepository('FrontendBundle:Actividad')
-                          ->findActividadesPorEdificio($edificio);
+                          ->findActividadesPorEdificioPorFecha($edificio,$month,$year);
         
         return $this->render("FrontendBundle:Actividad:actividades.html.twig", array(
                 'entities' => $actividades,
                 'edificio' => $edificio,
                 'residencial' => $residencialActual,
+				'month'=>$month,
+				'year'=>$year,
+				'nombreMes' => $nombreMes,
         ));
     }
     

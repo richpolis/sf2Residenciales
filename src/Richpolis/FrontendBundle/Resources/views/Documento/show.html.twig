@@ -36,7 +36,7 @@
                 <span class="divider">/</span>
                 <a href="{{path('documentos_show',{'id':entity.id})}}" class="bread-current">{{entity.titulo}}</a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{path('documentos_new')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear documento</a>
+                    <a href="{{path('documentos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear documento</a>
                 {% endif %}
             </div>
 
@@ -112,7 +112,8 @@
                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('documentos_edit',{id: entity.id})}}')">Editar</button>
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('documentos_delete', { 'id': entity.id }) }}" method="post">
-                                            {{ form_widget(delete_form) }}
+                                            <input name="_method" value="DELETE" type="hidden"/>
+											{{ form_widget(delete_form) }}
                                         </form>
                                         <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
                                     </div>        

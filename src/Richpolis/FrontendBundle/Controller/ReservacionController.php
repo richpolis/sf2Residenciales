@@ -27,16 +27,16 @@ class ReservacionController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         if($this->get('security.context')->isGranted('ROLE_ADMIN')){
-            return $this->adminIndex();
+            return $this->adminIndex($request);
         }else{
-            return $this->usuariosIndex();
+            return $this->usuariosIndex($request);
         }
     }
     
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -53,20 +53,28 @@ class ReservacionController extends BaseController
         ));
     }
     
-    public function usuariosIndex()
+    public function usuariosIndex(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
         
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                        ->findReservacionesPorUsuario($this->getUser());
+                        ->findReservacionesPorUsuarioPorFecha($this->getUser(),$month,$year);
 
         return $this->render("FrontendBundle:Reservacion:reservaciones.html.twig", array(
             'entities' => $reservaciones,
             'residencial'=>$residencialActual,
             'edificio'=>$edificioActual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     

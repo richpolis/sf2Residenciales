@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+  <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -28,6 +29,23 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
+									<div class="navegador-fechas">
+										{% set monthPrevious = month -1 %}
+										{% set monthNext = month + 1 %}
+										{% set yearPrevious = year %}
+										{% set yearNext = year %}
+
+										{% if month == 1 %}
+											{% set monthPrevious = 12 %}
+											{% set yearPrevious = year - 1 %}
+										{% elseif month == 12 %}
+											{% set monthNext = 1 %}
+											{% set yearNext = year + 1 %}
+										{% endif %}
+										<span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
+										<span class="navegador-fechas-mes">{{nombreMes}}</span>
+										<span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
+									</div>
                                     <ul class="lista lista-foros">
                                         {% for registro in entities %}
                                             <li class="item item-foro">
@@ -40,7 +58,8 @@
                                                 </div>    
                                             </li>
                                         {% endfor%}    
-                                    </ul>    
+                                    </ul>
+									<button class="btn btn-success">Crear foro</button>
                                 </div>
                             </div>
                         </div>  

@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 /**
  * PagoRepository
@@ -12,6 +13,29 @@ use Doctrine\ORM\EntityRepository;
  */
 class PagoRepository extends EntityRepository
 {
+	public function queryFindPagosPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT p,c,u,e,r "
+                . "FROM FrontendBundle:Pago p "
+                . "JOIN p.cargos c "
+                . "JOIN p.usuario u "
+				. "JOIN u.edificio e "
+				. "JOIN e.residencial r "
+				. "WHERE u.id=:usuario "
+				. "AND p.createdAt BETWEEN :inicio AND :fin "
+                . "ORDER BY p.isAproved DESC, u.numero ASC");
+        $consulta->setParameters(array(
+            'usuario' => $usuario->getId(),
+			'inicio'=>"$year-$month-01 00:00:00",
+            'fin'=>"$year-$month-31 23:59:59",
+        ));
+        return $consulta;
+    }
+
+    public function findPagosPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        return $this->queryFindPagosPorUsuarioPorFecha($usuario,$month,$year)->getResult();
+    }
+	
     public function queryFindPagos($buscar = "", $edificio)
     {
         $em = $this->getEntityManager();

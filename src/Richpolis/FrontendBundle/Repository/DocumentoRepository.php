@@ -15,6 +15,30 @@ use Richpolis\FrontendBundle\Entity\Documento;
  */
 class DocumentoRepository extends EntityRepository
 {
+	public function queryFindDocumentosPorEdificioPorFecha(Edificio $edificio,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT d,e,r "
+                . "FROM FrontendBundle:Documento d "
+                . "JOIN d.edificios e "
+                . "JOIN d.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                . "AND d.tipoAcceso<=:tipoAcceso "
+				. "AND d.createdAt BETWEEN :inicio AND :fin "
+                . "ORDER BY d.createdAt DESC");
+        $consulta->setParameters(array(
+            'edificio' => $edificio->getId(),
+            'residencial' => $edificio->getResidencial()->getId(),
+            'tipoAcceso' => Documento::TIPO_ACCESO_EDIFICIO,
+			'inicio'=>"$year-$month-01 00:00:00",
+            'fin'=>"$year-$month-31 23:59:59",
+        ));
+        return $consulta;
+    }
+
+    public function findDocumentosPorEdificioPorFecha(Edificio $edificio,$month,$year) {
+        return $this->queryFindDocumentosPorEdificioPorFecha($edificio,$month,$year)->getResult();
+    }
+	
     public function queryFindDocumentosPorEdificio(Edificio $edificio) {
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT d,e,r "

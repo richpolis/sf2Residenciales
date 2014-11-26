@@ -34,6 +34,30 @@ class ActividadesRepository extends EntityRepository
     public function findActividadesPorEdificio(Edificio $edificio) {
         return $this->queryFindActividadesPorEdificio($edificio)->getResult();
     }
+	
+	public function queryFindActividadesPorEdificioPorFecha(Edificio $edificio,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT a,e,r "
+                . "FROM FrontendBundle:Actividad a "
+                . "JOIN a.edificios e "
+                . "JOIN a.residencial r "
+                . "WHERE (e.id=:edificio OR r.id =:residencial) "
+                . "AND a.tipoAcceso<=:tipoAcceso "
+				. "AND a.fechaActividad BETWEEN :inicio AND :fin "
+				. "ORDER BY a.createdAt DESC");
+        $consulta->setParameters(array(
+            'edificio' => $edificio->getId(),
+            'residencial' => $edificio->getResidencial()->getId(),
+            'tipoAcceso' => Actividad::TIPO_ACCESO_EDIFICIO,
+			'inicio'=>"$year-$month-01 00:00:00",
+            'fin'=>"$year-$month-31 23:59:59",
+        ));
+        return $consulta;
+    }
+
+    public function findActividadesPorEdificioPorFecha(Edificio $edificio,$month,$year) {
+        return $this->queryFindActividadesPorEdificioPorFecha($edificio,$month,$year)->getResult();
+    }
     
     public function queryFindActividadesPorResidencial(Residencial $residencial) {
         $em = $this->getEntityManager();

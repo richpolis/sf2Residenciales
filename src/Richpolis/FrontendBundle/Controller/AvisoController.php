@@ -56,12 +56,22 @@ class AvisoController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
+		
         $avisos = $em->getRepository('FrontendBundle:Aviso')
-                     ->findAvisosPorUsuario($this->getUser());
+                     ->findAvisosPorUsuarioPorFecha($this->getUser(),$month,$year);
+		
         return $this->render("FrontendBundle:Aviso:avisos.html.twig", array(
             'entities' => $avisos,
             'edificio' => $edificio,
             'residencial' => $residencialActual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     

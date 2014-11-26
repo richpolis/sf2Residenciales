@@ -64,7 +64,7 @@ class DefaultController extends BaseController {
         $edificio = $this->getEdificioActual();
 
         $foros = $em->getRepository('FrontendBundle:Foro')
-                         ->findForosPorEdificio($edificio);
+                    ->findForosPorEdificio($edificio);
         
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());

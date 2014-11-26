@@ -62,4 +62,30 @@ class AvisoRepository extends EntityRepository
             return $this->queryFindAvisosPorUsuario($usuario)->getResult();
         }
     }
+	
+	public function queryFindAvisosPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT a,u,e,r "
+                . "FROM FrontendBundle:Aviso a "
+                . "JOIN a.usuario u "
+                . "JOIN a.edificios e "
+                . "JOIN a.residencial r "
+                . "WHERE (r.id =:residencial AND a.tipoAcceso=1) "
+                . "OR (e.id=:edificio AND a.tipoAcceso=2 ) "
+                . "OR (u.id=:usuario AND a.tipoAcceso=3 ) "
+				. "AND a.createdAt BETWEEN :inicio AND :fin "
+                . "ORDER BY a.createdAt DESC");
+        $consulta->setParameters(array(
+            'usuario' => $usuario->getId(),
+            'edificio' => $usuario->getEdificio()->getId(),
+            'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
+			'inicio'=>"$year-$month-01 00:00:00",
+            'fin'=>"$year-$month-31 23:59:59",
+        ));
+        return $consulta;
+    }
+
+    public function findAvisosPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        return $this->queryFindAvisosPorUsuarioPorFecha($usuario,$month,$year)->getResult();
+    }
 }

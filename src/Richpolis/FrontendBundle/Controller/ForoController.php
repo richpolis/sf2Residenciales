@@ -71,6 +71,11 @@ class ForoController extends BaseController
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
         
         $foros = $em->getRepository('FrontendBundle:Foro')
                     ->findForosPorEdificio($edificioActual);
@@ -79,6 +84,9 @@ class ForoController extends BaseController
             'entities' => $foros,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     

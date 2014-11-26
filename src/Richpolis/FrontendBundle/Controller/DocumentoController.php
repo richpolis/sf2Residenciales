@@ -56,12 +56,22 @@ class DocumentoController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
+		
         $documentos = $em->getRepository('FrontendBundle:Documento')
-                     ->findDocumentosPorEdificio($edificio);
+                     ->findDocumentosPorEdificioPorFecha($edificio,$month,$year);
+		
         return $this->render("FrontendBundle:Documento:documentos.html.twig", array(
             'entities' => $documentos,
             'edificio' => $edificio,
             'residencial' => $residencialActual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     /**
@@ -313,7 +323,7 @@ class DocumentoController extends BaseController
             $filtros = $this->getFilters();
             $filtros['nivel_aviso'] = $request->query->get('nivel_aviso');
             $this->setFilters($filtros);
-            return $this->redirect($this->generateUrl('avisos_new'));
+            return $this->redirect($this->generateUrl('documentos_new'));
         }
         
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
