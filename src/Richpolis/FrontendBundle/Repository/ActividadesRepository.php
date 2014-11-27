@@ -20,13 +20,14 @@ class ActividadesRepository extends EntityRepository
                 . "FROM FrontendBundle:Actividad a "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Actividad::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoResidencial'=>Actividad::TIPO_ACCESO_RESIDENCIAL,
+            'tipoAccesoEdificio'=>Actividad::TIPO_ACCESO_EDIFICIO,
         ));
         return $consulta;
     }
@@ -41,15 +42,16 @@ class ActividadesRepository extends EntityRepository
                 . "FROM FrontendBundle:Actividad a "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
-				. "AND a.fechaActividad BETWEEN :inicio AND :fin "
-				. "ORDER BY a.createdAt DESC");
+                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
+		. "AND a.fechaActividad BETWEEN :inicio AND :fin "
+		. "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Actividad::TIPO_ACCESO_EDIFICIO,
-			'inicio'=>"$year-$month-01 00:00:00",
+            'tipoAccesoResidencial'=>Actividad::TIPO_ACCESO_RESIDENCIAL,
+            'tipoAccesoEdificio'=>Actividad::TIPO_ACCESO_EDIFICIO,
+            'inicio'=>"$year-$month-01 00:00:00",
             'fin'=>"$year-$month-31 23:59:59",
         ));
         return $consulta;

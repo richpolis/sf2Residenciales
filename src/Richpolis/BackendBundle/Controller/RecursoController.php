@@ -44,7 +44,7 @@ class RecursoController extends BaseController
         $edificioActual = $this->getEdificioActual();
         
         $recursos = $em->getRepository('BackendBundle:Recurso')
-					   ->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
+			->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
 
         return array(
             'entities'      => $recursos,

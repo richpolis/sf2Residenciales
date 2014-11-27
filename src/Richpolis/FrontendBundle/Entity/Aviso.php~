@@ -69,7 +69,7 @@ class Aviso
      * @var integer
      * @todo Edificios dentro de la residencial avisos. 
      *
-     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio", inversedBy="avisos")
+     * @ORM\ManyToMany(targetEntity="Richpolis\BackendBundle\Entity\Edificio")
      * @ORM\JoinTable(name="avisos_edificios")
      * @ORM\OrderBy({"nombre" = "ASC"})
      */

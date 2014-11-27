@@ -96,8 +96,12 @@
                                                     <td>{{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Aprobado?</th>
-                                                    <td>{{ (entity.isAproved)?'Si':'No' }}</td>
+                                                    <th>Status</th>
+                                                    <td>{{ entity.stringStatus }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Cuota</th>
+                                                    <td>$ {{ entity.monto|number_format(2,".",",") }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -106,10 +110,14 @@
                                 <div class="widget-foot">
                                     <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('reservaciones')}}')">Regresar</button>
                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('reservaciones_edit',{id: entity.id})}}')">Editar</button>
+                                    {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
+                                    <button id="botonAprobar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('reservaciones_aprobar',{id: entity.id})}}')">Aprobar reservacion</button>
+                                    <button id="botonRechazar" class="btn btn-danger" onclick="javascript:editarRegistro('{{path('reservaciones_rechazar',{id: entity.id})}}')">Rechazar reservacion</button>
+                                    {% endif %}
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
                                             <input name="_method" value="DELETE" type="hidden"/>
-								   			{{ form_widget(delete_form) }}
+                                            {{ form_widget(delete_form) }}
                                         </form>
                                         <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
                                     </div>        

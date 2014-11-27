@@ -107,6 +107,13 @@ class Foro
      */
     private $createdAt;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="cont_comentarios", type="integer", nullable=false)
+     */
+    private $contComentarios;
+    
     /*
      * Timestable
      */
@@ -173,6 +180,7 @@ class Foro
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isCerrado = false;
         $this->tipoDiscusion = Foro::TIPO_DISCUSION_PUBLICA;
+        $this->contComentarios = 0;
     }
 
     /**
@@ -433,5 +441,28 @@ class Foro
     public function getComentarios()
     {
         return $this->comentarios;
+    }
+
+    /**
+     * Set contComentarios
+     *
+     * @param integer $contComentarios
+     * @return Foro
+     */
+    public function setContComentarios($contComentarios)
+    {
+        $this->contComentarios = $contComentarios;
+
+        return $this;
+    }
+
+    /**
+     * Get contComentarios
+     *
+     * @return integer 
+     */
+    public function getContComentarios()
+    {
+        return $this->contComentarios;
     }
 }

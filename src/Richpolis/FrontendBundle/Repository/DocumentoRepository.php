@@ -21,15 +21,16 @@ class DocumentoRepository extends EntityRepository
                 . "FROM FrontendBundle:Documento d "
                 . "JOIN d.edificios e "
                 . "JOIN d.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND d.tipoAcceso<=:tipoAcceso "
-				. "AND d.createdAt BETWEEN :inicio AND :fin "
+                . "WHERE (e.id = :edificio AND d.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND d.tipoAcceso=:tipoAccesoResidencial ) "
+		. "AND d.createdAt BETWEEN :inicio AND :fin "
                 . "ORDER BY d.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Documento::TIPO_ACCESO_EDIFICIO,
-			'inicio'=>"$year-$month-01 00:00:00",
+            'tipoAccesoEdificio' => Documento::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoResidencial' => Documento::TIPO_ACCESO_RESIDENCIAL,
+            'inicio'=>"$year-$month-01 00:00:00",
             'fin'=>"$year-$month-31 23:59:59",
         ));
         return $consulta;
@@ -45,13 +46,14 @@ class DocumentoRepository extends EntityRepository
                 . "FROM FrontendBundle:Documento d "
                 . "JOIN d.edificios e "
                 . "JOIN d.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND d.tipoAcceso<=:tipoAcceso "
+                . "WHERE (e.id = :edificio AND d.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND d.tipoAcceso=:tipoAccesoResidencial ) "
                 . "ORDER BY d.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Documento::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoEdificio' => Documento::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoResidencial' => Documento::TIPO_ACCESO_RESIDENCIAL,
         ));
         return $consulta;
     }

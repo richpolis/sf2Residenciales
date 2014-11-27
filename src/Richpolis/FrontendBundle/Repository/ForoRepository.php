@@ -23,12 +23,14 @@ class ForoRepository extends EntityRepository
                     . "JOIN f.usuario u "
                     . "JOIN f.edificios e "
                     . "JOIN f.residencial r "
-                    . "WHERE (r.id =:residencial AND f.tipoAcceso=1) "
-                    . "OR (e.id=:edificio AND f.tipoAcceso=2 ) "
+                    . "WHERE (e.id = :edificio AND f.tipoAcceso=:tipoAccesoEdificio ) "
+                    . "OR (r.id=:residencial AND f.tipoAcceso=:tipoAccesoResidencial ) "
                     . "ORDER BY f.createdAt DESC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
-                'residencial' => $edificio->getResidencial()->getId()
+                'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAccesoEdificio' => Foro::TIPO_ACCESO_EDIFICIO,
+                'tipoAccesoResidencial' => Foro::TIPO_ACCESO_RESIDENCIAL,
             ));
         }else{
             $consulta = $em->createQuery("SELECT f,u,e,r "
@@ -36,13 +38,15 @@ class ForoRepository extends EntityRepository
                     . "JOIN f.usuario u "
                     . "JOIN f.edificios e "
                     . "JOIN f.residencial r "
-                    . "WHERE (r.id =:residencial AND f.tipoAcceso=1) "
-                    . "OR (e.id=:edificio AND f.tipoAcceso=2 ) "
+                    . "WHERE (e.id = :edificio AND f.tipoAcceso=:tipoAccesoEdificio ) "
+                    . "OR (r.id=:residencial AND f.tipoAcceso=:tipoAccesoResidencial ) "
                     . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR f.titulo LIKE :titulo) "
                     . "ORDER BY f.createdAt DESC, u.numero ASC");
             $consulta->setParameters(array(
                 'edificio' => $edificio->getId(),
                 'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAccesoEdificio' => Foro::TIPO_ACCESO_EDIFICIO,
+                'tipoAccesoResidencial' => Foro::TIPO_ACCESO_RESIDENCIAL,
                 'numero' => $buscar,
                 'nombre' => "%" . $buscar . "%",
                 'email' => "%" . $buscar . "%",

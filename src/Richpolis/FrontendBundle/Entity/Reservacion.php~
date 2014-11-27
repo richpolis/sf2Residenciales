@@ -75,7 +75,7 @@ class Reservacion
      */
     private $isAproved = false;
 	
-	/**
+    /**
      * @var decimal
      *
      * @ORM\Column(name="monto", type="decimal", nullable=true)
@@ -100,6 +100,13 @@ class Reservacion
      */
     private $createdAt;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
+     */
+    private $status;
+    
     /*
      * Timestable
      */
@@ -115,9 +122,32 @@ class Reservacion
         }
     }
     
+    const STATUS_SOLICITUD=1;
+    const STATUS_APROBADA=2;
+    const STATUS_RECHAZADA=3;
+        
+    static public $sStatus=array(
+        self::STATUS_SOLICITUD=>'En solicitud',
+        self::STATUS_APROBADA=>'Aprobada',
+        self::STATUS_RECHAZADA=>'Rechazada',
+    );
+    
+    public function getStringStatus(){
+        return self::$sStatus[$this->getStatus()];
+    }
+    
+    static function getArrayStatus(){
+        return self::$sStatus;
+    }
+    
+    static function getPreferedStatus(){
+        return array(self::STATUS_SOLICITUD);
+    }
+    
     public function __construct() {
         $this->isAproved = false;
-		$this->monto = 0;
+	$this->monto = 0;
+        $this->status = 0;
     }
     
     public function getStringReservacion(){
@@ -127,4 +157,244 @@ class Reservacion
     
 
    
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set fechaEvento
+     *
+     * @param \DateTime $fechaEvento
+     * @return Reservacion
+     */
+    public function setFechaEvento($fechaEvento)
+    {
+        $this->fechaEvento = $fechaEvento;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaEvento
+     *
+     * @return \DateTime 
+     */
+    public function getFechaEvento()
+    {
+        return $this->fechaEvento;
+    }
+
+    /**
+     * Set desde
+     *
+     * @param \DateTime $desde
+     * @return Reservacion
+     */
+    public function setDesde($desde)
+    {
+        $this->desde = $desde;
+
+        return $this;
+    }
+
+    /**
+     * Get desde
+     *
+     * @return \DateTime 
+     */
+    public function getDesde()
+    {
+        return $this->desde;
+    }
+
+    /**
+     * Set hasta
+     *
+     * @param \DateTime $hasta
+     * @return Reservacion
+     */
+    public function setHasta($hasta)
+    {
+        $this->hasta = $hasta;
+
+        return $this;
+    }
+
+    /**
+     * Get hasta
+     *
+     * @return \DateTime 
+     */
+    public function getHasta()
+    {
+        return $this->hasta;
+    }
+
+    /**
+     * Set isAproved
+     *
+     * @param boolean $isAproved
+     * @return Reservacion
+     */
+    public function setIsAproved($isAproved)
+    {
+        $this->isAproved = $isAproved;
+
+        return $this;
+    }
+
+    /**
+     * Get isAproved
+     *
+     * @return boolean 
+     */
+    public function getIsAproved()
+    {
+        return $this->isAproved;
+    }
+
+    /**
+     * Set monto
+     *
+     * @param string $monto
+     * @return Reservacion
+     */
+    public function setMonto($monto)
+    {
+        $this->monto = $monto;
+
+        return $this;
+    }
+
+    /**
+     * Get monto
+     *
+     * @return string 
+     */
+    public function getMonto()
+    {
+        return $this->monto;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Reservacion
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set recurso
+     *
+     * @param \Richpolis\BackendBundle\Entity\Recurso $recurso
+     * @return Reservacion
+     */
+    public function setRecurso(\Richpolis\BackendBundle\Entity\Recurso $recurso = null)
+    {
+        $this->recurso = $recurso;
+
+        return $this;
+    }
+
+    /**
+     * Get recurso
+     *
+     * @return \Richpolis\BackendBundle\Entity\Recurso 
+     */
+    public function getRecurso()
+    {
+        return $this->recurso;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Richpolis\BackendBundle\Entity\Usuario $usuario
+     * @return Reservacion
+     */
+    public function setUsuario(\Richpolis\BackendBundle\Entity\Usuario $usuario = null)
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Richpolis\BackendBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
+    }
+
+    /**
+     * Set pago
+     *
+     * @param \Richpolis\FrontendBundle\Entity\Pago $pago
+     * @return Reservacion
+     */
+    public function setPago(\Richpolis\FrontendBundle\Entity\Pago $pago = null)
+    {
+        $this->pago = $pago;
+
+        return $this;
+    }
+
+    /**
+     * Get pago
+     *
+     * @return \Richpolis\FrontendBundle\Entity\Pago 
+     */
+    public function getPago()
+    {
+        return $this->pago;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     * @return Reservacion
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }

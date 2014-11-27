@@ -75,7 +75,7 @@ class Reservacion
      */
     private $isAproved = false;
 	
-	/**
+    /**
      * @var decimal
      *
      * @ORM\Column(name="monto", type="decimal", nullable=true)
@@ -100,6 +100,13 @@ class Reservacion
      */
     private $createdAt;
     
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
+     */
+    private $status;
+    
     /*
      * Timestable
      */
@@ -115,9 +122,32 @@ class Reservacion
         }
     }
     
+    const STATUS_SOLICITUD=1;
+    const STATUS_APROBADA=2;
+    const STATUS_RECHAZADA=3;
+        
+    static public $sStatus=array(
+        self::STATUS_SOLICITUD=>'En solicitud',
+        self::STATUS_APROBADA=>'Aprobada',
+        self::STATUS_RECHAZADA=>'Rechazada',
+    );
+    
+    public function getStringStatus(){
+        return self::$sStatus[$this->getStatus()];
+    }
+    
+    static function getArrayStatus(){
+        return self::$sStatus;
+    }
+    
+    static function getPreferedStatus(){
+        return array(self::STATUS_SOLICITUD);
+    }
+    
     public function __construct() {
         $this->isAproved = false;
-		$this->monto = 0;
+	$this->monto = 0;
+        $this->status = 0;
     }
     
     public function getStringReservacion(){
@@ -343,5 +373,28 @@ class Reservacion
     public function getPago()
     {
         return $this->pago;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     * @return Reservacion
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer 
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

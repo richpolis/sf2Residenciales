@@ -10,6 +10,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Foro;
 use Richpolis\FrontendBundle\Form\ForoType;
 use Richpolis\FrontendBundle\Form\ForoPorEdificioType;
+use Richpolis\FrontendBundle\Form\ComentarioType;
+use Richpolis\FrontendBundle\Entity\Comentario;
 
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
@@ -382,5 +384,82 @@ class ForoController extends BaseController
             'return' => 'foros',
         );
         
+    }
+    
+    /**
+     * @Route("/foro/{id}", name="foros_foro")
+     * @Template("FrontendBundle:Foro:foro.html.twig")
+     * @Method({"GET","POST"})
+     */
+    public function foroAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $foro = $em->getRepository('FrontendBundle:Foro')->find($id);
+        $comentario = new Comentario();
+        $comentario->setForo($foro);
+        $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em->persist($comentario);
+                $foro->setContComentarios($foro->getContComentarios() + 1);
+                $em->flush();
+                $comentario = new Comentario();
+                $comentario->setForo($foro);
+                $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+            }
+        }
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('FrontendBundle:Comentario:form.html.twig', array('form' => $form->createView()));
+        }
+        $comentarios = $em->getRepository('FrontendBundle:Comentario')
+                ->findBy(array('foro' => $foro), array('createdAt' => 'ASC'));
+        return array(
+            'foro'=>$foro,
+            'comentarios'=>$comentarios,
+            'form'=>$form->createView(),
+        );
+    }
+    
+    /**
+     * Formulario para crear foro.
+     *
+     * @Route("/crear/pago", name="foro_crear_foro")
+     * @Method({"GET","POST"})
+     */
+    public function crearForoAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUsuarioActual();
+        $entity = new Foro();
+        $entity->setUsuario($usuario);
+        $entity->setTipoAcceso(Foro::TIPO_ACCESO_EDIFICIO);
+        $entity->addEdificio($usuario->getEdificio());
+        $entity->setResidencial($this->getResidencialActual($this->getResidencialDefault()));
+        $form = $this->createCreateForm($entity);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $form->getData();
+                $em->persist($entity);
+                $em->flush();
+                $response = new JsonResponse(json_encode(array(
+                    'json' => json_encode(array(
+                        'id'=>$entity->getId(),
+                        'titulo'=>$entity->getTitulo(),
+                        'comentario'=>$entity->getComentario(),
+                    )),
+                    'respuesta' => 'creado',
+                )));
+                return $response;
+            }
+        }
+
+        $response = new JsonResponse(json_encode(array(
+            'form' => $this->renderView('FrontendBundle:Foro:formForo.html.twig', array(
+                'rutaAction' => $this->generateUrl('foro_crear_foro'),
+                'form' => $form->createView(),
+            )),
+            'respuesta' => 'nuevo',
+        )));
+        return $response;
     }
 }

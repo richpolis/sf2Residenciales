@@ -131,7 +131,7 @@
                                     <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('pagos')}}')">Regresar</button>
                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('pagos_edit',{id: entity.id})}}')">Editar</button>
                                     {% if entity.isAproved == false %}
-                                        <button id="botonEditar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('pagos_aprobar',{id: entity.id})}}')">Aprobar pago</button>
+                                        <button id="botonAprobar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('pagos_aprobar',{id: entity.id})}}')">Aprobar pago</button>
                                     {% endif %}    
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('pagos_delete', { 'id': entity.id }) }}" method="post">

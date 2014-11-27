@@ -21,13 +21,14 @@ class AvisoRepository extends EntityRepository
                 . "FROM FrontendBundle:Aviso a "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (e.id=:edificio OR r.id =:residencial) "
-                . "AND a.tipoAcceso<=:tipoAcceso "
+                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'edificio' => $edificio->getId(),
             'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAcceso' => Aviso::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
+            'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
         ));
         return $consulta;
     }
@@ -43,14 +44,17 @@ class AvisoRepository extends EntityRepository
                 . "JOIN a.usuario u "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (r.id =:residencial AND a.tipoAcceso=1) "
-                . "OR (e.id=:edificio AND a.tipoAcceso=2 ) "
-                . "OR (u.id=:usuario AND a.tipoAcceso=3 ) "
+                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
+                . "OR (u.id=:usuario AND a.tipoAcceso=:tipoAccesoUsuario ) "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),
             'edificio' => $usuario->getEdificio()->getId(),
             'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
+            'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
+            'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoUsuario'=>Aviso::TIPO_ACCESO_PRIVADO,
         ));
         return $consulta;
     }
@@ -70,16 +74,19 @@ class AvisoRepository extends EntityRepository
                 . "JOIN a.usuario u "
                 . "JOIN a.edificios e "
                 . "JOIN a.residencial r "
-                . "WHERE (r.id =:residencial AND a.tipoAcceso=1) "
-                . "OR (e.id=:edificio AND a.tipoAcceso=2 ) "
-                . "OR (u.id=:usuario AND a.tipoAcceso=3 ) "
-				. "AND a.createdAt BETWEEN :inicio AND :fin "
+                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
+                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
+                . "OR (u.id=:usuario AND a.tipoAcceso=:tipoAccesoUsuario ) "
+		. "AND a.createdAt BETWEEN :inicio AND :fin "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),
             'edificio' => $usuario->getEdificio()->getId(),
             'residencial' => $usuario->getEdificio()->getResidencial()->getId(),
-			'inicio'=>"$year-$month-01 00:00:00",
+            'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
+            'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
+            'tipoAccesoUsuario'=>Aviso::TIPO_ACCESO_PRIVADO,
+            'inicio'=>"$year-$month-01 00:00:00",
             'fin'=>"$year-$month-31 23:59:59",
         ));
         return $consulta;

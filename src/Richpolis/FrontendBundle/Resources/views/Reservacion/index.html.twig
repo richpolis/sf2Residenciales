@@ -58,11 +58,11 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Residencial</th>
                                <th>Recurso</th>
                                <th>Usuario</th>
                                <th>Fecha reservacion</th>
                                <th>Fecha evento</th>
+                               <th>Aprobado</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -70,11 +70,11 @@
                        {% for entity in entities %}
                            <tr>
                                <td><a href="{{ path('reservaciones_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.usuario.edificio.residencial }}</td>
                                <td>{{ entity.recurso }}</td>
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                               <td>{{ entity.fechaEvento | date('d-m-Y') }}</td>
+                               <td>{{ entity.fechaEvento | date('d-m-Y') }} <br/> {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
+                               <td>{{ entity.isAproved | isActive | raw }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
