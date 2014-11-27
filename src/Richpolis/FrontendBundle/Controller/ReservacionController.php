@@ -59,22 +59,22 @@ class ReservacionController extends BaseController
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-		
-		$fecha = new \DateTime();
-		$year = $request->query->get('year', $fecha->format('Y'));
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
         $month = $request->query->get('month', $fecha->format('m'));
-		$nombreMes = $this->getNombreMes($month);
-        
+        $nombreMes = $this->getNombreMes($month);
+
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                        ->findReservacionesPorUsuarioPorFecha($this->getUser(),$month,$year);
+                ->findReservacionesPorUsuarioPorFecha($this->getUser(), $month, $year);
 
         return $this->render("FrontendBundle:Reservacion:reservaciones.html.twig", array(
-            'entities' => $reservaciones,
-            'residencial'=>$residencialActual,
-            'edificio'=>$edificioActual,
-			'month'=>$month,
-			'year'=>$year,
-			'nombreMes' => $nombreMes,
+                    'entities' => $reservaciones,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
     
@@ -159,7 +159,7 @@ class ReservacionController extends BaseController
     /**
      * Finds and displays a Reservacion entity.
      *
-     * @Route("/{id}", name="reservaciones_show")
+     * @Route("/{id}", name="reservaciones_show", requirements={"id" = "\d+"})
      * @Method("GET")
      * @Template()
      */
@@ -407,6 +407,44 @@ class ReservacionController extends BaseController
             'titulo' => 'Seleccionar usuario que hace la reservacion',
             'return' => 'reservaciones_select_recurso',
         );
+        
+    }
+    
+    /**
+     * Calendario de reservaciones.
+     *
+     * @Route("/calendario", name="reservaciones_calendario")
+     * @Template("FrontendBundle:Reservacion:calendario.html.twig")
+     */
+    public function calendarioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificioActual = $this->getEdificioActual();
+        $recursoActual = $this->getRecursoActual();
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+        $nombreMes = $this->getNombreMes($month);
+        
+        if($recursoActual){
+            $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                                 ->findReservacionesPorRecursoPorFecha($recursoActual, $month, $year);
+        }else{
+            $reservaciones = array();
+        }
+
+        return $this->render("FrontendBundle:Reservacion:calendario.html.twig", array(
+                    'entities' => $reservaciones,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'recurso' => $recursoActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
+        ));
         
     }
 }

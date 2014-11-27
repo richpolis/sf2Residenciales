@@ -5,6 +5,7 @@ namespace Richpolis\FrontendBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Richpolis\BackendBundle\Entity\Edificio;
 use Richpolis\BackendBundle\Entity\Usuario;
+use Richpolis\BackendBundle\Entity\Recurso;
 
 /**
  * ReservacionRepository
@@ -14,6 +15,28 @@ use Richpolis\BackendBundle\Entity\Usuario;
  */
 class ReservacionRepository extends EntityRepository
 {
+    public function queryFindReservacionesPorRecursoPorFecha(Recurso $recurso,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT s,i,u,e "
+                . "FROM FrontendBundle:Reservacion s "
+                . "JOIN s.recurso i "
+                . "JOIN s.usuario u "
+                . "JOIN u.edificio e "
+                . "WHERE i.id=:recurso "
+		. "AND s.fechaEvento BETWEEN :inicio AND :fin "
+                . "ORDER BY s.createdAt DESC");
+        $consulta->setParameters(array(
+            'usuario' => $recurso->getId(),
+            'inicio'=>"$year-$month-01 00:00:00",
+            'fin'=>"$year-$month-31 23:59:59",
+        ));
+        return $consulta;
+    }
+
+    public function findReservacionesPorRecursoPorFecha(Recurso $recurso,$month,$year) {
+        return $this->queryFindReservacionesPorRecursoPorFecha($recurso,$month,$year)->getResult();
+    }
+    
     public function queryFindReservacionesPorEdificio(Edificio $edificio) {
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT s,i,u,e "
@@ -52,7 +75,7 @@ class ReservacionRepository extends EntityRepository
         return $this->queryFindReservacionesPorUsuario($usuario)->getResult();
     }
 	
-	public function queryFindReservacionesPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+    public function queryFindReservacionesPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT s,i,u,e "
                 . "FROM FrontendBundle:Reservacion s "

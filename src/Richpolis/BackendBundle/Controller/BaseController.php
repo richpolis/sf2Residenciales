@@ -77,20 +77,20 @@ class BaseController extends Controller
         return $edificio;
     }
     
-	protected function getUsuarioActual() {
+    protected function getUsuarioActual() {
         $em = $this->getDoctrine()->getManager();
-		$filters = $this->getFilters();
-		if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+        $filters = $this->getFilters();
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $usuarioId = $filters['usuario'];
-			$usuario = $em->getRepository('BackendBundle:Usuario')->find($usuarioId);
-        	return $usuario;
-        }else{
+            $usuario = $em->getRepository('BackendBundle:Usuario')->find($usuarioId);
+            return $usuario;
+        } else {
             return $this->getUser();
         }
     }
-    
-	public function getNombreMes($month){
-        switch($month){
+
+    public function getNombreMes($month) {
+        switch ($month) {
             case 1: return "Enero";
             case 2: return "Febrero";
             case 3: return "Marzo";
@@ -106,4 +106,23 @@ class BaseController extends Controller
         }
     }
     
+    protected function getRecursoActual() {
+        $em = $this->getDoctrine()->getManager();
+        $filters = $this->getFilters();
+        if (isset($filters['recurso'])) {
+            $recursoId = $filters['recurso'];
+        } else {
+            $recursos = $this->getEdificioActual()->getRecursos();
+            if(count($recursos)>0){
+                $filters['recurso']=$recursos[0]->getId();
+                $this->setFilters($filters);
+                $recursoId = $filters['recurso'];
+            }else{
+                $recursoId = 0;
+            }
+        }
+        $recurso = $em->getRepository('BackendBundle:Recurso')->find($recursoId);
+        return $recurso;
+    }
+
 }

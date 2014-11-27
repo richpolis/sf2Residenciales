@@ -29,27 +29,26 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-									<div class="navegador-fechas">
-										{% set monthPrevious = month -1 %}
-										{% set monthNext = month + 1 %}
-										{% set yearPrevious = year %}
-										{% set yearNext = year %}
-
-										{% if month == 1 %}
-											{% set monthPrevious = 12 %}
-											{% set yearPrevious = year - 1 %}
-										{% elseif month == 12 %}
-											{% set monthNext = 1 %}
-											{% set yearNext = year + 1 %}
-										{% endif %}
-										<span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
-										<span class="navegador-fechas-mes">{{nombreMes}}</span>
-										<span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
-									</div>
+                                    <div class="navegador-fechas">
+                                        {% set monthPrevious = month -1 %}
+                                        {% set monthNext = month + 1 %}
+                                        {% set yearPrevious = year %}
+                                        {% set yearNext = year %}
+                                        {% if month == 1 %}
+                                            {% set monthPrevious = 12 %}
+                                            {% set yearPrevious = year - 1 %}
+                                        {% elseif month == 12 %}
+                                            {% set monthNext = 1 %}
+                                            {% set yearNext = year + 1 %}
+                                        {% endif %}
+                                        <span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
+                                        <span class="navegador-fechas-mes">{{nombreMes}}</span>
+                                        <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
+                                    </div>
                                     <ul class="lista lista-foros">
                                         {% for registro in entities %}
                                             <li class="item item-foro">
-                                                 <div class="item-aviso-fecha">
+                                                <div class="item-aviso-fecha">
                                                     {{ registro.createdAt | date('d-M-Y') }}
                                                 </div>
                                                 <div class="item-foro-contenido">
@@ -59,7 +58,7 @@
                                             </li>
                                         {% endfor%}    
                                     </ul>
-									<button class="btn btn-success">Crear foro</button>
+                                    <button class="btn btn-success">Crear foro</button>
                                 </div>
                             </div>
                         </div>  
@@ -77,40 +76,35 @@
 {% block javascripts %}
   {{ parent() }}
 
-<script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-<!-- jQuery Notification - Noty -->
-<script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
-<!-- jQuery Notification ends -->
+  <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+  <!-- jQuery Notification - Noty -->
+  <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+  <!-- jQuery Notification ends -->
 
-<script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
-<script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+  <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+  <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+  <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+  <script>
+  var editarRegistro = function(url){
+    location.href=url;
+  };
 
-<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
-<script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+  var eliminarRegistro = function(){
+      {% if is_granted('ROLE_ADMIN') %}
+      bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
+        if(result){
+           $("#formEliminar").submit();
+        }
+      });
+      {% else %}
+      noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
+      {% endif %}      
+  };
 
-<script>
-var editarRegistro = function(url){
-        location.href=url;
-};
-
-var eliminarRegistro = function(){
-  {% if is_granted('ROLE_ADMIN') %}
-    bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
-      if(result){
-         $("#formEliminar").submit();
-      }
-    });
-  {% else %}
-    noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
-  {% endif %}      
-};
-
-</script>
-
-    
+  </script>
 {% endblock %}
 
