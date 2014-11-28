@@ -40,58 +40,58 @@ class ForoController extends BaseController
         }
     }
     
-    public function adminIndex(Request $request){
+    public function adminIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        
-        $buscar = $request->query->get('buscar','');
-        
-        if(strlen($buscar)>0){
-            $options = array('filterParam'=>'buscar','filterValue'=>$buscar);
-        }else{
+
+        $buscar = $request->query->get('buscar', '');
+
+        if (strlen($buscar) > 0) {
+            $options = array('filterParam' => 'buscar', 'filterValue' => $buscar);
+        } else {
             $options = array();
         }
         $query = $em->getRepository('FrontendBundle:Foro')
-                    ->queryFindForosPorResidencial($residencialActual,$buscar);
-        
+                ->queryFindForosPorResidencial($residencialActual, $buscar);
+
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $query, $this->get('request')->query->get('page', 1),10, $options 
+                $query, $this->get('request')->query->get('page', 1), 10, $options
         );
-        
+
         return $this->render("FrontendBundle:Foro:index.html.twig", array(
-            'pagination' => $pagination,
-            'residencial'=> $residencialActual,
-            'edificio' => $edificioActual,
+                    'pagination' => $pagination,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
         ));
     }
-    
-    public function usuariosIndex(Request $request){
+
+    public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-		
-		$fecha = new \DateTime();
-		$year = $request->query->get('year', $fecha->format('Y'));
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
         $month = $request->query->get('month', $fecha->format('m'));
-		$nombreMes = $this->getNombreMes($month);
-        
+        $nombreMes = $this->getNombreMes($month);
+
         $foros = $em->getRepository('FrontendBundle:Foro')
-                    ->findForosPorEdificio($edificioActual);
-        
+                ->findForosPorEdificio($edificioActual);
+
         return $this->render("FrontendBundle:Foro:foros.html.twig", array(
-            'entities' => $foros,
-            'residencial'=> $residencialActual,
-            'edificio' => $edificioActual,
-			'month'=>$month,
-			'year'=>$year,
-			'nombreMes' => $nombreMes,
+                    'entities' => $foros,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
-    
+
     /**
      * Creates a new Foro entity.
      *
@@ -104,7 +104,11 @@ class ForoController extends BaseController
         $entity = new Foro();
         $filtros = $this->getFilters();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $entity->setTipoAcceso($filtros['nivel_aviso']);
+        }else{
+            $entity->setTipoAcceso(Foro::TIPO_ACCESO_PRIVADO);
+        }
         $entity->setResidencial($residencial);
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -156,17 +160,32 @@ class ForoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Resquest $request)
     {
         $entity = new Foro();
         $filtros = $this->getFilters();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-        $entity->setTipoAcceso($filtros['nivel_aviso']);
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            $entity->setTipoAcceso($filtros['nivel_aviso']);
+        }else{
+            $entity->setTipoAcceso(Foro::TIPO_ACCESO_PRIVADO);
+        }
         $entity->setResidencial($residencial);
         $entity->addEdificio($edificio);
         $entity->setUsuario($this->getUser());
         $form   = $this->createCreateForm($entity);
+        
+        if ($request->isXmlHttpRequest()) {
+            $response = new JsonResponse(json_encode(array(
+            'form' => $this->renderView('FrontendBundle:Foro:formForo.html.twig', array(
+                'rutaAction' => $this->generateUrl('foro_crear_foro'),
+                'form' => $form->createView(),
+            )),
+                'respuesta' => 'nuevo',
+            )));
+            return $response;
+        }
 
         return array(
             'entity' => $entity,
@@ -185,18 +204,23 @@ class ForoController extends BaseController
     public function showAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-
         $entity = $em->getRepository('FrontendBundle:Foro')->find($id);
-
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Foro entity.');
         }
-
         $deleteForm = $this->createDeleteForm($id);
 
+        $comentario = new Comentario();
+        $comentario->setForo($entity);
+        $comentario->setUsuario($this->getUser());
+        $comentario->setNivel(0);
+        $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+        
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            // formulario de comentarios
+            'form' => $form->createView(),
         );
     }
 
@@ -396,6 +420,8 @@ class ForoController extends BaseController
         $foro = $em->getRepository('FrontendBundle:Foro')->find($id);
         $comentario = new Comentario();
         $comentario->setForo($foro);
+        $comentario->setUsuario($this->getUser());
+        $comentario->setNivel(0);
         $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -403,16 +429,22 @@ class ForoController extends BaseController
                 $em->persist($comentario);
                 $foro->setContComentarios($foro->getContComentarios() + 1);
                 $em->flush();
+                if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+                    return $this->redirect($this->generateUrl('foros_show',array('id'=>$foro->getId())));
+                }
                 $comentario = new Comentario();
                 $comentario->setForo($foro);
+                $comentario->setUsuario($this->getUser());
+                $comentario->setNivel(0);
                 $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+                $foro = $em->getRepository('FrontendBundle:Foro')->find($id);
             }
         }
         if ($request->isXmlHttpRequest()) {
             return $this->render('FrontendBundle:Comentario:form.html.twig', array('form' => $form->createView()));
         }
         $comentarios = $em->getRepository('FrontendBundle:Comentario')
-                ->findBy(array('foro' => $foro), array('createdAt' => 'ASC'));
+                          ->findBy(array('foro' => $foro), array('createdAt' => 'ASC'));
         return array(
             'foro'=>$foro,
             'comentarios'=>$comentarios,

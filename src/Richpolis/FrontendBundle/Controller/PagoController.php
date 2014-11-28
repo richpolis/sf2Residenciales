@@ -378,7 +378,7 @@ class PagoController extends BaseController
             'ruta' => 'pagos_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Seleccionar usuario para pago',
-			'return' => 'pagos'
+            'return' => 'pagos'
         );
         
     }

@@ -46,11 +46,16 @@
                                         {% for registro in entities %}
                                             <li class="item item-foro">
                                                 <div class="item-aviso-fecha">
-                                                    {{ registro.createdAt | date('d-M-Y') }}
+                                                    {{ registro.createdAt | date('d-M-Y') }} - Comentarios: <span class="badge">{{registro.contComentarios}}</span> 
+                                                    {% if registro.isCerrado == false %}
+                                                        <span class="label label-success">Abierto</span>
+                                                    {% else %}
+                                                        <span class="label label-default">Cerrado</span>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="item-foro-contenido">
                                                     <div class="item-titulo item-foro-titulo"> 
-                                                        <a href="{{path('foros_foro',{'id': registro.id})}}">{{ registro.titulo }}</a>
+                                                        <a href="{{path('foros_foro',{'id': registro.id})}}">{{ registro.titulo }}</a> 
                                                     </div>
                                                     <div class="item-descripcion item-foro-descripcion"> {{ registro.comentario|raw }}</div>
                                                 </div>    

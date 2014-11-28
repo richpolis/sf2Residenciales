@@ -48,7 +48,6 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Residencial</th>
                                <th>Usuario</th>
                                <th>Comentario</th>
                                <th>Actions</th>
@@ -58,7 +57,6 @@
                        {% for entity in entities %}
                            <tr>
                                <td><a href="{{ path('comentarios_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.residencial }}</td>
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.comentario }}</td>
                                <td>

@@ -28,11 +28,12 @@ class ComentarioController extends BaseController
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $entities = $em->getRepository('FrontendBundle:Comentario')->findAll();
 
         return array(
             'entities' => $entities,
+            'residencial' => $residencial,
         );
     }
     /**

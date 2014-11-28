@@ -5,6 +5,9 @@ namespace Richpolis\FrontendBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Richpolis\FrontendBundle\Form\DataTransformer\ComentarioToNumberTransformer;
+use Richpolis\FrontendBundle\Form\DataTransformer\ForoToNumberTransformer;
+use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
 
 class ComentarioType extends AbstractType
 {
@@ -14,13 +17,25 @@ class ComentarioType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $em = $options['em'];
+	$parentTransformer = new ComentarioToNumberTransformer($em);
+	$foroTransformer = new ForoToNumberTransformer($em);
+        $usuarioTransformer = new UsuarioToNumberTransformer($em);
+        
         $builder
-            ->add('comentario',null,array('attr'=>array('class'=>'form-control')))
+            ->add('comentario',null,array(
+                'label'=>'Comentario',
+                'required'=>true,
+                'attr'=>array(
+                    'class'=>'cleditor tinymce form-control placeholder',
+                   'data-theme' => 'advanced',
+                    )
+                ))
             ->add('nivel','hidden')
             ->add('isAdmin','hidden')
-            ->add('residencial')
-            ->add('usuario')
-            ->add('parent')
+            ->add($builder->create('foro', 'hidden')->addModelTransformer($foroTransformer))
+            ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
+            ->add($builder->create('parent', 'hidden')->addModelTransformer($parentTransformer))
         ;
     }
     
@@ -31,7 +46,10 @@ class ComentarioType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'Richpolis\FrontendBundle\Entity\Comentario'
-        ));
+        ))
+        ->setRequired(array('em'))
+        ->setAllowedTypes(array('em'=>'Doctrine\Common\Persistence\ObjectManager'))
+        ;
     }
 
     /**

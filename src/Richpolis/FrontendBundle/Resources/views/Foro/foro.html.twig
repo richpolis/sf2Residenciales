@@ -34,7 +34,7 @@
                                             <span class="datetime">{{ foro.createdAt|date("m/d/Y g:ia","America/Mexico_City")}}</span>
                                         </header>
                                         <div class="contenido">
-                                            {{foro.descripcion | raw }}
+                                            {{foro.comentario | raw }}
                                         </div>
                                     </article>
                                     {% if comentarios | length > 0 %}        
@@ -44,11 +44,7 @@
                                                     {{foro.contComentarios ~ (foro.contComentarios > 1?' comentarios':' comentario')}}
                                                 </h2>
                                             </header>
-                                            <section class="comentarios">
-                                                {% for comentario in comentarios if comentario.nivel == 0 %}
-                                                    {% include 'FrontendBundle:Default:comentario.html.twig' with {'comentario': comentario } %}
-                                                {% endfor %}
-                                            </section>
+                                            {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': comentarios } %}
                                         </article>
                                     {% endif %}
                                     <article class="comentarios-formulario">
@@ -57,19 +53,15 @@
                                                 Deja tu comentario
                                             </h2>
                                         </header>
-                                        <form action="{{ path('frontend_foroes',{'slug': foro.slug}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
-                                            <span class="closeForm boton" style="display: none;" onclick="javascript:closeForm()">X</span>
+                                        <form action="{{ path('foros_foro',{'id': foro.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
+                                            <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             {{form_errors(form)}}
-                                            <div class="controles-izquierdos">
-                                                {{form_row(form.username)}}
-                                                {{form_row(form.email)}}
-                                            </div>
-                                            <div class="controles-derechos">
-                                                {{form_row(form.message)}}
+                                            <div class="controles-derechos form-group">
+                                                {{form_row(form.comentario)}}
                                             </div>
                                             {{form_rest(form)}}
                                             <div class="group-control">
-                                                <input type="submit" value="Enviar"/>
+                                                <input class="btn btn-success" type="submit" value="Enviar"/>
                                             </div>
                                         </form>
                                     </article>  
@@ -102,7 +94,7 @@
   <script type="text/javascript">
     var $boton;
     $(document).ready(function(){
-        $(".boton-responder").on("click",function(){
+        $(".boton-para-responder ").on("click",function(){
             $boton = $(this);
             var $controles = $boton.parent();
             var idComentario = $boton.data('comentario');

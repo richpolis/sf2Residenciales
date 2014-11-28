@@ -48,7 +48,7 @@ class Comentario
     /**
      * @var string
      *
-     * @ORM\Column(name="comentario", type="string", length=255)
+     * @ORM\Column(name="comentario", type="text")
      */
     private $comentario;
 
@@ -74,7 +74,7 @@ class Comentario
     /**
      * @var \Boolean
      *
-     * @ORM\Column(name="is_administrador", type="boolean")
+     * @ORM\Column(name="is_administrador", type="boolean", nullable=true)
      */
     private $isAdmin;
     
@@ -107,6 +107,8 @@ class Comentario
     public function __construct()
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->nivel = 0;
+        $this->isAdmin = false;
     }
 
 
@@ -267,6 +269,8 @@ class Comentario
     public function setParent(\Richpolis\FrontendBundle\Entity\Comentario $parent = null)
     {
         $this->parent = $parent;
+        
+        $this->setNivel($this->parent->getNivel()+1);
 
         return $this;
     }

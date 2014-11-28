@@ -1,0 +1,5 @@
+<section class="comentarios">
+    {% for comentario in comentarios if comentario.nivel == 0 %}
+        {% include 'FrontendBundle:Comentario:comentario.html.twig' with {'comentario': comentario } %}
+    {% endfor %}
+</section>

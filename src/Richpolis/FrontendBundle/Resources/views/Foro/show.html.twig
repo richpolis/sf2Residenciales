@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
     <!-- Gritter Notifications stylesheet -->
     <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
-
+    <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -115,7 +115,7 @@
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('foros_delete', { 'id': entity.id }) }}" method="post">
                                             <input name="_method" value="DELETE" type="hidden"/>
-								   			{{ form_widget(delete_form) }}
+                                            {{ form_widget(delete_form) }}
                                         </form>
                                         <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
                                     </div>        
@@ -128,16 +128,34 @@
                             <!-- Widget content -->
                             <div class="widget">
                                 <div class="widget-content">
-                                    <ul class="lista lista-comentarios">
-                                        {% for registro in entity.comentarios %}
-                                            <li class="item item-comentario">
-                                                <div class="item-comentario-fecha">
-                                                    {{ registro.createdAt | date('d-M-Y') }} - {{registro.usuario}}
-                                                </div>
-                                                <div class="item-descripcion item-comentario-descripcion"> {{ registro.comentario|raw }}</div>
-                                            </li>
-                                        {% endfor%}    
-                                    </ul>
+                                    {% if entity.comentarios | length > 0 %}        
+                                        <article class="comentarios-formulario">
+                                            <header>
+                                                <h2 class="titulo">
+                                                    {{entity.contComentarios ~ (entity.contComentarios > 1?' comentarios':' comentario')}}
+                                                </h2>
+                                            </header>
+                                            {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': entity.comentarios } %}
+                                        </article>
+                                    {% endif %}
+                                    <article class="comentarios-formulario">
+                                        <header>
+                                            <h2 class="titulo">
+                                                Deja tu comentario
+                                            </h2>
+                                        </header>
+                                        <form action="{{ path('foros_foro',{'id': entity.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
+                                            <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{form_errors(form)}}
+                                            <div class="controles-derechos form-group">
+                                                {{form_row(form.comentario)}}
+                                            </div>
+                                            {{form_rest(form)}}
+                                            <div class="group-control">
+                                                <input class="btn btn-success" type="submit" value="Enviar"/>
+                                            </div>
+                                        </form>
+                                    </article>  
                                 </div>
                             </div>
                             <!-- Widget ends -->
@@ -198,7 +216,33 @@ var eliminarRegistro = function(){
 };
 
 </script>
-
+<script type="text/javascript">
+    var $boton;
+    $(document).ready(function(){
+        $(".boton-para-responder ").on("click",function(){
+            $boton = $(this);
+            var $controles = $boton.parent();
+            var idComentario = $boton.data('comentario');
+            var $formulario = $("<form>");
+            var $divComentarioFormulario = $("<div>");
+            var $formComentarios = $("#formComentarios");
+            $formulario.attr('action',$formComentarios.attr('action'));
+            $formulario.attr('method','post');
+            $formulario.html($formComentarios.html());
+            $divComentarioFormulario.attr('id','formulario-comentario-'+idComentario);
+            $divComentarioFormulario.addClass('formulario-comentario');
+            $divComentarioFormulario.append($formulario);
+            $controles.after($divComentarioFormulario)
+            $formulario.find(".closeForm").fadeIn();
+            $formulario.find("#richpolis_frontendbundle_comentario_parent").val(idComentario);
+            $boton.fadeOut();
+        });
+    });
+    function closeForm(){
+       $(".formulario-comentario").remove();
+       $boton.fadeIn();
+    }
+</script>
     
 {% endblock %}
 
