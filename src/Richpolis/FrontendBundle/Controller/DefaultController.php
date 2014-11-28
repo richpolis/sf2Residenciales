@@ -24,7 +24,7 @@ class DefaultController extends BaseController {
         if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
             return $this->redirect($this->generateUrl('residenciales'));
         }else if(true === $context->isGranted('ROLE_ADMIN')){
-           return $this->adminIndex($request); 
+           return $this->redirect($this->generateUrl('residenciales'));
         }else{
            return $this->usuariosIndex($request);
         }
@@ -79,6 +79,35 @@ class DefaultController extends BaseController {
             'foros'         =>  $foros,
             'avisos'        =>  $avisos,
             'cargos'        =>  $cargos,
+            'reservaciones' =>  $reservaciones,
+        ));
+    }
+    
+    public function forosIndexAction() {
+        $em = $this->getDoctrine()->getManager();
+        $edificio = $this->getEdificioActual();
+        $foros = $em->getRepository('FrontendBundle:Foro')
+                    ->findForosPorEdificio($edificio);
+        return $this->render('FrontendBundle:Foro:lista.html.twig', array(
+            'foros'=>$foros,
+        ));
+    }
+    
+    public function avisosIndexAction() {
+        $em = $this->getDoctrine()->getManager();
+        $avisos = $em->getRepository('FrontendBundle:Aviso')
+                     ->findAvisosPorUsuario($this->getUser());
+        return $this->render('FrontendBundle:Aviso:lista.html.twig', array(
+            'avisos'=>$avisos,
+        ));
+    }
+    
+    public function reservacionesIndexAction() {
+        $em = $this->getDoctrine()->getManager();
+
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                            ->findReservacionesPorUsuario($this->getUser());
+        return $this->render('FrontendBundle:Reservacion:lista.html.twig', array(
             'reservaciones' =>  $reservaciones,
         ));
     }

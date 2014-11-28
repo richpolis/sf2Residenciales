@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
     <!-- Admin stylesheet -->
     <link rel="stylesheet" href="{{asset('css/admin.css')}}">
+    <!-- Admin stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">
 {% endblock %}
 
 {% block mainbar %}
@@ -44,34 +46,12 @@
                         <!-- Widget -->
                         <div class="widget">
                             <div style="background-color: grey; color: white; text-align: center;font-size: 20px; padding: 10px;">    
-                                Discusiones recientes    
+                                Foros recientes    
                             </div>
                             <div class="widget-content">
                                 <!-- Widget content -->
                                 <div class="padd">
-                                    <ul class="recent">
-                                        {% for foro in foros %}  
-                                            <li>
-                                                <div class="recent-content">
-                                                    <div class="recent-meta">Creado {{foro.createdAt | date('d/m/Y')}} por {{foro.usuario.nombre}} - {{foro.usuario.numero}}</div>
-                                                    <div><a href="#">{{foro.titulo}}</a></div>
-                                                    {% if foro.isCerrado == false %}
-                                                        <div class="btn-group">
-                                                            <button cla
-                                                                    ss="btn btn-xs btn-success"><i class="fa fa-comments"></i><span class="badge">{{foro.comentarios|length}}</span></button>
-                                                        </div>
-                                                        <span class="label label-success pull-right">Abierto</span>
-                                                    {% else %}
-                                                        <div class="btn-group">
-                                                            <span class="label label-default"><i class="fa fa-comments"></i><span class="badge">{{foro.comentarios|length}}</span></span>
-                                                        </div>   
-                                                        <span class="label label-primary pull-right">Cerrado</span>
-                                                    {% endif %}
-                                                    <div class="clearfix"></div>
-                                                </div>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
+                                    {{render(controller('FrontendBundle:Default:forosIndex'))}}
                                 </div>
                             </div>  
                         </div> 
@@ -161,25 +141,7 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-                                    <ul class="lista lista-avisos">
-                                        {% for registro in avisos %}
-                                            {% if registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
-                                                {% set nivel = "General" %}
-                                            {% elseif registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_EDIFICIO') %}
-                                                {% set nivel = registro.edificio %}
-                                            {% else %}
-                                                {% set nivel = registro.usuario %}    
-                                            {% endif %}
-                                            <li class="item item-aviso item-aviso-notificacion">
-                                                <div class="item-aviso-fecha">
-                                                    {{ registro.createdAt | date('d-M-Y') }} - {{nivel}}
-                                                </div>
-                                                <div class="item-titulo item-aviso-titulo"> {{ registro.titulo }}</div>
-                                                <div class="item-descripcion item-aviso-descripcion"> {{ registro.aviso|raw }}</div>
-
-                                            </li>
-                                        {% endfor%}    
-                                    </ul>    
+                                    {{render(controller('FrontendBundle:Default:avisosIndex'))}}
                                 </div>
                             </div>
                         </div>

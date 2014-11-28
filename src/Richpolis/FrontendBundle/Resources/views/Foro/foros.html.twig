@@ -42,26 +42,7 @@
                                         <span class="navegador-fechas-mes">{{nombreMes}}</span>
                                         <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('documentos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
                                     </div>
-                                    <ul class="lista lista-foros">
-                                        {% for registro in entities %}
-                                            <li class="item item-foro">
-                                                <div class="item-aviso-fecha">
-                                                    {{ registro.createdAt | date('d-M-Y') }} - Comentarios: <span class="badge">{{registro.contComentarios}}</span> 
-                                                    {% if registro.isCerrado == false %}
-                                                        <span class="label label-success">Abierto</span>
-                                                    {% else %}
-                                                        <span class="label label-default">Cerrado</span>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="item-foro-contenido">
-                                                    <div class="item-titulo item-foro-titulo"> 
-                                                        <a href="{{path('foros_foro',{'id': registro.id})}}">{{ registro.titulo }}</a> 
-                                                    </div>
-                                                    <div class="item-descripcion item-foro-descripcion"> {{ registro.comentario|raw }}</div>
-                                                </div>    
-                                            </li>
-                                        {% endfor%}    
-                                    </ul>
+                                    {% include 'FrontendBundle:Foro:lista.html.twig' with {'foros': entities } %}
                                     <button class="btn btn-success" onclick="addForo();">Crear foro</button>
                                 </div>
                             </div>

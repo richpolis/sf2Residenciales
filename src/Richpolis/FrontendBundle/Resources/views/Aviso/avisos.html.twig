@@ -29,42 +29,24 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-									<div class="navegador-fechas">
-										{% set monthPrevious = month -1 %}
-										{% set monthNext = month + 1 %}
-										{% set yearPrevious = year %}
-										{% set yearNext = year %}
+                                    <div class="navegador-fechas">
+                                        {% set monthPrevious = month -1 %}
+                                        {% set monthNext = month + 1 %}
+                                        {% set yearPrevious = year %}
+                                        {% set yearNext = year %}
 
-										{% if month == 1 %}
-											{% set monthPrevious = 12 %}
-											{% set yearPrevious = year - 1 %}
-										{% elseif month == 12 %}
-											{% set monthNext = 1 %}
-											{% set yearNext = year + 1 %}
-										{% endif %}
-										<span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('avisos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
-										<span class="navegador-fechas-mes">{{nombreMes}}</span>
-										<span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('avisos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
-									</div>
-                                    <ul class="lista lista-avisos">
-                                        {% for registro in entities %}
-                                            {% if registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
-                                                {% set nivel = "General" %}
-                                            {% elseif registro.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_EDIFICIO') %}
-                                                {% set nivel = app.user.edificio %}
-                                            {% else %}
-                                                {% set nivel = registro.usuario %}    
-                                            {% endif %}
-                                            <li class="item item-aviso item-aviso-notificacion">
-                                                <div class="item-aviso-fecha">
-                                                    {{ registro.createdAt | date('d-M-Y') }} - {{nivel}}
-                                                </div>
-                                                <div class="item-titulo item-aviso-titulo"> {{ registro.titulo }}</div>
-                                                <div class="item-descripcion item-aviso-descripcion"> {{ registro.aviso|raw }}</div>
-
-                                            </li>
-                                        {% endfor%}    
-                                    </ul>    
+                                        {% if month == 1 %}
+                                            {% set monthPrevious = 12 %}
+                                            {% set yearPrevious = year - 1 %}
+                                        {% elseif month == 12 %}
+                                            {% set monthNext = 1 %}
+                                            {% set yearNext = year + 1 %}
+                                        {% endif %}
+                                        <span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('avisos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
+                                        <span class="navegador-fechas-mes">{{nombreMes}}</span>
+                                        <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('avisos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
+                                    </div>
+                                    {% include 'FrontendBundle:Aviso:lista.html.twig' with { 'avisos': entities } %}
 
                                 </div>
                             </div>
