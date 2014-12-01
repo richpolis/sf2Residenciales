@@ -348,11 +348,11 @@ class DefaultController extends BaseController {
                 ->setFrom('noreply@mosaicors.com')
                 ->setTo($usuario->getEmail())
                 ->setBody(
-                        $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
-                                compact('usuario','sUsuario','sPassword','isNew','asunto')), 
-                                'text/html'
-                        );
+                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                'text/html'
+        );
         $this->get('mailer')->send($message);
     }
-    
+
 }

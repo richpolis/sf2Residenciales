@@ -32,4 +32,4 @@ assetic:
 swiftmailer:
     transport: gmail
     username:  richpolis@gmail.com
-    password:  xxxxxxxx
+    password:  sf2Galilea

@@ -534,7 +534,7 @@ class EstadoCuentaController extends BaseController
         $arreglo = array(
             array('id' => 1, 'nombre' => 'Cargos automaticos'),
             array('id' => 2, 'nombre' => 'Cargo general a residencial'),
-            array('id' => 3, 'nombre' => 'Cargo por edificio'),
+            array('id' => 3, 'nombre' => 'Cuotas extraordinarias'),
             array('id' => 4, 'nombre' => 'Cargo a inquilino'),
         );
 

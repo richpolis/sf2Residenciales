@@ -375,9 +375,13 @@ class AvisoController extends BaseController
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
                        ->findBy(array('edificio'=>$edificio));
+        $arreglo = array();
+        foreach($usuarios as $usuario){
+            $arreglo[]= array('id'=>$usuario->getId(),'nombre'=>$usuario->getStringCompleto());
+        }
         
         return array(
-            'entities'=>$usuarios,
+            'entities'=>$arreglo,
             'residencial'=>$residencialActual,
             'edificio'=> $edificio,
             'ruta' => 'avisos_select_usuario',

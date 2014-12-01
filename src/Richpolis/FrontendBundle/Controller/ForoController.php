@@ -160,7 +160,7 @@ class ForoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function newAction(Resquest $request)
+    public function newAction(Request $request)
     {
         $entity = new Foro();
         $filtros = $this->getFilters();

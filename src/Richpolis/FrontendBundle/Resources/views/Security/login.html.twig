@@ -2,7 +2,7 @@
 
 {% block title %}Administrador - Login{% endblock %}
 
-{% block body %}
+{% block body %}   
     <!-- Form area -->
     <div class="admin-form">
         <div class="container">
@@ -27,7 +27,7 @@
                                     <div class="form-group">
                                         <label class="control-label col-lg-3" for="username">Usuario</label>
                                         <div class="col-lg-9">
-                                            <input type="text" id="username" name="_username" value="{{ last_username }}" placeholder="Username">
+                                            <input type="email" id="username" name="_username" value="{{ last_username }}" placeholder="Email">
                                         </div>
                                     </div>
                                     <!-- Password -->
@@ -38,15 +38,15 @@
                                         </div>
                                     </div>
                                     <!-- Remember me checkbox and sign in button -->
-                                    <!--div class="form-group">
+                                    <div class="form-group">
                                         <div class="col-lg-9 col-lg-offset-3">
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox"> Remember me
+                                                    <input type="checkbox" id="remember_me" name="_remember_me" checked > Recuerdame
                                                 </label>
                                             </div>
                                         </div>
-                                    </div-->
+                                    </div>
                                     <div class="col-lg-9 col-lg-offset-3">
                                         <button type="submit" class="btn btn-danger">Entrar</button>
                                         <button type="reset" class="btn btn-default">Limpiar</button>
@@ -69,10 +69,12 @@
                     </div>  
                 </div>
             </div>
-            <div class="pie-login">
-                <img src="{{asset('images/interactivevalley.png')}}"/>
-            </div>
         </div> 
     </div>
-
+<footer class="footer">
+    <div class="container">
+    <!--img src="{{asset('images/interactivevalley.png')}}"/-->
+    <p class="text-center">Mosaico Real Estate Management | Los Cormoran 102, Lomas de las Águilas, Álvaro Obregón C.P. 01730, México DF |  63 78 99 05</p>
+    </div>
+</footer>
 {% endblock %}

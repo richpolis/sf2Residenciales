@@ -57,6 +57,22 @@ class Usuarios extends AbstractFixture implements OrderedFixtureInterface, Conta
         $superadmin->setGrupo(Usuario::GRUPO_SUPER_ADMIN);
         $manager->persist($superadmin);
         
+        // Superadmin 2
+        $superadmin = new Usuario();
+        
+        //$superadmin->setUsername('admin');
+        $superadmin->setSalt(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36));
+        $passwordEnClaro = 'mosaicomeuvera9210290';
+        $encoder = $this->container->get('security.encoder_factory')->getEncoder($superadmin);
+        $passwordCodificado = $encoder->encodePassword($passwordEnClaro, $superadmin->getSalt());
+        $superadmin->setPassword($passwordCodificado);
+        $superadmin->setNombre("Administrador General");
+        $superadmin->setEmail('admin@mosaicors.com');
+        $superadmin->setTelefono('55555555');
+        $superadmin->setNumero('000');
+        $superadmin->setGrupo(Usuario::GRUPO_SUPER_ADMIN);
+        $manager->persist($superadmin);
+        
         // Administrador residencial 1
         $AdminR1 = new Usuario();
         

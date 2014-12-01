@@ -314,7 +314,7 @@ class RecursoController extends BaseController
         $arreglo = array(
             array('id'=>  Recurso::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Para Residencial'),
             array('id'=>  Recurso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por torre'),
-			array('id'=>  Recurso::TIPO_ACCESO_PRIVADO,'nombre'=>'Privado (solo administración)'),
+            /*array('id'=>  Recurso::TIPO_ACCESO_PRIVADO,'nombre'=>'Privado (solo administración)'),*/
         );
         return array(
             'entities'=>$arreglo,
