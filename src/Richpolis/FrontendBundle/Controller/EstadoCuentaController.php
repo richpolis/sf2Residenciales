@@ -707,15 +707,6 @@ class EstadoCuentaController extends BaseController
         return $response;
     }
 	
-    public function getUsuariosPorEdificios($edificios) 
-    {
-        $usuarios = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($edificios as $edificio) {
-            foreach ($edificio->getUsuarios() as $usuario) {
-                $usuarios[] = $usuario;
-            }
-        }
-        return $usuarios;
-    }
+    
 
 }

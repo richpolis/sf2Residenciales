@@ -94,6 +94,13 @@ class Aviso
     private $link;
     
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enviar_email", type="boolean", nullable=true)
+     */
+    private $enviarEmail = false;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime",nullable=true)
@@ -153,6 +160,7 @@ class Aviso
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
 	$this->tipoAviso = self::TIPO_AVISO;
 	$this->tipoAcceso = self::TIPO_ACCESO_RESIDENCIAL;
+        $this->enviarEmail = false;
     }
     
     public function getStringNivel(){

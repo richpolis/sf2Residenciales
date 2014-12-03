@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
+use Richpolis\FrontendBundle\Entity\Aviso;
 
 class AvisoType extends AbstractType
 {
@@ -32,7 +33,21 @@ class AvisoType extends AbstractType
                     )
                 ))
             ->add('tipoAcceso','hidden')
-            ->add('tipoAviso','hidden')
+            ->add('tipoAviso','choice',array(
+                'label'=>'Tipo de aviso',
+                'empty_value'=>false,
+                'read_only'=> true,
+                'choices'=>  Aviso::getArrayTipoAviso(),
+                'preferred_choices'=>  Aviso::getPreferedTipoAviso(),
+                'attr'=>array(
+                    'class'=>'validate[required] form-control placeholder',
+                    'placeholder'=>'Tipo de aviso',
+                    'data-bind'=>'value: tipoAviso'
+                )))
+            ->add('enviarEmail',null,array('label'=>'Enviar email?','attr'=>array(
+                'class'=>'checkbox-inline',
+                'data-bind'=>'value: enviarEmail'
+             )))
             ->add('link','hidden')
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
             ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))                    

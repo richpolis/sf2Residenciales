@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Richpolis\FrontendBundle\Entity\Contacto;
 use Richpolis\FrontendBundle\Form\ContactoType;
+use Richpolis\BackendBundle\Form\UsuarioFrontendType;
 
 
 class DefaultController extends BaseController {
@@ -297,11 +298,11 @@ class DefaultController extends BaseController {
     }
     
     /**
-     * @Route("/editar",name="editar_usuario")
+     * @Route("/perfil",name="perfil_usuario")
      * @Template("FrontendBundle:Default:registro.html.twig")
      * @Method({"GET","POST"})
      */
-    public function editarAction(Request $request)
+    public function perfilUsuarioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -336,7 +337,7 @@ class DefaultController extends BaseController {
         return array(
             'form'      =>  $form->createView(),
             'usuario'   =>  $usuario,
-            'titulo'    => 'Editar registro',
+            'titulo'    => 'Editar perfil',
             'isNew'     =>  $isNew,
         );
     }

@@ -43,7 +43,7 @@ class ForoPorEdificioType extends AbstractType
             ->add('edificios','entity',array(
                 'class'=>'BackendBundle:Edificio',
                 'choices' => $this->residencial->getEdificios(),
-                'label'=>'Edificios',
+                'label'=>'Torres',
                 'expanded' => false,
                 'multiple' => true,
                 'required' => true,

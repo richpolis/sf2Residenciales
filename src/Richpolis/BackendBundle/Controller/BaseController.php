@@ -124,5 +124,34 @@ class BaseController extends Controller
         $recurso = $em->getRepository('BackendBundle:Recurso')->find($recursoId);
         return $recurso;
     }
+    
+    protected function getUsuariosPorEdificios($edificios) 
+    {
+        $usuarios = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($edificios as $edificio) {
+            foreach ($edificio->getUsuarios() as $usuario) {
+                $usuarios[] = $usuario;
+            }
+        }
+        return $usuarios;
+    }
+    
+    protected function getArregloUsuarios($usuarios){
+        $arreglo = array();
+        foreach($usuarios as $usuario){
+            $arreglo[] = $usuario->getEmail();
+        }
+        return $arreglo;
+    }
+    
+    private function setSecurePassword(&$entity) {
+        // encoder
+        $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
+        $passwordCodificado = $encoder->encodePassword(
+                    $entity->getPassword(),
+                    $entity->getSalt()
+        );
+        $entity->setPassword($passwordCodificado);
+    }
 
 }

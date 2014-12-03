@@ -65,13 +65,13 @@ class UsuarioController extends BaseController
         $entity = new Usuario();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-
+        $data = $form->getData();
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
-
+            $this->enviarMensaje($data->getUsuario(), $data->getPassword(), $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $entity->getId())));
         }
 
@@ -285,15 +285,7 @@ class UsuarioController extends BaseController
         ;
     }
 
-    private function setSecurePassword(&$entity) {
-        // encoder
-        $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
-        $passwordCodificado = $encoder->encodePassword(
-                    $entity->getPassword(),
-                    $entity->getSalt()
-        );
-        $entity->setPassword($passwordCodificado);
-    }
+    
     
     /**
      * Exportar los usuarios.
@@ -317,5 +309,19 @@ class UsuarioController extends BaseController
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="export-usuarios.xls"');
         return $response;
+    }
+    
+    private function enviarMensaje($sUsuario, $sPassword, Usuario $usuario, $isNew = false) {
+        $asunto = 'Usuario creado';
+        $message = \Swift_Message::newInstance()
+                ->setSubject($asunto)
+                ->setFrom('noreply@mosaicors.com')
+                ->setTo($usuario->getEmail())
+                ->setBody(
+                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                'text/html'
+        );
+        $this->get('mailer')->send($message);
     }
 }

@@ -94,6 +94,13 @@ class Aviso
     private $link;
     
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enviar_email", type="boolean", nullable=true)
+     */
+    private $enviarEmail = false;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime",nullable=true)
@@ -133,14 +140,22 @@ class Aviso
 	self::TIPO_NOTIFICACION => 'Notificacion'
     );
     
-    public function getStringTipoAcceso(){
-        return self::$sTipoAcceso[$this->getTipoAcceso()];
-    }
-	
     public function getStringTipoAviso(){
         return self::$sTipoAviso[$this->getTipoAviso()];
     }
+    
+    static function getArrayTipoAviso(){
+        return self::$sTipoAviso;
+    }
 	
+    static function getPreferedTipoAviso(){
+        return array(self::TIPO_AVISO);
+    }
+	
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+    
     static function getArrayTipoAcceso(){
         return self::$sTipoAcceso;
     }
@@ -153,6 +168,7 @@ class Aviso
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
 	$this->tipoAviso = self::TIPO_AVISO;
 	$this->tipoAcceso = self::TIPO_ACCESO_RESIDENCIAL;
+        $this->enviarEmail = false;
     }
     
     public function getStringNivel(){
@@ -394,5 +410,28 @@ class Aviso
     public function getUsuario()
     {
         return $this->usuario;
+    }
+
+    /**
+     * Set enviarEmail
+     *
+     * @param boolean $enviarEmail
+     * @return Aviso
+     */
+    public function setEnviarEmail($enviarEmail)
+    {
+        $this->enviarEmail = $enviarEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get enviarEmail
+     *
+     * @return boolean 
+     */
+    public function getEnviarEmail()
+    {
+        return $this->enviarEmail;
     }
 }

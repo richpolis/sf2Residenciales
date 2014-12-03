@@ -94,6 +94,7 @@ class AvisoController extends BaseController
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
+            $this->enviarCorreos($entity);
             return $this->redirect($this->generateUrl('avisos_show', array('id' => $entity->getId())));
         }
         return array(
@@ -339,7 +340,7 @@ class AvisoController extends BaseController
         
         $arreglo = array(
             array('id'=>  Aviso::TIPO_ACCESO_RESIDENCIAL,'nombre'=>'Residencial'),
-            array('id'=>  Aviso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Edificio'),
+            array('id'=>  Aviso::TIPO_ACCESO_EDIFICIO,'nombre'=>'Por torre'),
             array('id'=>  Aviso::TIPO_ACCESO_PRIVADO,'nombre'=>'A usuario'),
         );
         
@@ -390,5 +391,37 @@ class AvisoController extends BaseController
             'return' =>'avisos'
         );
         
+    }
+    
+    public function enviarCorreos(Aviso $entity){
+        if($entity->getEnviarEmail()){
+            switch($entity->getTipoAcceso()){
+                case Aviso::TIPO_ACCESO_RESIDENCIAL:
+                    $usuarios = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
+                                    ->findBy(array('residencial'=>$entity->getResidencial()));
+                    break;
+                case Aviso::TIPO_ACCESO_EDIFICIO:
+                    $usuarios = $this->getUsuariosPorEdificios($entity->getEdificios());
+                    break;
+                case Aviso::TIPO_ACCESO_PRIVADO:
+                    $usuarios = array($entity->getUsuario());
+                    break;
+            }
+            
+        }
+    }
+    
+    private function enviarAvisosPorCorreo(Aviso $entity,$usuarios) {
+        $asunto = $entity->getTitulo();
+        $message = \Swift_Message::newInstance()
+                ->setSubject($asunto)
+                ->setFrom('noreply@mosaicors.com')
+                ->setTo($this->getArregloUsuarios($usuarios))
+                ->setBody(
+                $this->renderView('FrontendBundle:Default:enviarAviso.html.twig', 
+                        compact('entity')), 
+                'text/html'
+        );
+        $this->get('mailer')->send($message);
     }
 }

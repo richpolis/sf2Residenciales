@@ -1,0 +1,94 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <!-- Datatables -->
+  <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/style.css')}}">
+  <!-- Widgets stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+  <!-- Gritter Notifications stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+  <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
+{% endblock %}
+
+{% block mainbar %}
+     <!-- Main bar -->
+    <div class="mainbar">
+        <div class="matter">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="widget">
+
+                            <div class="widget-head">
+                                <div class="pull-left">Editar perfil "{{usuario.nombre}}"</div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                                <div class="widget-content">
+                                    <div class="padd contenido-formulario">
+                                        <!-- Form starts.  -->
+                                        <form action="{{ path('perfil_usuario') }}" id="formUsuarios" method="post" {{ form_enctype(form)}}>
+                                            {{form_widget(form)}}
+                                        </form>
+                                    </div>
+                                </div>
+                            <div class="widget-foot">
+                                <button id="botonRegresar" class="btn btn-default">Regresar</button>
+                                <button id="botonGuardar" class="btn btn-primary">Actualizar</button>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="labelFormulario"></h4>
+      </div>
+      <div class="modal-body" id="modalBodyFormulario">
+          
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>  
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+  <!-- jQuery Notification - Noty -->
+  <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+  <!-- jQuery Notification ends -->
+
+  <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+  <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+  <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+  <script>
+  $(document).ready(function(){
+      $("#botonGuardar").on("click",function(){
+         $(".contenido-formulario form").submit(); 
+      });
+      $("#botonRegresar").on("click",function(){
+         location.href = '{{path('homepage')}}'; 
+      });
+  });
+  </script>
+{% endblock %}
+
