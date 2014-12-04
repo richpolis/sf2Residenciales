@@ -426,28 +426,32 @@ class ReservacionController extends BaseController
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
+        $recursosEdificio = $em->getRepository('BackendBundle:Recurso')
+			->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
+        if($request->query->has('recurso')){
+            $filtros = $this->getFilters();
+            $filtros['recurso'] = $request->query->get('recurso');
+            $this->setFilters($filtros);
+        }
+
         $recursoActual = $this->getRecursoActual();
 
         $fecha = new \DateTime();
-        $year = $request->query->get('year', $fecha->format('Y'));
-        $month = $request->query->get('month', $fecha->format('m'));
-        $nombreMes = $this->getNombreMes($month);
+        $fecha->modify('-1 month');
         
         if($recursoActual){
             $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                                 ->findReservacionesPorRecursoPorFecha($recursoActual, $month, $year);
+                                 ->findReservacionesPorRecursoAprobadas($recursoActual, $fecha);
         }else{
             $reservaciones = array();
         }
 
         return $this->render("FrontendBundle:Reservacion:calendario.html.twig", array(
-                    'entities' => $reservaciones,
-                    'residencial' => $residencialActual,
-                    'edificio' => $edificioActual,
-                    'recurso' => $recursoActual,
-                    'month' => $month,
-                    'year' => $year,
-                    'nombreMes' => $nombreMes,
+            'entities' => $reservaciones,
+            'residencial' => $residencialActual,
+            'edificio' => $edificioActual,
+            'recurso' => $recursoActual,
+            'recursos' => $recursosEdificio,
         ));
         
     }
@@ -516,5 +520,48 @@ class ReservacionController extends BaseController
         $em->flush();
         
         return $this->redirect($this->generateUrl('reservaciones_show',array('id'=>$reservacion->getId())));
+    }
+
+    /**
+     * Formulario para realizar reservacion.
+     *
+     * @Route("/realizar/reservacion", name="reservaciones_realizar_reservacion")
+     * @Method({"GET","POST"})
+     */
+    public function realizarPagoAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUsuarioActual();
+        $entity = new Reservacion();
+        $entity->setUsuario($usuario);
+        $form = $this->createCreateForm($entity);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $form->getData();
+                $entity->setIsAproved(false);
+                $em->persist($entity);
+                $em->flush();
+                foreach ($cargos as $cargo) {
+                    $cargo->setPago($entity);
+                    $em->persist($cargo);
+                    $em->flush();
+                }
+                $response = new JsonResponse(json_encode(array(
+                            'html' => '',
+                            'respuesta' => 'creado',
+                )));
+                return $response;
+            }
+        }
+
+        $response = new JsonResponse(json_encode(array(
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
+        )));
+        return $response;
     }
 }
