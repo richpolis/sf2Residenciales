@@ -112,7 +112,10 @@ class BaseController extends Controller
         if (isset($filters['recurso'])) {
             $recursoId = $filters['recurso'];
         } else {
-            $recursos = $this->getEdificioActual()->getRecursos();
+			$residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        	$edificioActual = $this->getEdificioActual();
+            $recursos = $em->getRepository('BackendBundle:Recurso')
+							->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
             if(count($recursos)>0){
                 $filters['recurso']=$recursos[0]->getId();
                 $this->setFilters($filters);

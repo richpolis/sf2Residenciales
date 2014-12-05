@@ -146,8 +146,8 @@ class Reservacion
     
     public function __construct() {
         $this->isAproved = false;
-	$this->monto = 0;
-        $this->status = 0;
+		$this->monto = 0;
+        $this->status = Reservacion::STATUS_SOLICITUD;
     }
     
     public function getStringReservacion(){

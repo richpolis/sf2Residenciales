@@ -24,8 +24,8 @@ class ReservacionRepository extends EntityRepository
                 . "JOIN s.usuario u "
                 . "JOIN u.edificio e "
                 . "WHERE i.id=:recurso "
-		. "AND i.status=:status "
-                . "AND i.fechaEvento>=:fecha "
+				. "AND s.status=:status "
+                . "AND s.createdAt>=:fecha "
                 . "ORDER BY s.createdAt DESC");
         $consulta->setParameters(array(
             'recurso' => $recurso->getId(),
@@ -107,7 +107,7 @@ class ReservacionRepository extends EntityRepository
                 . "JOIN s.usuario u "
                 . "JOIN u.edificio e "
                 . "WHERE u.id=:usuario "
-                . "AND s.fechaEvento BETWEEN :inicio AND :fin "
+                . "AND s.createdAt BETWEEN :inicio AND :fin "
                 . "ORDER BY s.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),

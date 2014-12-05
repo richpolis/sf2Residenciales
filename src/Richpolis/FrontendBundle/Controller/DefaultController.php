@@ -312,7 +312,9 @@ class DefaultController extends BaseController {
             return $this->redirect($this->generateUrl('login'));
         }
         
-        $form = $this->createForm( new UsuarioFrontendType(), $usuario);
+        $form = $this->createForm( new UsuarioFrontendType(), $usuario,array(
+			'em'=>$this->getDoctrine()->getManager())
+		);
         $isNew = false;
         if($request->isMethod('POST')){
             //obtiene la contraseña

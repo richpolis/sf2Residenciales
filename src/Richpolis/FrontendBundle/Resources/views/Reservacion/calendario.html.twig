@@ -77,6 +77,7 @@
 {% block javascripts %}
   {{ parent() }}
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+<script src="{{asset('js/jquery-ui-timepicker-addon.js')}}"></script>
 <script src="{{asset('js/fullcalendar.min.js')}}"></script> <!-- Full Google Calendar - Calendar -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
@@ -107,50 +108,13 @@
       },
       editable: true,
       events: [
+	  	{% for reservacion in entities %}
         {
-          title: 'All Day Event',
-          start: new Date(y, m, 1)
+          title: 'Reservacion',
+          start: new Date({{reservacion.fechaEvento|date('y')}}, {{reservacion.fechaEvento|date('m')}}, {{reservacion.fechaEvento|date('d')}}, {{reservacion.desde|date('g')}}, {{reservacion.desde|date('i')}},0),
+          end: new Date({{reservacion.fechaEvento|date('y')}}, {{reservacion.fechaEvento|date('m')}}, {{reservacion.fechaEvento|date('d')}}, {{reservacion.hasta|date('g')}}, {{reservacion.hasta|date('i')}},0)
         },
-        {
-          title: 'Long Event',
-          start: new Date(y, m, d-5),
-          end: new Date(y, m, d-2)
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: new Date(y, m, d-3, 16, 0),
-          allDay: false
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: new Date(y, m, d+4, 16, 0),
-          allDay: false
-        },
-        {
-          title: 'Meeting',
-          start: new Date(y, m, d, 10, 30),
-          allDay: false
-        },
-        {
-          title: 'Lunch',
-          start: new Date(y, m, d, 12, 0),
-          end: new Date(y, m, d, 14, 0),
-          allDay: false
-        },
-        {
-          title: 'Birthday Party',
-          start: new Date(y, m, d+1, 19, 0),
-          end: new Date(y, m, d+1, 22, 30),
-          allDay: false
-        },
-        {
-          title: 'Click for Google',
-          start: new Date(y, m, 28),
-          end: new Date(y, m, 29),
-          url: 'http://google.com/'
-        }
+        {% endfor %}
       ],
       dayClick: function(date, allDay, jsEvent, view) {
         
@@ -169,8 +133,15 @@
             editable: true,
             start: new Date(y, m, d, h1, m1),
             end: new Date(y, m, d, h2, m2),
-            allDay: false
+            allDay: false,
+			year: y,
+			month: m,
+			day: d,
+			hora: h1,
+			minuto: m1,
+			fecha: (y + "-" + (m+1) + "-" + d)
         }
+		addReservacion(calEvent);
     }
     });
     
@@ -182,39 +153,38 @@
     
   });
   function addReservacion(calEvent){
-      mostrarFormulario("Realizar pago");
-      getFormulario(calEvent.start);
+  	  
+      mostrarFormulario("Realizar reservacion");
+      getFormulario(calEvent.fecha);
   }
   
   function mostrarFormulario(titulo){
       $("#modalFormulario").modal("show");
       $("#labelFormulario").html(titulo);
       $loader = $("<img>");
-      $loader.attr({'src': '{{asset('images/loader.GIF')}}','id': 'loader'});
+      $loader.attr({'src': '{{asset('images/bx_loader.gif')}}','id': 'loader'});
       $loader.css({'maxWidth': '80px'});
       $("#modalBodyFormulario").html($loader);
   }
   
   function guardar(){
       var $form = $("#modalBodyFormulario form");
-      var data = $form.serializefiles();
+      var data = $form.serialize();
       $.ajax({
           url: $form.attr('action'),
           type: 'POST',
           data: data,
           dataType: 'json',
-  cache: false,
-    contentType: false,
-    processData: false,
       }).done(function(data, textStatus,jqXHR){
           debugger;
           data = JSON.parse(data);
           if(data.respuesta == 'nuevo'){
               $("#modalBodyFormulario").html(data.form);
               $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+			  activarDateTimePicker();
           }else if(data.respuesta == 'creado'){
               $("#modalFormulario").modal("hide");
-    location.href='{{path('pagos')}}';
+    		  location.href='{{path('reservaciones')}}';
           }
       }).fail(function(data){
           console.log(data);
@@ -232,9 +202,34 @@
               if(data.respuesta == 'nuevo'){
                   $("#modalBodyFormulario").html(data.form);
                   $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+				  activarDateTimePicker();
               }
-          });
-  }  
+          }).fail(function(data){
+		  		alert("Error");
+		  		console.log(data);
+		  });
+  }
+  function activarDateTimePicker(){
+  			$("#richpolis_frontendbundle_reservacion_fechaEvento").datepicker({
+                dateFormat: "yy-mm-dd",
+                {% if is_granted('ROLE_SUPER_ADMIN') == false %}    
+                minDate: 0,       
+                maxDate: "+3M"
+                {% endif %}
+            });
+            
+            $('#richpolis_frontendbundle_reservacion_desde').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
+            });
+            
+            $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
+                    timeFormat: 'HH:mm',
+                    stepHour: 1,
+                    stepMinute: 15
+            });
+  }
 </script>
 
 {% endblock %}

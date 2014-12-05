@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -70,12 +71,12 @@ class ReservacionController extends BaseController
                 ->findReservacionesPorUsuarioPorFecha($this->getUser(), $month, $year);
 
         return $this->render("FrontendBundle:Reservacion:reservaciones.html.twig", array(
-                    'entities' => $reservaciones,
-                    'residencial' => $residencialActual,
-                    'edificio' => $edificioActual,
-                    'month' => $month,
-                    'year' => $year,
-                    'nombreMes' => $nombreMes,
+              'entities' => $reservaciones,
+              'residencial' => $residencialActual,
+              'edificio' => $edificioActual,
+              'month' => $month,
+              'year' => $year,
+              'nombreMes' => $nombreMes,
         ));
     }
     
@@ -418,7 +419,7 @@ class ReservacionController extends BaseController
      * Calendario de reservaciones.
      *
      * @Route("/calendario", name="reservaciones_calendario")
-     * @Template("FrontendBundle:Reservacion:calendario.html.twig")
+     * @Template()
      */
     public function calendarioAction(Request $request)
     {
@@ -446,13 +447,11 @@ class ReservacionController extends BaseController
             $reservaciones = array();
         }
 
-        return $this->render("FrontendBundle:Reservacion:calendario.html.twig", array(
+        return array(
             'entities' => $reservaciones,
-            'residencial' => $residencialActual,
-            'edificio' => $edificioActual,
             'recurso' => $recursoActual,
             'recursos' => $recursosEdificio,
-        ));
+        );
         
     }
     
@@ -528,39 +527,42 @@ class ReservacionController extends BaseController
      * @Route("/realizar/reservacion", name="reservaciones_realizar_reservacion")
      * @Method({"GET","POST"})
      */
-    public function realizarPagoAction(Request $request) {
+    public function realizarReservacionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
+		$recursoActual = $this->getRecursoActual();
         $entity = new Reservacion();
         $entity->setUsuario($usuario);
+		if($request->query->has('fecha')){
+			$fecha = new \DateTime($request->query->get('fecha'));
+		}else{
+			$fecha = new \DateTime();
+		}
+		$entity->setRecurso($recursoActual);
+		$entity->setFechaEvento($fecha);
+		$entity->setMonto($recursoActual->getPrecio());
         $form = $this->createCreateForm($entity);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $form->getData();
-                $entity->setIsAproved(false);
                 $em->persist($entity);
                 $em->flush();
-                foreach ($cargos as $cargo) {
-                    $cargo->setPago($entity);
-                    $em->persist($cargo);
-                    $em->flush();
-                }
                 $response = new JsonResponse(json_encode(array(
-                            'html' => '',
-                            'respuesta' => 'creado',
+                   'html' => '',
+                   'respuesta' => 'creado',
                 )));
                 return $response;
             }
         }
 
         $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
-                        'form' => $form->createView(),
-                    )),
-                    'respuesta' => 'nuevo',
+          'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+          		'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
+            	'form' => $form->createView(),
+          	)),
+          	'respuesta' => 'nuevo',
         )));
         return $response;
     }
