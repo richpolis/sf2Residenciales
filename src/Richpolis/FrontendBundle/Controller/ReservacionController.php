@@ -27,7 +27,6 @@ class ReservacionController extends BaseController
      *
      * @Route("/", name="reservaciones")
      * @Method("GET")
-     * @Template()
      */
     public function indexAction(Request $request)
     {

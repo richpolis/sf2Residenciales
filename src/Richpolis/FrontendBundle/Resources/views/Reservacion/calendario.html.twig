@@ -25,7 +25,7 @@
 
                         <div class="widget">
                             <div class="widget-head">
-                                <h2>Calendario</h2>
+                                <h2>Calendario - {{recurso.nombre}}</h2>
                                 <select id="selectRecurso">
                                     {% for rec in recursos %}
                                         {% if rec.id == recurso.id %}
@@ -54,6 +54,7 @@
             </div>
         </div>
     </div>
+
 <!-- Modal -->
 <div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
   <div class="modal-dialog">
@@ -71,7 +72,8 @@
       </div>
     </div>
   </div>
-</div>  
+</div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -94,7 +96,7 @@
     /* Calendar */
   var calEvent;
   $(document).ready(function() {
-  
+   
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
@@ -108,7 +110,7 @@
       },
       editable: true,
       events: [
-	  	{% for reservacion in entities %}
+	{% for reservacion in entities %}
         {
           title: 'Reservacion',
           start: new Date({{reservacion.fechaEvento|date('y')}}, {{reservacion.fechaEvento|date('m')}}, {{reservacion.fechaEvento|date('d')}}, {{reservacion.desde|date('g')}}, {{reservacion.desde|date('i')}},0),
@@ -210,7 +212,7 @@
 		  });
   }
   function activarDateTimePicker(){
-  			$("#richpolis_frontendbundle_reservacion_fechaEvento").datepicker({
+            $("#richpolis_frontendbundle_reservacion_fechaEvento").datepicker({
                 dateFormat: "yy-mm-dd",
                 {% if is_granted('ROLE_SUPER_ADMIN') == false %}    
                 minDate: 0,       
@@ -221,13 +223,15 @@
             $('#richpolis_frontendbundle_reservacion_desde').timepicker({
                     timeFormat: 'HH:mm',
                     stepHour: 1,
-                    stepMinute: 15
+                    stepMinute: 15,
+                    controlType: 'select',
             });
             
             $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
                     timeFormat: 'HH:mm',
                     stepHour: 1,
-                    stepMinute: 15
+                    stepMinute: 15,
+                    controlType: 'select',
             });
   }
 </script>

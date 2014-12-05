@@ -53,6 +53,7 @@
                                                 <th>Usuario</th>
                                                 <th>Fecha reservacion</th>
                                                 <th>Fecha evento</th>
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -62,10 +63,17 @@
                                                     <td>{{ entity.recurso }}</td>
                                                     <td>{{ entity.usuario }}</td>
                                                     <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                                                    <td>{{ entity.fechaEvento | date('d-m-Y') }}</td>
                                                     <td>
-                                                        <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                                        <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                                        {{ entity.fechaEvento | date('d-m-Y') }} <br/>
+                                                        {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}
+                                                    </td>
+                                                    <td>{{ entity.stringStatus }}</td>
+                                                    <td>
+                                                        {% if entity.status != constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
+                                                            {% if entity.pago is null %}    
+                                                            <button id="realizarPago" onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Realizar Pago</button>
+                                                            {% endif %}
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -111,11 +119,71 @@
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 <script>
+    var reservacionActual = 0;
     $(document).ready(function(){
        $("#crearReservacion").on("click",function(){
            location.href = '{{path('reservaciones_calendario')}}';
        }); 
     });
+        function addPago(reservacion){
+            mostrarFormulario("Realizar pago");
+            reservacionActual = reservacion;
+            getFormulario();
+        }
+        
+        function mostrarFormulario(titulo){
+            $("#modalFormulario").modal("show");
+            $("#labelFormulario").html(titulo);
+            $loader = $("<img>");
+            $loader.attr({'src': '{{asset('images/bx_loader.gif')}}','id': 'loader'});
+            $loader.css({'maxWidth': '80px'});
+            $("#modalBodyFormulario").html($loader);
+        }
+        
+        function guardar(){
+            var $form = $("#modalBodyFormulario form");
+            var data = $form.serializefiles();
+            $.ajax({
+                url: $form.attr('action')+"?reservacion="+reservacionActual,
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                cache: false,
+    		contentType: false,
+    		processData: false,
+            }).done(function(data, textStatus,jqXHR){
+                debugger;
+                data = JSON.parse(data);
+                if(data.respuesta == 'nuevo'){
+                    $("#modalBodyFormulario").html(data.form);
+                    $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                }else if(data.respuesta == 'creado'){
+                    $("#modalFormulario").modal("hide");
+                    location.href='{{path('pagos')}}';
+                }
+            }).fail(function(data){
+                alert("Error");
+                console.log(data);
+            });
+        }
+        
+        function getFormulario(){
+            $.ajax({
+                url: '{{path('pagos_realizar_pago_reservacion')}}',
+                type: 'GET',
+                data: {'reservacion': reservacionActual },
+                dataType: 'json',
+            }).done(function(data, textStatus,jqXHR){
+                data = JSON.parse(data);
+                if(data.respuesta == 'nuevo'){
+                    $("#modalBodyFormulario").html(data.form);
+                    $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                }
+            }).fail(function(data){
+                alert("Error");
+                console.log(data);
+            });;
+        }
 </script>
 {% endblock %}
 

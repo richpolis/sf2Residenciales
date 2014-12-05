@@ -456,5 +456,57 @@ class PagoController extends BaseController
         )));
         return $response;
     }
+    
+    /**
+     * Formulario para realizar pago.
+     *
+     * @Route("/realizar/pago/reservacion", name="pagos_realizar_pago_reservacion")
+     * @Method({"GET","POST"})
+     */
+    public function realizarPagoReservacionAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUsuarioActual();
+        $reservacionId = $request->query->get('reservacion');
+        $reservacion = $em->getRepository('FrontendBundle:Reservacion')->find($reservacionId);
+        $entity = new Pago();
+        $entity->setUsuario($usuario);
+        $entity->setMonto($reservacion->getMonto());
+        $entity->setIsAproved(false);
+        $form = $this->createCreateForm($entity);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $pago = $form->getData();
+                $pago->setIsAproved(false);
+                $em->persist($pago);
+                $em->flush();
+                //aplicamos la morosidad de la residencial
+                $cargo = new EstadoCuenta();
+                $cargo->setCargo("Cargo por reservacion evento dia: ". $reservacion->getFechaEvento()->format('d-m-Y') . " a las ". $reservacion->getDesde()->format('g:ia'));
+                $cargo->setMonto($reservacion->getMonto());
+                $cargo->setUsuario($usuario);
+                $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_RESERVACION);
+                $cargo->setIsAcumulable(false);
+                $cargo->setPago($pago);
+                $em->persist($cargo);
+                
+                $response = new JsonResponse(json_encode(array(
+                            'html' => '',
+                            'respuesta' => 'creado',
+                )));
+                return $response;
+            }
+        }
+
+        $response = new JsonResponse(json_encode(array(
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('pagos_realizar_pago'),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
+        )));
+        return $response;
+    }
 
 }

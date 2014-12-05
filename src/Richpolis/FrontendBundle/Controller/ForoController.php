@@ -455,7 +455,7 @@ class ForoController extends BaseController
     /**
      * Formulario para crear foro.
      *
-     * @Route("/crear/pago", name="foro_crear_foro")
+     * @Route("/crear/pago", name="foros_crear_foro")
      * @Method({"GET","POST"})
      */
     public function crearForoAction(Request $request) {
@@ -487,7 +487,7 @@ class ForoController extends BaseController
 
         $response = new JsonResponse(json_encode(array(
             'form' => $this->renderView('FrontendBundle:Foro:formForo.html.twig', array(
-                'rutaAction' => $this->generateUrl('foro_crear_foro'),
+                'rutaAction' => $this->generateUrl('foros_crear_foro'),
                 'form' => $form->createView(),
             )),
             'respuesta' => 'nuevo',

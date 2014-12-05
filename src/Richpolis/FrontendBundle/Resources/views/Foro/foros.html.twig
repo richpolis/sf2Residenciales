@@ -112,7 +112,7 @@
             $("#modalFormulario").modal("show");
             $("#labelFormulario").html(titulo);
             $loader = $("<img>");
-            $loader.attr({'src': '{{asset('images/loader.GIF')}}','id': 'loader'});
+            $loader.attr({'src': '{{asset('images/bx_loader.gif')}}','id': 'loader'});
             $loader.css({'maxWidth': '80px'});
             $("#modalBodyFormulario").html($loader);
         }
@@ -145,7 +145,7 @@
         
         function getFormulario(){
             $.ajax({
-                url: '{{path('foros_new')}}',
+                url: '{{path('foros_crear_foro')}}',
                 type: 'GET',
                 dataType: 'json',
             }).done(function(data, textStatus,jqXHR){
@@ -154,6 +154,8 @@
                     $("#modalBodyFormulario").html(data.form);
                     $("#modalBodyFormulario form").attr({'action': data.rutaAction});
                 }
+            }).fail(function(data){
+                console.log(data);
             });
         }
   </script>
