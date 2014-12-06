@@ -74,7 +74,7 @@
                                <td>{{ entity.usuario }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
                                <td>{{ entity.fechaEvento | date('d-m-Y') }} <br/> {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
-                               <td>{{ entity.isAproved | isActive | raw }}</td>
+                               <td>{{ entity.isAproved | isActive | raw }}<br/>$ {{ entity.monto|number_format(2,".",",") }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>

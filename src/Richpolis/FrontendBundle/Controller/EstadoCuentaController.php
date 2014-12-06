@@ -357,7 +357,7 @@ class EstadoCuentaController extends BaseController
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
         
-        //$residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
                        ->findBy(array('edificio'=>$edificio));
@@ -376,6 +376,7 @@ class EstadoCuentaController extends BaseController
                 $cargo->setCargo("Cargo automatico de ".$nombreMes." del ".$year);
                 $cargo->setMonto($edificio->getCuota());
                 $cargo->setUsuario($usuario);
+				$cargo->setResidencial($residencial);
                 $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_NORMAL);
                 $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
@@ -440,6 +441,7 @@ class EstadoCuentaController extends BaseController
                     $cargo->setCargo("Cargo por adeudo del ".$nombreMes." del ".$year);
                     $cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
                     $cargo->setUsuario($usuario);
+					$cargo->setResidencial($residencial);
                     $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
                     $cargo->setIsAcumulable(true);
                     $em->persist($cargo);
@@ -594,6 +596,7 @@ class EstadoCuentaController extends BaseController
                 $cargo->setUsuario($usuario);
                 $cargo->setTipoCargo($tipoCargo);
                 $cargo->setIsAcumulable($isAcumulable);
+				$cargo->setResidencial($residencial);
                 $em->persist($cargo);
                 $cont++;
             }
@@ -655,6 +658,7 @@ class EstadoCuentaController extends BaseController
                     $cargo->setUsuario($usuario);
                     $cargo->setTipoCargo($tipoCargo);
                     $cargo->setIsAcumulable($isAcumulable);
+					$cargo->setResidencial($residencial);
                     $em->persist($cargo);
                 }
                 $aviso = new Aviso();

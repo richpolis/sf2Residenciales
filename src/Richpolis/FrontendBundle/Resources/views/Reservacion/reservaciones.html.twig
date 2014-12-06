@@ -67,11 +67,15 @@
                                                         {{ entity.fechaEvento | date('d-m-Y') }} <br/>
                                                         {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}
                                                     </td>
-                                                    <td>{{ entity.stringStatus }}</td>
                                                     <td>
-                                                        {% if entity.status != constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
+													{{ entity.stringStatus }}
+													<br/>
+													$ {{ entity.monto|number_format(2,".",",") }}
+													</td>
+                                                    <td>
+                                                        {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
                                                             {% if entity.pago is null %}    
-                                                            <button id="realizarPago" onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Realizar Pago</button>
+                                                            <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Realizar Pago</button>
                                                             {% endif %}
                                                         {% endif %}
                                                     </td>
@@ -99,7 +103,24 @@
             </div>
         </div>
     </div>
-
+<!-- Modal -->
+<div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="labelFormulario"></h4>
+      </div>
+      <div class="modal-body" id="modalBodyFormulario">
+          
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div> 
 {% endblock %}
 
 {% block javascripts %}
@@ -118,6 +139,7 @@
 <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+<script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
 <script>
     var reservacionActual = 0;
     $(document).ready(function(){
@@ -141,6 +163,7 @@
         }
         
         function guardar(){
+			debugger;
             var $form = $("#modalBodyFormulario form");
             var data = $form.serializefiles();
             $.ajax({
@@ -168,6 +191,7 @@
         }
         
         function getFormulario(){
+			debugger;
             $.ajax({
                 url: '{{path('pagos_realizar_pago_reservacion')}}',
                 type: 'GET',

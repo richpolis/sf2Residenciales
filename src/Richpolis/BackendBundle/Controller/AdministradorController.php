@@ -277,13 +277,5 @@ class AdministradorController extends BaseController
         ;
     }
 
-    private function setSecurePassword(&$entity) {
-        // encoder
-        $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
-        $passwordCodificado = $encoder->encodePassword(
-                    $entity->getPassword(),
-                    $entity->getSalt()
-        );
-        $entity->setPassword($passwordCodificado);
-    }
+   
 }

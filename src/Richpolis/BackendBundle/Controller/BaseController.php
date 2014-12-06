@@ -147,7 +147,7 @@ class BaseController extends Controller
         return $arreglo;
     }
     
-    private function setSecurePassword(&$entity) {
+    protected function setSecurePassword(&$entity) {
         // encoder
         $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
         $passwordCodificado = $encoder->encodePassword(

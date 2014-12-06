@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -455,7 +456,7 @@ class ForoController extends BaseController
     /**
      * Formulario para crear foro.
      *
-     * @Route("/crear/pago", name="foros_crear_foro")
+     * @Route("/crear/foro", name="foros_crear_foro")
      * @Method({"GET","POST"})
      */
     public function crearForoAction(Request $request) {
@@ -466,7 +467,11 @@ class ForoController extends BaseController
         $entity->setTipoAcceso(Foro::TIPO_ACCESO_EDIFICIO);
         $entity->addEdificio($usuario->getEdificio());
         $entity->setResidencial($this->getResidencialActual($this->getResidencialDefault()));
-        $form = $this->createCreateForm($entity);
+        $form = $this->createForm(new ForoType(), $entity, array(
+            'action' => $this->generateUrl('foros_crear_foro'),
+            'method' => 'POST',
+            'em' => $this->getDoctrine()->getManager(),
+        ));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {

@@ -71,7 +71,7 @@ class UsuarioController extends BaseController
             $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
-            $this->enviarMensaje($data->getUsuario(), $data->getPassword(), $entity);
+            $this->enviarMensaje($data->getEmail(), $data->getPassword(), $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $entity->getId())));
         }
 

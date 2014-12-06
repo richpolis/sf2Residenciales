@@ -119,15 +119,12 @@
         
         function guardar(){
             var $form = $("#modalBodyFormulario form");
-            var data = $form.serializefiles();
+            var data = $form.serialize();
             $.ajax({
                 url: $form.attr('action'),
                 type: 'POST',
                 data: data,
                 dataType: 'json',
-		cache: false,
-    		contentType: false,
-    		processData: false,
             }).done(function(data, textStatus,jqXHR){
                 debugger;
                 data = JSON.parse(data);
