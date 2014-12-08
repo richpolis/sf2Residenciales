@@ -76,20 +76,18 @@
                                                 <th>Fecha</th>
                                                 <th>Cargo</th>
                                                 <th>Monto</th>
-                                                <th>Pagado</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% set monto = 0 %}    
-                                            {% for entity in cargos if entity.isPaid == false %}
+                                            {% set monto = 0 %}
+                                            {% for entity in cargos %}
                                                 <tr>
                                                     <td>{{ entity.createdAt|date('d-m-Y') }}</td>
                                                     <td>
-                                                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div><br/>
-                                                        <div class="descripcion-cargo">{{ entity.cargo }}</div><br/>
+                                                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
+                                                        <div class="descripcion-cargo">{{ entity.cargo }}</div>
                                                     </td>
                                                     <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
-                                                    <td>{{ entity.isPaid|isActive |raw }}</td>
                                                 </tr>
 
                                                 {% set monto = monto + entity.monto %}

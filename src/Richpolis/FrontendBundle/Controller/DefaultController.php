@@ -60,15 +60,23 @@ class DefaultController extends BaseController {
     
     public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
 
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
+		$usuario = $this->getUsuarioActual();
         
-        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                     ->getCargosAdeudoPorUsuario($this->getUser()->getId());
-
+		$fecha = new \DateTime();
+        $mes = $fecha->format("m");
+        $year = $fecha->format("Y");
+        $registros = $em->getRepository('FrontendBundle:EstadoCuenta')
+                         ->getCargosEnMes($mes,$year,$usuario);
         return $this->render('FrontendBundle:Default:index.html.twig', array(
-            'cargos'        =>  $cargos,
+            'cargos'=>$registros,
         ));
     }
     
@@ -179,6 +187,20 @@ class DefaultController extends BaseController {
             'edificios' => $edificios,
             'edificioActual' => $edificio,
         ));
+    }
+	
+	/**
+     * @Route("/cambiar/residencial", name="cambiar_residencial")
+     */
+    public function cambiarResidencialAction(Request $request) {
+        $filtros = $this->getFilters();
+        if($request->query->has('residencial') == true){
+            $filtros['residencial'] = $request->query->get('residencial');
+            $pagina = $request->query->get('pagina','homepage');
+            $this->setFilters($filtros);
+        }
+        return $this->redirect($this->generateUrl($pagina));
+        
     }
     
     /**

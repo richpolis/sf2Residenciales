@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Aviso;
+use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\AvisoType;
 use Richpolis\FrontendBundle\Form\AvisoPorEdificioType;
 
@@ -433,5 +434,57 @@ class AvisoController extends BaseController
                 'text/html'
         );
         $this->get('mailer')->send($message);
+    }
+	
+	/**
+     * Aplicar avisos de cargos del mes.
+     *
+     * @Route("/aplicar/avisos/cargos", name="avisos_avisos_cargos")
+     */
+    public function aplicarAvisosCargosAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+		if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->query->get('edificioId');
+            $this->setFilters($filtros);
+        }
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        $fecha = new \DateTime();
+        $mes = $fecha->format("m");
+        $year = $fecha->format("Y");
+        $cont = 0;
+        $nombreMes = $this->getMes($mes);
+		$monto = 0;
+        foreach($usuarios as $usuario){
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                         ->getCargosEnMes($mes,$year,$usuario);
+			foreach($cargos as $cargo){
+				$monto+=$cargo->getMonto();
+			}
+			
+            if($monto>0){
+                $aviso = new Aviso();
+                $aviso->setTitulo("Estado de cuenta de ".$nombreMes." del ".$year);
+                $aviso->setAviso("Su estado de cuenta es de ".number_format(''));
+                $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                $aviso->setResidencial($residencial);
+                $aviso->addEdificio($edificio);
+                $aviso->setUsuario($usuario);
+                $em->persist($aviso);
+				$cont++;
+            }
+        }
+        $em->flush();
+        $response = new JsonResponse(array('avisos'=>"Avisos creados ".$cont));
+        return $response;
     }
 }

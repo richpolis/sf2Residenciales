@@ -79,19 +79,38 @@ class EstadoCuentaController extends BaseController
     
     public function usuariosIndex(Request $request){
         $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
 
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        
+		$usuario = $this->getUsuarioActual();
         $todos = $request->query->get('todos',false);
-        $estadodecuentas = $em->getRepository('FrontendBundle:EstadoCuenta')
-                              ->getCargosAdeudoPorUsuario($this->getUser()->getId(),$todos);
+		
+		$fecha = new \DateTime();
+		$year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+		$nombreMes = $this->getNombreMes($month);
+		$actual = false;
+		if($fecha->format('Y') == $year && $fecha->format('m')==$month){
+			$actual = true;
+		}
         
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosEnMes($month,$year,$usuario);
+
         return $this->render("FrontendBundle:EstadoCuenta:estadodecuentas.html.twig", array(
-            'entities' => $estadodecuentas,
+            'entities' => $cargos,
             'residencial'=> $residencialActual,
             'edificio' => $edificioActual,
+			'edoCuentaActual' => $actual,
+			'month'=>$month,
+			'year'=>$year,
+			'nombreMes' => $nombreMes,
         ));
     }
     
@@ -356,7 +375,10 @@ class EstadoCuentaController extends BaseController
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-        
+		if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->query->get('edificioId');
+            $this->setFilters($filtros);
+        }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
@@ -371,7 +393,6 @@ class EstadoCuentaController extends BaseController
                         ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_NORMAL,$usuario);
             if(!$cargo){
                 //no existe cargo en el mes, creamos el cargo
-                
                 $cargo = new EstadoCuenta();
                 $cargo->setCargo("Cargo automatico de ".$nombreMes." del ".$year);
                 $cargo->setMonto($edificio->getCuota());
@@ -381,7 +402,7 @@ class EstadoCuentaController extends BaseController
                 $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
                 $cont++;
-                $aviso = new Aviso();
+                /*$aviso = new Aviso();
                 $aviso->setTitulo("Cargo automatico de ".$nombreMes." del ".$year);
                 $aviso->setAviso("Cargo automatico de ".$nombreMes." del ".$year);
                 $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
@@ -389,7 +410,7 @@ class EstadoCuentaController extends BaseController
                 $aviso->setResidencial($residencial);
                 $aviso->addEdificio($edificio);
                 $aviso->setUsuario($usuario);
-                $em->persist($aviso);
+                $em->persist($aviso);*/
                 
             }
         }
@@ -412,7 +433,10 @@ class EstadoCuentaController extends BaseController
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-        
+        if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->query->get('edificioId');
+            $this->setFilters($filtros);
+        }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
@@ -435,19 +459,34 @@ class EstadoCuentaController extends BaseController
                     $monto = 0;
                     foreach($cargos as $registro){
                         $monto += $registro->getMonto();
+						//registro, se cierra el registro porque se reemplazara por registro nuevo.
+						$registro->setIsPaid(true);
+						$em->persist($registro);
                     }
-                    //aplicamos la morosidad de la residencial
-                    $cargo = new EstadoCuenta();
-                    $cargo->setCargo("Cargo por adeudo del ".$nombreMes." del ".$year);
-                    $cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
-                    $cargo->setUsuario($usuario);
-					$cargo->setResidencial($residencial);
-                    $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
-                    $cargo->setIsAcumulable(true);
-                    $em->persist($cargo);
-                    $cont++;
-                    
-                    $aviso = new Aviso();
+					//cerramos los cargos anteriores y creamos el cargo nuevo
+					if($monto>0){
+						//aplicando el cargo anterior.
+						$anterior = new EstadoCuenta();
+						$anterior->setCargo("Cargo anterior");
+						$anterior->setMonto($$monto);
+						$anterior->setUsuario($usuario);
+						$anterior->setResidencial($residencial);
+						$anterior->setTipoCargo(EstadoCuenta::TIPO_CARGO_ANTERIOR);
+						$anterior->setIsAcumulable(true);
+						$em->persist($anterior);
+						//aplicamos la morosidad de la residencial
+						$cargo = new EstadoCuenta();
+						$cargo->setCargo("Cargo por adeudo del ".$nombreMes." del ".$year);
+						$cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
+						$cargo->setUsuario($usuario);
+						$cargo->setResidencial($residencial);
+						$cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
+						$cargo->setIsAcumulable(true);
+						$em->persist($cargo);
+						$cont++;
+					}
+					$em->flush();
+					/*$aviso = new Aviso();
                     $aviso->setTitulo("Cargo por adeudo del ".$nombreMes." del ".$year);
                     $aviso->setAviso("Cargo por adeudo del ".$nombreMes." del ".$year);
                     $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
@@ -455,8 +494,7 @@ class EstadoCuentaController extends BaseController
                     $aviso->setResidencial($residencial);
                     $aviso->addEdificio($edificio);
                     $aviso->setUsuario($usuario);
-                    $em->persist($aviso);
-                    
+                    $em->persist($aviso);*/
                 }
             }
         }
@@ -559,7 +597,19 @@ class EstadoCuentaController extends BaseController
     public function cargosAutomaticosAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        return array();
+		if($request->query->has('residencial') == true){
+            $filtros['residencial'] = $request->query->get('residencial');
+            $this->setFilters($filtros);
+        }
+		$residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+		$torres = $residencialActual->getEdificios();
+		$residenciales = $this->getResidenciales();
+		var_dump(count($torres)); die;
+        return array(
+			'residencial'=>$residencialActual,
+			'residenciales'=>$this->getResidenciales(),
+			'edificios'=>$torres,
+		);
     }
 	
 	/**

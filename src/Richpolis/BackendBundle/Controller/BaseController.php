@@ -157,7 +157,7 @@ class BaseController extends Controller
         $entity->setPassword($passwordCodificado);
     }
     
-    protected function enviarUsuarioCreado($sUsuario, $sPassword, Usuario $usuario) {
+    protected function enviarUsuarioCreado($sUsuario, $sPassword, $usuario) {
         $asunto = 'Usuario creado';
         $isNew = true;
         $message = \Swift_Message::newInstance()
@@ -172,7 +172,7 @@ class BaseController extends Controller
         $this->get('mailer')->send($message);
     }
     
-    protected function enviarUsuarioUpdate($sUsuario, $sPassword, Usuario $usuario) {
+    protected function enviarUsuarioUpdate($sUsuario, $sPassword, $usuario) {
         $asunto = 'Usuario actualizado';
         $isNew = false;
         $message = \Swift_Message::newInstance()

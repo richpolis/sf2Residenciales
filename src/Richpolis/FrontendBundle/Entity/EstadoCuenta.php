@@ -115,18 +115,22 @@ class EstadoCuenta
         }
     }
     
+	const TIPO_CARGO_ANTERIOR   =   0;
     const TIPO_CARGO_NORMAL     =   1;
     const TIPO_CARGO_ADEUDO     =   2;
     const TIPO_CARGO_RESERVACION=   3;
     const TIPO_CARGO_MULTA      =   4;
 	const TIPO_CARGO_MTTO       =   5;
+	const TIPO_CARGO_PAGO       =   6;
         
     static public $sTipoCargo=array(
+		self::TIPO_CARGO_ANTERIOR   =>  'Anterior',
         self::TIPO_CARGO_NORMAL     =>  'Normal',
         self::TIPO_CARGO_ADEUDO     =>  'Por adeudo',
         self::TIPO_CARGO_RESERVACION=>  'Reservación',
         self::TIPO_CARGO_MULTA      =>  'Multa',
 		self::TIPO_CARGO_MTTO      	=>  'Mantenimiento',
+		self::TIPO_CARGO_PAGO      	=>  'Pago',
     );
 
     public function getStringTipoCargo(){

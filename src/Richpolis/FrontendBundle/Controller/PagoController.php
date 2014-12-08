@@ -339,13 +339,46 @@ class PagoController extends BaseController
     {
        $em = $this->getDoctrine()->getManager();
        $pago = $em->find('FrontendBundle:Pago', $id);
+       $monto = 0;
+       foreach($pago->getCargos() as $cargo){
+		   $cargo->setIsPaid(true);
+		   $monto += $cargo->getMonto();
+           $em->persist($cargo);
+       }
+       $pago->setIsAproved(true);
+		if($monto>0){
+			//se realiza el cargo de pago
+			$cargo = new EstadoCuenta();
+			$cargo->setCargo("Gracias por su pago");
+			$cargo->setMonto(($monto - ($monto*2)));
+			$cargo->setUsuario($usuario);
+			$cargo->setResidencial($residencial);
+			$cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
+			$cargo->setIsAcumulable(true);
+			$cargo->setIsPaid(true);
+			$em->persist($cargo);
+			$pago->addCargo($cargo);
+		}
+       $em->flush();
+       return $this->redirect($this->generateUrl('pagos_show',array('id'=>$pago->getId())));
+    }
+	
+	/**
+     * Rechazar pago.
+     *
+     * @Route("/rechazar/{id}", name="pagos_rechazar")
+     */
+    public function rechazarAction(Request $request, $id)
+    {
+       $em = $this->getDoctrine()->getManager();
+       $pago = $em->find('FrontendBundle:Pago', $id);
        
        foreach($pago->getCargos() as $cargo){
            $cargo->setIsPaid(true);
            $em->persist($cargo);
            $em->flush();
        }
-       $pago->setIsAproved(true);
+       $pago->setIsAproved(false);
        $em->flush();
        return $this->redirect($this->generateUrl('pagos_show',array('id'=>$pago->getId())));
     }

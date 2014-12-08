@@ -1,0 +1,206 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    <!-- Widgets stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+    <!-- Gritter Notifications stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}">
+    <!-- jQuery Validation Engine stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/validationEngine.jquery.css')}}">
+{% endblock %}
+
+{% block mainbar %}
+    <!-- Main bar -->
+    <div class="mainbar">
+
+        <!-- Page heading -->
+        <div class="page-head">
+            <h2 class="pull-left">Cargos</h2>
+            <div class="clearfix"></div>
+            <!-- Breadcrumb -->
+            <div class="bread-crumb">
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{residencial}}</a>    
+                {% endif %}    
+                <span class="divider">/</span>  
+                <a href="#" class="bread-current">Cargos automaticos</a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <!-- Page heading ends -->
+
+        <!-- Matter -->
+        <div class="matter">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="widget">
+
+                            <div class="widget-head">
+                                <div class="pull-left">Nuevo cargo a residencial</div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="widget-content">
+                                <div class="padd contenido-pagina">
+                                   
+                                </div>
+							</div>
+                            <div class="widget-foot">
+                                <h3>Generando cargs automaticos a: {{residencial}}</h3>
+                            </div>
+                        </div>  
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Matter ends -->
+    </div>
+    <!-- Mainbar ends -->           
+    <div class="clearfix"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+
+    <!-- jQuery Notification - Noty -->
+    <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+    <!-- jQuery Notification ends -->
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+    <script src="{{asset('js/languages/jquery.validationEngine-es.js')}}"></script> <!-- jQuery Validation Engine Language File -->
+    <script src="{{asset('js/jquery.validationEngine.js')}}"></script> <!-- jQuery Validation Engine -->
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+    <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
+    <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+<script>
+var residencialActual = {'id':{{residencial.id}},'nombre':'{{residencial.nombre}}' };
+var residenciales = [
+{% for res in residenciales %}
+	{'id':{{res.id}} ,'nombre':'{{res.nombre}}' },
+{% endfor %}
+];
+var edificios = [
+{% for edificio in edificios %}
+	{'id':{{edificio.id}} ,'nombre':'{{edificio.nombre}}' },
+{% endfor %}
+];
+var contEdificios = 0;
+$(document).ready(function () {
+	ejecutarCargosPorEdificio();
+});
+function ejecutarCargosPorEdificio(){
+	debugger;
+	if(contEdificios<(edificios.length-1)){
+		ejecutarCargoAEdificio(contEdificio);
+		contEdificio++;
+	}else{
+		//significa que ya no hay mas edificios en este residencial
+		//se mandaria a llamar a si misma pero con el cambio de residencial
+		for(var r = 0; r<(residenciales.length-1);r++){
+			if(residenciales[r].id==residencialActual.id){
+				r++;
+				if( r<(residenciales.length-1)){
+					location.href = '{{path('estadodecuentas_cargos_automaticos')}}?residencial='+residenciales[r].id;
+					break;
+				}else{
+					alert('Cargos automaticos terminados');
+				}
+			}
+		}
+	}
+}
+function ejecutarCargoAEdificio(edificio){
+	debugger;
+	$(".loader").fadeIn();
+        $.ajax({
+           url: '{{path('estadodecuentas_aplicar_cargo_normal')}}',
+           type: 'POST',
+		   data: {'edificioId': edificio },
+           dataType: 'json',
+           success: function(data){
+               $(".loader").fadeOut();
+               //data = JSON.parse(data);
+               console.log(data);
+               noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
+			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos normales aplicados '+data.cargosAplicados+'</div>';
+			   $(".contenido-pagina").append(html);
+               setTimeOut(function(){
+			   		aplicarCargosAdeudo(edificio);
+			   },1000);
+           },
+           error: function(data){
+               $(".loader").fadeOut();
+               console.log(data);
+           }
+        });
+}
+
+function aplicarCargosAdeudo(edificio){
+	debugger;
+	$(".loader").fadeIn();
+        $.ajax({
+           url: '{{path('estadodecuentas_aplicar_cargo_adeudo')}}',
+           type: 'POST',
+		   data: {'edificioId': edificio },
+           dataType: 'json',
+           success: function(data){
+               $(".loader").fadeOut();
+               //data = JSON.parse(data);
+               console.log(data);
+               noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
+			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos anteriores y adeudos aplicados '+data.cargosAplicados+'</div>';
+			   $(".contenido-pagina").append(html);
+               setTimeOut(function(){
+			   		aplicarAvisosCargos();
+			   },1000);
+           },
+           error: function(data){
+               $(".loader").fadeOut();
+               console.log(data);
+           }
+        });
+}
+
+function aplicarAvisosCargos(edificio){
+	$(".loader").fadeIn();
+        $.ajax({
+           url: '{{path('avisos_avisos_cargos')}}',
+           type: 'POST',
+		   data: {'edificioId': edificio },
+           dataType: 'json',
+           success: function(data){
+               $(".loader").fadeOut();
+               //data = JSON.parse(data);
+               console.log(data);
+               noty({text: data.avisos,layout:'bottom', type:'warning', timeout:2000 });
+			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' avisos '+data.avisos+'</div>';
+			   $(".contenido-pagina").append(html);
+               setTimeOut(function(){
+			   		ejecutarCargosPorEdificio();
+			   },1000);
+           },
+           error: function(data){
+               $(".loader").fadeOut();
+               console.log(data);
+           }
+        });
+}
+</script>
+{% endblock %}
+
+

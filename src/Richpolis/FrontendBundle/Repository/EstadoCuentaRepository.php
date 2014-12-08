@@ -123,6 +123,24 @@ class EstadoCuentaRepository extends EntityRepository
            return null;
        }
     }
+	
+	public function getCargosEnMes($mes, $year, Usuario $usuario)
+    {
+        $em = $this->getEntityManager();
+            $consulta = $em->createQuery(
+                "SELECT c "
+                . "FROM FrontendBundle:EstadoCuenta c "
+                . "JOIN c.usuario u " 
+                . "WHERE MONTH(c.createdAt)=:mes "
+                . "AND YEAR(c.createdAt)=:year "
+                . "AND u.id=:usuario");
+            $consulta->setParameters(array(
+                'mes'=>$mes,
+                'year'=>$year,
+                'usuario'=>$usuario->getId(),
+            ));
+       return  $consulta->getResult();       
+    }
     
     public function getCargosAnteriores($fecha, Usuario $usuario){
         $em = $this->getEntityManager();

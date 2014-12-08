@@ -405,4 +405,28 @@ class Reservacion
     {
         return ($this->desde < $this->hasta);
     }
+	
+	/**
+     * @Assert\True(message = "Este dia no esta diponible para reservación")
+     */
+    public function isDiasOperativos()
+    {
+        switch($this->fechaEvento->format('w')){
+			case 0: return $this->getRecurso()->getDomingo();
+			case 1: return $this->getRecurso()->getLunes();
+			case 2: return $this->getRecurso()->getMartes();
+			case 3: return $this->getRecurso()->getMiercoles();
+			case 4: return $this->getRecurso()->getJueves();
+			case 5: return $this->getRecurso()->getViernes();
+			case 6: return $this->getRecurso()->getSabado();
+		}
+    }
+	
+	/**
+     * @Assert\True(message = "No esta disponible en estos horarios")
+     */
+    public function isHorarioOperativo()
+    {
+        return ($this->desde>=$this->getRecurso()->getDesde() && $this->hasta<=$this->getRecurso()->getHasta());
+    }
 }
