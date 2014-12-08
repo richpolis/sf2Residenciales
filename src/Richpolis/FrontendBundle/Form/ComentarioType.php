@@ -24,7 +24,7 @@ class ComentarioType extends AbstractType
         
         $builder
             ->add('comentario',null,array(
-                'label'=>'Comentario',
+                'label'=>'Mensaje',
                 'required'=>true,
                 'attr'=>array(
                     'class'=>'cleditor tinymce form-control placeholder',

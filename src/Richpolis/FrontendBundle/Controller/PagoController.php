@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Pago;
 use Richpolis\FrontendBundle\Form\PagoType;
+use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -353,7 +354,7 @@ class PagoController extends BaseController
      * Seleccionar usuario para pago.
      *
      * @Route("/seleccionar/usuario", name="pagos_select_usuario")
-     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     * @Template("FrontendBundle:Reservacion:selectUsuario.html.twig")
      */
     public function selectUsuarioAction(Request $request)
     {
@@ -472,7 +473,12 @@ class PagoController extends BaseController
         $entity->setUsuario($usuario);
         $entity->setMonto($reservacion->getMonto());
         $entity->setIsAproved(false);
-        $form = $this->createCreateForm($entity);
+        $form = $this->createForm(new PagoType(), $entity, array(
+            'action' => $this->generateUrl('pagos_realizar_pago_reservacion'),
+            'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
+			
+        ));
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -490,10 +496,12 @@ class PagoController extends BaseController
                 $cargo->setIsAcumulable(false);
                 $cargo->setPago($pago);
                 $em->persist($cargo);
+                $reservacion->setPago($pago);
+                $em->flush();
                 
                 $response = new JsonResponse(json_encode(array(
-                            'html' => '',
-                            'respuesta' => 'creado',
+                    'html' => '',
+                    'respuesta' => 'creado',
                 )));
                 return $response;
             }
@@ -501,7 +509,7 @@ class PagoController extends BaseController
 
         $response = new JsonResponse(json_encode(array(
                     'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('pagos_realizar_pago'),
+                        'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
                         'form' => $form->createView(),
                     )),
                     'respuesta' => 'nuevo',

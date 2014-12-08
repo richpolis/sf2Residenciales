@@ -66,6 +66,11 @@ ul.lista
 		color silver
 		font-style italic
 		font-weight 600
+	&.item-aviso-notificacion
+		background #EB5A94 
+		color white
+		& .item-aviso-fecha
+			color black
 		
 .item-documento
 	width 100%
@@ -221,4 +226,9 @@ ul.lista
 			right 16px
 			top 10px
 			cursor pointer
+
+@media (max-width: 480px)
+	footer.footer
+		display none
+
 

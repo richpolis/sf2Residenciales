@@ -140,14 +140,22 @@ class Aviso
 	self::TIPO_NOTIFICACION => 'Notificacion'
     );
     
-    public function getStringTipoAcceso(){
-        return self::$sTipoAcceso[$this->getTipoAcceso()];
-    }
-	
     public function getStringTipoAviso(){
         return self::$sTipoAviso[$this->getTipoAviso()];
     }
+    
+    static function getArrayTipoAviso(){
+        return self::$sTipoAviso;
+    }
 	
+    static function getPreferedTipoAviso(){
+        return array(self::TIPO_AVISO);
+    }
+	
+    public function getStringTipoAcceso(){
+        return self::$sTipoAcceso[$this->getTipoAcceso()];
+    }
+    
     static function getArrayTipoAcceso(){
         return self::$sTipoAcceso;
     }
@@ -402,5 +410,28 @@ class Aviso
     public function getUsuario()
     {
         return $this->usuario;
+    }
+
+    /**
+     * Set enviarEmail
+     *
+     * @param boolean $enviarEmail
+     * @return Aviso
+     */
+    public function setEnviarEmail($enviarEmail)
+    {
+        $this->enviarEmail = $enviarEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get enviarEmail
+     *
+     * @return boolean 
+     */
+    public function getEnviarEmail()
+    {
+        return $this->enviarEmail;
     }
 }

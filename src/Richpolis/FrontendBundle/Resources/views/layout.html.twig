@@ -29,6 +29,8 @@
   {% set reservaciones = "" %}
   {% set pagos = "" %}
   {% set foros = "" %}
+  {% set tickets = "" %}
+  {% set perfil = "" %}
   {% set pagina = 'homepage' %}
   
   {% if route == "homepage" %}
@@ -73,6 +75,12 @@
   {% elseif route == "foros" %}
     {% set foros = "class=open" %}
     {% set pagina = route %}
+  {% elseif route == "tickets" %}
+    {% set tickets = "class=open" %}
+    {% set pagina = route %}
+  {% elseif route == "perfil_usuario" %}
+    {% set perfil = "class=open" %}
+    {% set pagina = route %}
   {% endif %}
 
 
@@ -93,16 +101,14 @@
                     <span class="bold">Dashboard | {{render(controller('FrontendBundle:Default:residencialName'))}}</span>
                 </a>
             </div>
-
             <!-- Navigation starts -->
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">         
-
                 <!-- Links -->
                 <ul class="nav navbar-nav pull-right">
                     <li class="dropdown pull-right user-data">            
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <img src="/apple-touch-icon.png" width="25" height="25"/>
-                            {{app.user.username|default('anonimo')}} <b class="caret"></b>
+                            <img src="/images/logo.png" width="25" height="25"/>
+                            {{app.user.nombre|default('anonimo')}} <b class="caret"></b>
                         </a>
                         <!-- Dropdown menu -->
                         <ul class="dropdown-menu">
@@ -210,6 +216,18 @@
                     <i class="fa fa-comments"></i> <span>Foros</span>
                 </a>
             </li>
+            <li>
+                <a {{tickets}} href="{{path('tickets')}}">
+                    <i class="fa fa-comment-o"></i> <span>Contactar a administrador</span>
+                </a>
+            </li>
+            {% if is_granted('ROLE_ADMIN') == false %}
+            <li>
+                <a {{perfil}} href="{{path('perfil_usuario')}}">
+                    <i class="fa fa-user-md"></i> <span>Perfil</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </div>
 <!-- Sidebar ends -->

@@ -91,15 +91,10 @@
                                     </table>
                                     <button class="btn btn-success" id="crearReservacion">Crear reservación</button>
                                 </div>
-
                             </div>
-
                         </div>  
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -163,7 +158,7 @@
         }
         
         function guardar(){
-			debugger;
+            debugger;
             var $form = $("#modalBodyFormulario form");
             var data = $form.serializefiles();
             $.ajax({
@@ -191,7 +186,7 @@
         }
         
         function getFormulario(){
-			debugger;
+            debugger;
             $.ajax({
                 url: '{{path('pagos_realizar_pago_reservacion')}}',
                 type: 'GET',

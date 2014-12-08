@@ -63,24 +63,12 @@ class DefaultController extends BaseController {
 
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-
-        $foros = $em->getRepository('FrontendBundle:Foro')
-                    ->findForosPorEdificio($edificio);
         
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                      ->getCargosAdeudoPorUsuario($this->getUser()->getId());
-        
-        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->findReservacionesPorUsuario($this->getUser());
-        
-        $avisos = $em->getRepository('FrontendBundle:Aviso')
-                     ->findAvisosPorUsuario($this->getUser());
 
         return $this->render('FrontendBundle:Default:index.html.twig', array(
-            'foros'         =>  $foros,
-            'avisos'        =>  $avisos,
             'cargos'        =>  $cargos,
-            'reservaciones' =>  $reservaciones,
         ));
     }
     
@@ -271,21 +259,7 @@ class DefaultController extends BaseController {
                 $usuario->addRol($rolUsuario);
                 $em->persist($usuario);
                 $em->flush();
-                $cont = $this->crearHijos($usuario, $paremetros['ninos'], $parametros['ninas']);
-                
-                if($cont > 0 ){
-                    $this->get('session')->getFlashBag()->add(
-                        'notice',
-                        'Ahora entra para crear tus historias y editar tus hijos.'
-                    );
-                    return $this->redirect($this->generateUrl('login'));
-                }else{
-                    $this->get('session')->getFlashBag()->add(
-                        'notice',
-                        'Ahora entra para crear tus historias.'
-                    );
-                    return $this->redirect($this->generateUrl('login'));
-                }
+                return $this->redirect($this->generateUrl('login'));
             }
         }
         
@@ -305,34 +279,32 @@ class DefaultController extends BaseController {
     public function perfilUsuarioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        
         $usuario = $this->getUser();
-        
         if (!$usuario) {
             return $this->redirect($this->generateUrl('login'));
         }
-        
-        $form = $this->createForm( new UsuarioFrontendType(), $usuario,array(
-			'em'=>$this->getDoctrine()->getManager())
-		);
+        $form = $this->createForm(new UsuarioFrontendType(), $usuario, array(
+            'em' => $this->getDoctrine()->getManager())
+        );
         $isNew = false;
         if($request->isMethod('POST')){
             //obtiene la contraseña
             $current_pass = $usuario->getPassword();
-			
             $form->handleRequest($request);
-			
             if($form->isValid()){
-                
                 if (null == $usuario->getPassword()) {
-                    // La tienda no cambia su contraseña, utilizar la original
+                    // usuario no cambio contraseña
                     $usuario->setPassword($current_pass);
                 } else {
-                    // actualizamos la contraseña
+                    // se actualiza la contraseña
                     $this->setSecurePassword($usuario);
                 }
                 $em->flush();
-                
+                $this->enviarUsuarioUpdate($usuario->getEmail(), $current_pass, $usuario);
+                $this->get('session')->getFlashBag()->add(
+                    'notice',
+                    'Se han realizado los cambios solicitados.'
+                );
             }
         }
         

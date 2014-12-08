@@ -71,7 +71,7 @@ class UsuarioController extends BaseController
             $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
-            $this->enviarMensaje($data->getEmail(), $data->getPassword(), $entity);
+            $this->enviarUsuarioCreado($data->getEmail(), $data->getPassword(), $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $entity->getId())));
         }
 
@@ -218,11 +218,10 @@ class UsuarioController extends BaseController
 
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
-        $editForm->handleRequest($request);
-
         //obtiene la contraseña actual
         $current_pass = $entity->getPassword();
-
+        $editForm->handleRequest($request);
+        
         if ($editForm->isValid()) {
             if (null == $entity->getPassword()) {
                 // El usuario no cambia su contraseña.
@@ -232,6 +231,7 @@ class UsuarioController extends BaseController
                 $this->setSecurePassword($entity);
             }
             $em->flush();
+            $this->enviarUsuarioUpdate($entity->getEmail(), $current_pass, $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $id)));
         }
 
@@ -311,17 +311,5 @@ class UsuarioController extends BaseController
         return $response;
     }
     
-    private function enviarMensaje($sUsuario, $sPassword, Usuario $usuario, $isNew = false) {
-        $asunto = 'Usuario creado';
-        $message = \Swift_Message::newInstance()
-                ->setSubject($asunto)
-                ->setFrom('noreply@mosaicors.com')
-                ->setTo($usuario->getEmail())
-                ->setBody(
-                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
-                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
-                'text/html'
-        );
-        $this->get('mailer')->send($message);
-    }
+    
 }

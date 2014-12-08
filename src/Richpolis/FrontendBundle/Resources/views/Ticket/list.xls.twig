@@ -1,0 +1,24 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Residencial</th>
+            <th>Torre</th>
+            <th>Usuario</th>
+            <th>Titulo</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td>{{ entity.id }}</td>
+                <td>{{ entity.edificio.residencial }}</td>
+                <td>{{ entity.edificio }}</td>
+                <td>{{ entity.usuario }}</td>
+                <td>{{ entity.titulo }}</td>
+                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

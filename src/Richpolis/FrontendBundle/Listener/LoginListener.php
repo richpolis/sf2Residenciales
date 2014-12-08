@@ -47,8 +47,8 @@ class LoginListener
                     $edificio = $this->usuario->getEdificio();
                     $session->set('filters',array(
                        'residencial'=>$edificio->getResidencial()->getId(),
-                        'edificio'=>$edificio->getId(),
-                        'pagados'=>false,
+                       'edificio'=>$edificio->getId(),
+                       'pagados'=>false,
                     ));
                 }
             }else{

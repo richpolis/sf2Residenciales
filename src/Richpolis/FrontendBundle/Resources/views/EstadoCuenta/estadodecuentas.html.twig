@@ -59,7 +59,7 @@
                                             <tr>
                                                 {% if monto > 0 %}
                                                     <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}
-                                                        <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Realizar Pago</button>
+                                                        <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Subir comprobante de pago</button>
                                                     </th>
                                                 {% else %}
                                                     <th colspan="6">Sin saldo pendiente</th>

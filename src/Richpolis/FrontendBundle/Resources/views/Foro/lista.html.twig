@@ -4,7 +4,7 @@
             <div class="item-aviso-fecha">
                 {{ registro.createdAt | date('d-M-Y') }} - Comentarios: <span class="badge">{{registro.contComentarios}}</span> 
                 {% if registro.isCerrado == false %}
-                    <span class="label label-success">Abierto</span>
+                    <span class="label label-success">En discusion</span>
                 {% else %}
                     <span class="label label-default">Cerrado</span>
                 {% endif %}

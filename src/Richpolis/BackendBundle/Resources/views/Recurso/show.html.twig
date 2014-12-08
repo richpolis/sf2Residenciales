@@ -25,9 +25,9 @@
                 <!--Divider-->
                 <span class="divider">/</span>
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
+                    <a href="{{ path('residenciales')}}" class="bread-current">{{edificio.residencial}}</a>
                 {% else %}
-                <a href="#" class="bread-current">{edificio.residencial}}</a>    
+                    <a href="#" class="bread-current">{edificio.residencial}}</a>    
                 {% endif %}    
                 <!--Divider-->
                 <span class="divider">/</span> 
@@ -37,90 +37,90 @@
                 <span class="divider">/</span>
                 <a href="{{path('recursos_show',{'id':entity.id})}}" class="bread-current">{{entity.nombre}}</a>
                 {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear amenidad</a> <!-- recurso -->
+                    <a href="{{path('recursos_select_nivel')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear amenidad</a> <!-- recurso -->
                 {% endif %}
-                </div>
+            </div>
 
-                        <div class="clearfix"></div>
+            <div class="clearfix"></div>
 
-                        </div>
-                        <!-- Page heading ends -->
+        </div>
+        <!-- Page heading ends -->
 
-                        <!-- Matter -->
+        <!-- Matter -->
 
-                        <div class="matter">
-                            <div class="container" id="contenidoPagina">
-                                <div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="widget">
-                                                <div class="widget-head">
-                                                    <div class="pull-left">{{entity.nombre}}</div>
-                                                    <div class="clearfix"></div>
-                                                </div>
+        <div class="matter">
+            <div class="container" id="contenidoPagina">
+                <div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="widget">
+                                <div class="widget-head">
+                                    <div class="pull-left">{{entity.nombre}}</div>
+                                    <div class="clearfix"></div>
+                                </div>
 
-                                                <div class="widget-content">
-                                                    <div class="padd contenido-formulario">    
-													<table class="record_properties">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th>Id</th>
-                                                                    <td>{{ entity.id }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Residencial</th>
-                                                                    <td>{{ entity.edificios[0].residencial }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Torres</th>
-                                                                    {% if entity.tipoAcceso == constant('Richpolis\\BackendBundle\\Entity\\Recurso::TIPO_ACCESO_EDIFICIO') %}
-																	<td>
-																		<ul>
-																			{% for edificio in entity.edificios %}
-																				<li>
-																					{{ edificio }}
-																				</li>
-																			{% endfor %}
-																		</ul>  
-																	</td> 
-																	{% else %}
-																	<td>General</td>    
-																	{% endif %}
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Amenidad</th><!-- recurso -->
-                                                                    <td>{{ entity.nombre }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Tipo de acceso</th>
-                                                                    <td>{{ entity.stringTipoAcceso }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>Cuota por evento</th>
-                                                                    <td>$ {{ entity.precio|number_format(2, '.', ',') }}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="widget-foot">
-                                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('recursos')}}')">Regresar</button>
-                                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('recursos_edit',{id: entity.id})}}')">Editar</button>
-                                                    <div style="float: left; margin-right: 3px;">
-                                                        <form id="formEliminar" action="{{ path('recursos_delete', { 'id': entity.id }) }}" method="post">
-                                                            {{ form_widget(delete_form) }}
-                                                        </form>
-							<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
-                                                    </div>        
-                                                </div>
-                                            </div>  
-                                        </div>    
+                                <div class="widget-content">
+                                    <div class="padd contenido-formulario">    
+                                        <table class="record_properties">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <td>{{ entity.id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Residencial</th>
+                                                    <td>{{ entity.edificios[0].residencial }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Torres</th>
+                                                        {% if entity.tipoAcceso == constant('Richpolis\\BackendBundle\\Entity\\Recurso::TIPO_ACCESO_EDIFICIO') %}
+                                                        <td>
+                                                            <ul>
+                                                                {% for edificio in entity.edificios %}
+                                                                    <li>
+                                                                        {{ edificio }}
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>  
+                                                        </td> 
+                                                    {% else %}
+                                                        <td>General</td>    
+                                                    {% endif %}
+                                                </tr>
+                                                <tr>
+                                                    <th>Amenidad</th><!-- recurso -->
+                                                    <td>{{ entity.nombre }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Tipo de acceso</th>
+                                                    <td>{{ entity.stringTipoAcceso }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Cuota por evento</th>
+                                                    <td>$ {{ entity.precio|number_format(2, '.', ',') }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div class="widget-foot">
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('recursos')}}')">Regresar</button>
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('recursos_edit',{id: entity.id})}}')">Editar</button>
+                                    <div style="float: left; margin-right: 3px;">
+                                        <form id="formEliminar" action="{{ path('recursos_delete', { 'id': entity.id }) }}" method="post">
+                                            {{ form_widget(delete_form) }}
+                                        </form>
+                                        <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
+                                    </div>        
+                                </div>
+                            </div>  
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Matter ends -->
+        <!-- Matter ends -->
 
     </div>
 

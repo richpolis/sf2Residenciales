@@ -48,6 +48,15 @@
                 <div class="widget">
                 <div class="widget-head">
                   <div class="pull-left">Registro de avisos</div>
+                  <div class="pull-right">
+                      <form action="{{path('avisos')}}" method="GET" role="search">  
+                          <div class="form-group pull-left">
+                              <input placeholder="departamento, nombre de inquilino o email" class="form-control" name="buscar"
+                                     type="text">
+                          </div>
+                          <input type="submit" class="btn btn-default" value="Buscar" />
+                      </form>
+                  </div>
                   <div class="clearfix"></div>
                 </div>
                   <div class="widget-content">
@@ -55,18 +64,17 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Residencial</th>
                                <th>Torre</th>
                                <th>Nivel</th>
                                <th>Aviso</th>
+                               <th>Tipo</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
                        <tbody>
-                       {% for entity in entities %}
+                       {% for entity in pagination %}
                            <tr>
                                <td><a href="{{ path('avisos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.residencial }}</td>
                                {% if entity.tipoAcceso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_ACCESO_RESIDENCIAL') %}
                                <td>Todos</td>
                                {% else %}
@@ -82,6 +90,7 @@
                                {% endif %}
                                <td>{{entity.stringNivel}}</td>
                                <td>{{ entity.titulo }}</td>
+                               <td>{{ entity.stringTipoAviso }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('avisos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('avisos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
@@ -91,7 +100,9 @@
                        </tbody>
                    </table>
                     <div class="widget-foot">
-                       <br><br>
+                        <div class="container text-center">
+                            {{ knp_pagination_render(pagination) }}
+                        </div>
                       <div class="clearfix"></div>
                     </div>
                   </div>
@@ -143,13 +154,13 @@ var eliminarRegistro = function(){
 
 
 $(document).ready(function() {
-    $('#datatable').dataTable({
+    /*$('#datatable').dataTable({
         "sPaginationType": "full_numbers",
         "sNext":"Siguiente",
         "sLast":"Ultimo",
         "sFirst":"Primero",
         "sPrevious": "Anterior",
-    });
+    });*/
 });
 </script>
 

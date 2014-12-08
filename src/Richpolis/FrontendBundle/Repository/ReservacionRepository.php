@@ -16,6 +16,41 @@ use Richpolis\FrontendBundle\Entity\Reservacion;
  */
 class ReservacionRepository extends EntityRepository
 {
+    public function getReservacionesPorFechaEvento($fecha){
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT s "
+            . "FROM FrontendBundle:Reservacion s "
+            . "WHERE s.fechaEvento=:fecha "
+            . "ORDER BY s.desde ASC");
+        $consulta->setParameters(array(
+            'fecha'=>$fecha->format('Y-m-d'),
+        ));
+        return $consulta->getResult();
+    }
+    
+    public function queryFindReservacionesPorRecursoReservadas(Recurso $recurso,$fecha) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT s,i,u,e "
+                . "FROM FrontendBundle:Reservacion s "
+                . "JOIN s.recurso i "
+                . "JOIN s.usuario u "
+                . "JOIN u.edificio e "
+                . "WHERE i.id=:recurso "
+                . "AND s.status<=:status "
+                . "AND s.createdAt>=:fecha "
+                . "ORDER BY s.createdAt DESC");
+        $consulta->setParameters(array(
+            'recurso' => $recurso->getId(),
+            'status'=>Reservacion::STATUS_APROBADA,
+            'fecha'=>$fecha->format('Y-m-d')." 23:59:59"
+        ));
+        return $consulta;
+    }
+
+    public function findReservacionesPorRecursoReservadas(Recurso $recurso,$fecha) {
+        return $this->queryFindReservacionesPorRecursoReservadas($recurso,$fecha)->getResult();
+    }
+    
     public function queryFindReservacionesPorRecursoAprobadas(Recurso $recurso,$fecha) {
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT s,i,u,e "
@@ -30,7 +65,7 @@ class ReservacionRepository extends EntityRepository
         $consulta->setParameters(array(
             'recurso' => $recurso->getId(),
             'status'=>Reservacion::STATUS_APROBADA,
-            'fecha'=>"'".$fecha->format('Y-m-d')." 23:59:59'"
+            'fecha'=>$fecha->format('Y-m-d')." 23:59:59"
         ));
         return $consulta;
     }

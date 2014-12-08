@@ -156,5 +156,34 @@ class BaseController extends Controller
         );
         $entity->setPassword($passwordCodificado);
     }
-
+    
+    protected function enviarUsuarioCreado($sUsuario, $sPassword, Usuario $usuario) {
+        $asunto = 'Usuario creado';
+        $isNew = true;
+        $message = \Swift_Message::newInstance()
+                ->setSubject($asunto)
+                ->setFrom('no-reply@mosaicors.com')
+                ->setTo($usuario->getEmail())
+                ->setBody(
+                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                'text/html'
+                );
+        $this->get('mailer')->send($message);
+    }
+    
+    protected function enviarUsuarioUpdate($sUsuario, $sPassword, Usuario $usuario) {
+        $asunto = 'Usuario actualizado';
+        $isNew = false;
+        $message = \Swift_Message::newInstance()
+                ->setSubject($asunto)
+                ->setFrom('no-reply@mosaicors.com')
+                ->setTo($usuario->getEmail())
+                ->setBody(
+                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                'text/html'
+        );
+        $this->get('mailer')->send($message);
+    }
 }

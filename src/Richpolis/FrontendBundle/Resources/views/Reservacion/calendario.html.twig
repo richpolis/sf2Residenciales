@@ -25,9 +25,10 @@
 
                         <div class="widget">
                             <div class="widget-head">
+                                {% if recurso is not null %}
                                 <h2>Calendario - {{recurso.nombre}}</h2>
                                 <select id="selectRecurso">
-                                    {% for rec in recursos %}
+                                    {% for rec in amenidades %}
                                         {% if rec.id == recurso.id %}
                                         <option value="{{rec.id}}" selected>{{rec.nombre}}</option>
                                         {% else %}
@@ -35,6 +36,10 @@
                                         {% endif %}    
                                     {% endfor %}    
                                 </select>
+                                <p>Haga click sobre el día deseado en el calendario para generar reservaciones.</p>
+                                {% else %}
+                                <h2>Calendario</h2>    
+                                {% endif %}
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
@@ -77,10 +82,13 @@
 {% endblock %}
 
 {% block javascripts %}
+<script src="{{asset('js/moment.min.js')}}"></script> <!-- Moment -->    
   {{ parent() }}
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
 <script src="{{asset('js/jquery-ui-timepicker-addon.js')}}"></script>
 <script src="{{asset('js/fullcalendar.min.js')}}"></script> <!-- Full Google Calendar - Calendar -->
+<!--script src="{{asset('js/lang/es.js')}}"></script--> <!-- Idioma español para caliendario -->
+<script src="{{asset('js/lang-all.js')}}"></script> <!-- Idioma de calendar.js -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -97,10 +105,10 @@
   var calEvent;
   $(document).ready(function() {
    
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
+    var fechaActual = new Date();
+    var d = fechaActual.getDate();
+    var m = fechaActual.getMonth();
+    var y = fechaActual.getFullYear();
     
     $('#calendar').fullCalendar({
       header: {
@@ -108,17 +116,31 @@
         center: 'title',
         right: 'month,agendaWeek,agendaDay,next'
       },
-      editable: true,
+      editable: false,
+      lang: 'es',
+      hiddenDays: {{recurso.diasHidden}},
       events: [
 	{% for reservacion in entities %}
         {
+          {% if reservacion.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}  
+          title: 'Apartado',
+          color: 'orange',        
+          {% elseif reservacion.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
           title: 'Reservacion',
-          start: new Date({{reservacion.fechaEvento|date('y')}}, {{reservacion.fechaEvento|date('m')}}, {{reservacion.fechaEvento|date('d')}}, {{reservacion.desde|date('g')}}, {{reservacion.desde|date('i')}},0),
-          end: new Date({{reservacion.fechaEvento|date('y')}}, {{reservacion.fechaEvento|date('m')}}, {{reservacion.fechaEvento|date('d')}}, {{reservacion.hasta|date('g')}}, {{reservacion.hasta|date('i')}},0)
+          color: 'green',        
+          {% endif %}
+          start: '{{ (reservacion.fechaEvento|date('Y-m-d')) ~ 'T' ~ (reservacion.desde|date('H:i:00')) }}',
+          end: '{{ (reservacion.fechaEvento|date('Y-m-d')) ~ 'T' ~ (reservacion.hasta|date('H:i:00')) }}',
+          allDay: false,
         },
         {% endfor %}
       ],
       dayClick: function(date, allDay, jsEvent, view) {
+        
+        if(!(date >= fechaActual)){
+            alert("Esta fecha no puede ser seleccionada");
+            return false;
+        }
         
         y = date.getFullYear();
         m = date.getMonth();
@@ -136,14 +158,14 @@
             start: new Date(y, m, d, h1, m1),
             end: new Date(y, m, d, h2, m2),
             allDay: false,
-			year: y,
+            year: y,
 			month: m,
 			day: d,
 			hora: h1,
 			minuto: m1,
 			fecha: (y + "-" + (m+1) + "-" + d)
         }
-		addReservacion(calEvent);
+	addReservacion(calEvent);
     }
     });
     
@@ -183,10 +205,12 @@
           if(data.respuesta == 'nuevo'){
               $("#modalBodyFormulario").html(data.form);
               $("#modalBodyFormulario form").attr({'action': data.rutaAction});
-			  activarDateTimePicker();
+              activarDateTimePicker();
           }else if(data.respuesta == 'creado'){
               $("#modalFormulario").modal("hide");
-    		  location.href='{{path('reservaciones')}}';
+               location.href='{{path('reservaciones')}}';
+          }else if(data.respuesta == 'error'){
+              alert(data.error);
           }
       }).fail(function(data){
           console.log(data);
@@ -207,9 +231,9 @@
 				  activarDateTimePicker();
               }
           }).fail(function(data){
-		  		alert("Error");
-		  		console.log(data);
-		  });
+		alert("Error");
+		console.log(data);
+          });
   }
   function activarDateTimePicker(){
             $("#richpolis_frontendbundle_reservacion_fechaEvento").datepicker({
@@ -223,13 +247,13 @@
             $('#richpolis_frontendbundle_reservacion_desde').timepicker({
                     timeFormat: 'HH:mm',
                     stepHour: 1,
-                    stepMinute: 15,
+                    stepMinute: 60,
             });
             
             $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
                     timeFormat: 'HH:mm',
                     stepHour: 1,
-                    stepMinute: 15,
+                    stepMinute: 60,
             });
   }
 </script>

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Richpolis\FrontendBundle\Entity\Foro;
 use Richpolis\BackendBundle\Entity\Edificio;
 use Richpolis\BackendBundle\Entity\Residencial;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 /**
  * ForoRepository
@@ -15,6 +16,71 @@ use Richpolis\BackendBundle\Entity\Residencial;
  */
 class ForoRepository extends EntityRepository
 {
+    public function queryFindTicketsPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT f,u,e,r "
+                . "FROM FrontendBundle:Foro f "
+                . "JOIN f.usuario u "
+                . "JOIN f.edificios e "
+                . "JOIN f.residencial r "
+                . "WHERE u.id=:usuario "
+                . "AND f.tipoAcceso=:tipoAccesoUsuario  "
+                . "AND f.createdAt BETWEEN :inicio AND :fin "
+                . "ORDER BY f.createdAt DESC");
+            $consulta->setParameters(array(
+                'usuario' => $usuario->getId(),
+                'tipoAccesoUsuario' => Foro::TIPO_ACCESO_PRIVADO,
+                'inicio'=>"$year-$month-01 00:00:00",
+                'fin'=>"$year-$month-31 23:59:59",
+            ));
+        return $consulta;
+    }
+    
+    public function findTicketsPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
+        return $this->queryFindTicketsPorUsuarioPorFecha($usuario,$month,$year)->getResult();
+    }
+    
+    public function queryFindTicketsPorEdificio(Edificio $edificio,$buscar="") {
+        $em = $this->getEntityManager();
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT f,u,e,r "
+                . "FROM FrontendBundle:Foro f "
+                . "JOIN f.usuario u "
+                . "JOIN f.edificios e "
+                . "JOIN f.residencial r "
+                . "WHERE e.id =:edificio "
+                . "AND f.tipoAcceso=:tipoAccesoUsuario  "
+                . "ORDER BY f.createdAt DESC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+                'tipoAccesoUsuario' => Foro::TIPO_ACCESO_PRIVADO,
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT f,u,e,r "
+                . "FROM FrontendBundle:Foro f "
+                . "JOIN f.usuario u "
+                . "JOIN f.edificios e "
+                . "JOIN f.residencial r "
+                . "WHERE e.id =:edificio "
+                . "AND f.tipoAcceso=:tipoAccesoUsuario  "
+                . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR f.titulo LIKE :titulo) "
+                . "ORDER BY f.createdAt DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+                'tipoAccesoUsuario' => Foro::TIPO_ACCESO_PRIVADO,
+                'numero' => $buscar,
+                'nombre' => "%" . $buscar . "%",
+                'email' => "%" . $buscar . "%",
+                'titulo' => "%" . $buscar . "%"
+            ));
+        }
+        return $consulta;
+    }
+
+    public function findTicketsPorEdificio(Edificio $edificio,$buscar="") {
+        return $this->queryFindTicketsPorEdificio($edificio,$buscar)->getResult();
+    }
+    
     public function queryFindForosPorEdificio(Edificio $edificio,$buscar="") {
         $em = $this->getEntityManager();
         if(strlen($buscar)==0){

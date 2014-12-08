@@ -54,6 +54,70 @@ class Recurso
      * @ORM\Column(name="precio", type="decimal", nullable=true)
      */
     private $precio;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="desde", type="time")
+     */
+    private $desde;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="hasta", type="time")
+     */
+    private $hasta;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="lunes", type="boolean",nullable=true)
+     */
+    private $lunes = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="martes", type="boolean",nullable=true)
+     */
+    private $martes = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="miercoles", type="boolean",nullable=true)
+     */
+    private $miercoles = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="jueves", type="boolean",nullable=true)
+     */
+    private $jueves = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="viernes", type="boolean",nullable=true)
+     */
+    private $viernes = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="sabado", type="boolean",nullable=true)
+     */
+    private $sabado = true;
+    
+    /**
+     * @var \Booolean
+     *
+     * @ORM\Column(name="domingo", type="boolean",nullable=true)
+     */
+    private $domingo = true;
+    
 
     public function __toString() {
         return $this->nombre;

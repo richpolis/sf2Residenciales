@@ -383,7 +383,7 @@ class ReservacionController extends BaseController
      * Seleccionar usuario para reservacion.
      *
      * @Route("/seleccionar/usuario", name="reservaciones_select_usuario")
-     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     * @Template("FrontendBundle:Reservacion:selectUsuario.html.twig")
      */
     public function selectUsuarioAction(Request $request)
     {
@@ -423,35 +423,34 @@ class ReservacionController extends BaseController
     public function calendarioAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        $recursosEdificio = $em->getRepository('BackendBundle:Recurso')
-			->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
+        $recursos = $em->getRepository('BackendBundle:Recurso')
+                               ->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
         if($request->query->has('recurso')){
             $filtros = $this->getFilters();
             $filtros['recurso'] = $request->query->get('recurso');
             $this->setFilters($filtros);
         }
-
         $recursoActual = $this->getRecursoActual();
-
         $fecha = new \DateTime();
         $fecha->modify('-1 month');
-        
         if($recursoActual){
             $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                                 ->findReservacionesPorRecursoAprobadas($recursoActual, $fecha);
+                                 ->findReservacionesPorRecursoReservadas($recursoActual, $fecha);
         }else{
             $reservaciones = array();
         }
-
+        /*$recursosR = array();
+        foreach($recursosEdificio as $recurso){
+            $recursosR[]=array('id'=>$recurso->getId(),'nombre'=>$recurso->getNombre());
+        }*/
+        
         return array(
+            'amenidades' => $recursos,
             'entities' => $reservaciones,
             'recurso' => $recursoActual,
-            'recursos' => $recursosEdificio,
         );
-        
     }
     
     /**
@@ -529,30 +528,44 @@ class ReservacionController extends BaseController
     public function realizarReservacionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
-		$recursoActual = $this->getRecursoActual();
+        $recursoActual = $this->getRecursoActual();
         $entity = new Reservacion();
         $entity->setUsuario($usuario);
-		if($request->query->has('fecha')){
-			$fecha = new \DateTime($request->query->get('fecha'));
-		}else{
-			$fecha = new \DateTime();
-		}
-		$entity->setRecurso($recursoActual);
-		$entity->setFechaEvento($fecha);
-		$entity->setMonto($recursoActual->getPrecio());
+        if ($request->query->has('fecha')) {
+            $fecha = new \DateTime($request->query->get('fecha'));
+        } else {
+            $fecha = new \DateTime();
+        }
+        $entity->setRecurso($recursoActual);
+        $entity->setFechaEvento($fecha);
+        $entity->setMonto($recursoActual->getPrecio());
         $form = $this->createCreateForm($entity);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $form->getData();
-                $em->persist($entity);
-                $em->flush();
-                $response = new JsonResponse(json_encode(array(
-                   'html' => '',
-                   'respuesta' => 'creado',
-                )));
-                return $response;
+                if($this->getValidarHorariosDisponibles($entity)){
+                    $em->persist($entity);
+                    $em->flush();
+                    $response = new JsonResponse(json_encode(array(
+                       'html' => '',
+                       'respuesta' => 'creado',
+                    )));
+                    return $response;
+                }else{
+                    $response = new JsonResponse(json_encode(array(
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                          'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
+                          'form' => $form->createView(),
+                     )),
+                     'respuesta' => 'error',
+                     'error'=>'La fecha y horarios no estan disponibles',   
+                  )));
+                  return $response;
+                }
+                
+                
             }
         }
 
@@ -564,5 +577,23 @@ class ReservacionController extends BaseController
           	'respuesta' => 'nuevo',
         )));
         return $response;
+    }
+    
+    protected function getValidarHorariosDisponibles(Reservacion $reservacion){
+        $em = $this->getDoctrine()->getManager();
+        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                            ->getReservacionesPorFechaEvento($reservacion->getFechaEvento());
+        $horarios = array();
+        foreach($reservaciones as $reser){
+            $horarios[]= $reser->getHasta()->modify('+2 hour');
+        }
+        $resp = true;
+        foreach($horarios as $horario){
+            if($horario>$reservacion->getDesde()){
+                $resp = false;
+                break;
+            }
+        }
+        return $resp;
     }
 }

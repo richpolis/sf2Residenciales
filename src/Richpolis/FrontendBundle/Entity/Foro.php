@@ -103,7 +103,7 @@ class Foro
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="createdAt", type="datetimetz")
+     * @ORM\Column(name="createdAt", type="datetime")
      */
     private $createdAt;
     

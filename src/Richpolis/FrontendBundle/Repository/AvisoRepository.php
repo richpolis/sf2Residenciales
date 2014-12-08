@@ -15,26 +15,51 @@ use Richpolis\FrontendBundle\Entity\Aviso;
  */
 class AvisoRepository extends EntityRepository
 {
-    public function queryFindAvisosPorEdificio(Edificio $edificio) {
+    public function queryFindAvisosPorEdificio(Edificio $edificio,$buscar="") {
         $em = $this->getEntityManager();
-        $consulta = $em->createQuery("SELECT a,e,r "
-                . "FROM FrontendBundle:Aviso a "
-                . "JOIN a.edificios e "
-                . "JOIN a.residencial r "
-                . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
-                . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
-                . "ORDER BY a.createdAt DESC");
-        $consulta->setParameters(array(
-            'edificio' => $edificio->getId(),
-            'residencial' => $edificio->getResidencial()->getId(),
-            'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
-            'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
-        ));
+        if(strlen($buscar)==0){
+            $consulta = $em->createQuery("SELECT a,u,e,r "
+                    . "FROM FrontendBundle:Aviso a "
+                    . "JOIN a.edificios e "
+                    . "JOIN a.residencial r "
+                    . "JOIN a.usuario u "
+                    . "WHERE (e.id = :edificio AND (a.tipoAcceso=:tipoAccesoEdificio OR a.tipoAcceso=:tipoAccesoUsuario)) "
+                    . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
+                    . "ORDER BY a.createdAt DESC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+                'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
+                'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
+                'tipoAccesoUsuario'=>Aviso::TIPO_ACCESO_PRIVADO,
+            ));
+        }else{
+            $consulta = $em->createQuery("SELECT a,u,e,r "
+                    . "FROM FrontendBundle:Aviso a "
+                    . "JOIN a.edificios e "
+                    . "JOIN a.residencial r "
+                    . "JOIN a.usuario u "
+                    . "WHERE (e.id = :edificio AND (a.tipoAcceso=:tipoAccesoEdificio OR a.tipoAcceso=:tipoAccesoUsuario)) "
+                    . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
+                    . "AND (u.numero =:numero OR u.nombre LIKE :nombre OR u.email LIKE :email OR a.titulo LIKE :titulo) "
+                    . "ORDER BY a.createdAt DESC, u.numero ASC");
+            $consulta->setParameters(array(
+                'edificio' => $edificio->getId(),
+                'residencial' => $edificio->getResidencial()->getId(),
+                'tipoAccesoResidencial'=>Aviso::TIPO_ACCESO_RESIDENCIAL,
+                'tipoAccesoEdificio'=>Aviso::TIPO_ACCESO_EDIFICIO,
+                'tipoAccesoUsuario'=>Aviso::TIPO_ACCESO_PRIVADO,
+                'numero' => $buscar,
+                'nombre' => "%" . $buscar . "%",
+                'email' => "%" . $buscar . "%",
+                'titulo' => "%" . $buscar . "%"
+            ));
+        }
         return $consulta;
     }
 
-    public function findAvisosPorEdificio(Edificio $edificio) {
-        return $this->queryFindAvisosPorEdificio($edificio)->getResult();
+    public function findAvisosPorEdificio(Edificio $edificio,$buscar="") {
+        return $this->queryFindAvisosPorEdificio($edificio,$buscar="")->getResult();
     }
     
     public function queryFindAvisosPorUsuario(Usuario $usuario) {
@@ -77,7 +102,7 @@ class AvisoRepository extends EntityRepository
                 . "WHERE (e.id = :edificio AND a.tipoAcceso=:tipoAccesoEdificio ) "
                 . "OR (r.id=:residencial AND a.tipoAcceso=:tipoAccesoResidencial ) "
                 . "OR (u.id=:usuario AND a.tipoAcceso=:tipoAccesoUsuario ) "
-		. "AND a.createdAt BETWEEN :inicio AND :fin "
+		        . "AND a.createdAt BETWEEN :inicio AND :fin "
                 . "ORDER BY a.createdAt DESC");
         $consulta->setParameters(array(
             'usuario' => $usuario->getId(),

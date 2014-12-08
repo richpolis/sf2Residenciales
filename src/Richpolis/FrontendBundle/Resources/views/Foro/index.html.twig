@@ -102,17 +102,15 @@
                                     <button onclick="javascript:editarRegistro('{{ path('foros_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
                                 </td>
                            </tr>
-                           
-                       {% endfor %}
-                       </tbody>
-                   <tfoot>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
                            <tr>
                                <td colspan="8">
                                    <a href="{{path('foros_exportar')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Exportar</a>
-                                   
                                </td>
                            </tr>
-                       </tfoot>
+                        </tfoot>
                    </table>
                     <div class="widget-foot">
                         <div class="container text-center">

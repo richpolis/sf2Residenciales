@@ -1,0 +1,244 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    <!-- Widgets stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+    <!-- Gritter Notifications stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
+{% endblock %}
+
+{% block mainbar %}
+    <!-- Main bar -->
+    <div class="mainbar">
+
+        <!-- Page heading -->
+        <div class="page-head">
+            <h2 class="pull-left">Tickets</h2>
+            <div class="clearfix"></div>
+            <!-- Breadcrumb -->
+            <div class="bread-crumb">
+                <a href="{{path('homepage')}}"><i class="fa fa-home"></i>Dashboard</a> 
+                <!--Divider-->
+                <span class="divider">/</span>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('residenciales')}}" class="bread-current">{{entity.residencial}}</a>
+                {% else %}
+                <a href="#" class="bread-current">{{entity.residencial}}</a>    
+                {% endif %}
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('tickets')}}" class="bread-current">Tickets</a>
+                <!--Divider-->
+                <span class="divider">/</span> 
+                <a href="{{path('tickets_show',{'id':entity.id})}}" class="bread-current">Ticket: {{entity.titulo}} </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{path('tickets_select_usuario')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Crear ticket</a>
+                {% endif %}
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+        <!-- Page heading ends -->
+
+        <!-- Matter -->
+
+        <div class="matter">
+            <div class="container" id="contenidoPagina">
+                <div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="widget">
+                                <div class="widget-head">
+                                    <div class="pull-left">Ticket:  {{ entity.titulo }}</div>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="widget-content">
+                                    <div class="padd contenido-formulario">    <table class="record_properties">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <td>{{ entity.id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Residencial</th>
+                                                    <td>{{ entity.residencial }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Torre</th>
+                                                    <td>
+                                                        <ul>
+                                                            {% for edificio in entity.edificios %}
+                                                                <li>
+                                                                    {{ edificio }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>  
+                                                    </td>
+                                                </tr>
+                                                <tr>                                                              <tr>
+                                                    <th>Creado</th>
+                                                    <td>{{ entity.usuario}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Fecha creacion</th>
+                                                    <td>{{ entity.createdAt|date('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Titulo</th>
+                                                    <td>{{ entity.titulo }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Post</th>
+                                                    <td>{{ entity.comentario | raw }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Cerrado?</th>
+                                                    <td>{{ entity.isCerrado | isActive | raw }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>   
+                                    </div>
+                                </div>
+                                <div class="widget-foot">
+                                    <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('tickets')}}')">Regresar</button>
+                                    <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('tickets_edit',{id: entity.id})}}')">Editar</button>   
+                                    <div style="float: left; margin-right: 3px;">
+                                        <form id="formEliminar" action="{{ path('tickets_delete', { 'id': entity.id }) }}" method="post">
+                                            <input name="_method" value="DELETE" type="hidden"/>
+                                            {{ form_widget(delete_form) }}
+                                        </form>
+                                        <button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
+                                    </div>        
+                                </div>
+                            </div>  
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Widget content -->
+                            <div class="widget">
+                                <div class="widget-content">
+                                    {% if entity.comentarios | length > 0 %}        
+                                        <article class="comentarios-formulario">
+                                            <header>
+                                                <h2 class="titulo">
+                                                    {{entity.contComentarios ~ (entity.contComentarios > 1?' comentarios':' comentario')}}
+                                                </h2>
+                                            </header>
+                                            {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': entity.comentarios } %}
+                                        </article>
+                                    {% endif %}
+                                    <article class="comentarios-formulario">
+                                        <header>
+                                            <h2 class="titulo">
+                                                Ingrese su comentario
+                                            </h2>
+                                        </header>
+                                        <form action="{{ path('tickets_ticket',{'id': entity.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
+                                            <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{form_errors(form)}}
+                                            <div class="controles-derechos form-group">
+                                                {{form_row(form.comentario)}}
+                                            </div>
+                                            {{form_rest(form)}}
+                                            <div class="group-control">
+                                                <input class="btn btn-success" type="submit" value="Enviar"/>
+                                            </div>
+                                        </form>
+                                    </article>  
+                                </div>
+                            </div>
+                            <!-- Widget ends -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matter ends -->
+
+    </div>
+
+    <!-- Mainbar ends -->        
+    <div class="clearfix"></div>
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+<script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+<!-- jQuery Notification - Noty -->
+<script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+<script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+<!-- jQuery Notification ends -->
+
+<script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
+
+<script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+<script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+
+
+<script>
+var regresar = function(url){
+    location.href=url;
+};
+
+var editarRegistro = function(url){
+    location.href=url;
+};
+    
+var eliminarRegistro = function(){
+  {% if is_granted('ROLE_ADMIN') %}
+    bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
+      if(result){
+         $("#formEliminar").submit();
+      }
+    });
+  {% else %}
+    noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
+  {% endif %}      
+};
+
+</script>
+<script type="text/javascript">
+    var $boton;
+    $(document).ready(function(){
+        $(".boton-para-responder ").on("click",function(){
+            $boton = $(this);
+            var $controles = $boton.parent();
+            var idComentario = $boton.data('comentario');
+            var $formulario = $("<form>");
+            var $divComentarioFormulario = $("<div>");
+            var $formComentarios = $("#formComentarios");
+            $formulario.attr('action',$formComentarios.attr('action'));
+            $formulario.attr('method','post');
+            $formulario.html($formComentarios.html());
+            $divComentarioFormulario.attr('id','formulario-comentario-'+idComentario);
+            $divComentarioFormulario.addClass('formulario-comentario');
+            $divComentarioFormulario.append($formulario);
+            $controles.after($divComentarioFormulario)
+            $formulario.find(".closeForm").fadeIn();
+            $formulario.find("#richpolis_frontendbundle_comentario_parent").val(idComentario);
+            $boton.fadeOut();
+        });
+    });
+    function closeForm(){
+       $(".formulario-comentario").remove();
+       $boton.fadeIn();
+    }
+</script>
+    
+{% endblock %}
+

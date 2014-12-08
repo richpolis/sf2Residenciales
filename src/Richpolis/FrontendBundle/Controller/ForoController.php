@@ -55,7 +55,7 @@ class ForoController extends BaseController
             $options = array();
         }
         $query = $em->getRepository('FrontendBundle:Foro')
-                ->queryFindForosPorResidencial($residencialActual, $buscar);
+                ->queryFindForosPorEdificio($edificioActual, $buscar);
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(

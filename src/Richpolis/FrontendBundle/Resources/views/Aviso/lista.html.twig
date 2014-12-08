@@ -7,13 +7,19 @@
         {% else %}
             {% set nivel = registro.usuario %}    
         {% endif %}
-        <li class="item item-aviso item-aviso-notificacion">
+        
+        {% if registro.tipoAviso == constant('Richpolis\\FrontendBundle\\Entity\\Aviso::TIPO_AVISO') %}
+        {% set clase = 'item-aviso-normal' %}
+        {% else %}
+        {% set clase = 'item-aviso-notificacion' %}
+        {% endif %}    
+        
+        <li class="item item-aviso {{ clase }}">
             <div class="item-aviso-fecha">
                 {{ registro.createdAt | date('d-M-Y') }} - {{nivel}}
             </div>
             <div class="item-titulo item-aviso-titulo"> {{ registro.titulo }}</div>
             <div class="item-descripcion item-aviso-descripcion"> {{ registro.aviso|raw }}</div>
-
         </li>
     {% endfor%}    
 </ul>    

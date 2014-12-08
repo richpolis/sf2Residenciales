@@ -146,8 +146,8 @@ class Reservacion
     
     public function __construct() {
         $this->isAproved = false;
-	$this->monto = 0;
-        $this->status = 0;
+		$this->monto = 0;
+        $this->status = Reservacion::STATUS_SOLICITUD;
     }
     
     public function getStringReservacion(){
@@ -396,5 +396,13 @@ class Reservacion
     public function getStatus()
     {
         return $this->status;
+    }
+    
+    /**
+     * @Assert\True(message = "Los horarios no son correctos")
+     */
+    public function isHorarioValido()
+    {
+        return ($this->desde < $this->hasta);
     }
 }

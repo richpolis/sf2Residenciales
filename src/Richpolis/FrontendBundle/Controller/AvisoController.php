@@ -40,14 +40,29 @@ class AvisoController extends BaseController
     public function adminIndex(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-        $edificio = $this->getEdificioActual();
-        $avisos = $em->getRepository('FrontendBundle:Aviso')
-                     ->findAvisosPorEdificio($edificio);
+        $edificioActual = $this->getEdificioActual();
+
+        $buscar = $request->query->get('buscar', '');
+
+        if (strlen($buscar) > 0) {
+            $options = array('filterParam' => 'buscar', 'filterValue' => $buscar);
+        } else {
+            $options = array();
+        }
+        $query = $em->getRepository('FrontendBundle:Aviso')
+                ->queryFindAvisosPorEdificio($edificioActual, $buscar);
+
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+                $query, $this->get('request')->query->get('page', 1), 10, $options
+        );
+
         return $this->render("FrontendBundle:Aviso:index.html.twig", array(
-            'entities' => $avisos,
-            'edificio' => $edificio,
+            'pagination' => $pagination,
             'residencial' => $residencialActual,
+            'edificio' => $edificioActual,
         ));
     }
     
@@ -56,22 +71,22 @@ class AvisoController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-		
-		$fecha = new \DateTime();
-		$year = $request->query->get('year', $fecha->format('Y'));
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
         $month = $request->query->get('month', $fecha->format('m'));
-		$nombreMes = $this->getNombreMes($month);
-		
+        $nombreMes = $this->getNombreMes($month);
+
         $avisos = $em->getRepository('FrontendBundle:Aviso')
-                     ->findAvisosPorUsuarioPorFecha($this->getUser(),$month,$year);
-		
+                ->findAvisosPorUsuarioPorFecha($this->getUser(), $month, $year);
+
         return $this->render("FrontendBundle:Aviso:avisos.html.twig", array(
-            'entities' => $avisos,
-            'edificio' => $edificio,
-            'residencial' => $residencialActual,
-			'month'=>$month,
-			'year'=>$year,
-			'nombreMes' => $nombreMes,
+                    'entities' => $avisos,
+                    'edificio' => $edificio,
+                    'residencial' => $residencialActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
     
@@ -359,7 +374,7 @@ class AvisoController extends BaseController
      * Seleccionar usuario para aviso.
      *
      * @Route("/seleccionar/usuario", name="avisos_select_usuario")
-     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     * @Template("FrontendBundle:Reservacion:selectUsuario.html.twig")
      */
     public function selectUsuarioAction(Request $request)
     {
@@ -376,13 +391,8 @@ class AvisoController extends BaseController
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
                        ->findBy(array('edificio'=>$edificio));
-        $arreglo = array();
-        foreach($usuarios as $usuario){
-            $arreglo[]= array('id'=>$usuario->getId(),'nombre'=>$usuario->getStringCompleto());
-        }
-        
         return array(
-            'entities'=>$arreglo,
+            'entities'=>$usuarios,
             'residencial'=>$residencialActual,
             'edificio'=> $edificio,
             'ruta' => 'avisos_select_usuario',

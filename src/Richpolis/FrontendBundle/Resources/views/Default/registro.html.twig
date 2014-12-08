@@ -89,6 +89,10 @@
          location.href = '{{path('homepage')}}'; 
       });
   });
+  
+  {% for flashMessage in app.session.flashbag.get('notice') %}
+    noty({text: flashMessage,layout:'top', type:'notice', timeout:2000 });
+  {% endfor %}
   </script>
 {% endblock %}
 

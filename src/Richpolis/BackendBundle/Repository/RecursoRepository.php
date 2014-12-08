@@ -20,13 +20,13 @@ class RecursoRepository extends EntityRepository
                FROM BackendBundle:Recurso i 
                JOIN i.edificios e 
                JOIN e.residencial r 
-               WHERE (e.id = :edificio AND i.tipoAcceso=:tipoAccesoEdificio ) 
-               OR (r.id=:residencial AND i.tipoAcceso=:tipoAccesoResidencial )
+               WHERE (r.id=:residencial AND i.tipoAcceso=:tipoAccesoResidencial ) 
+               OR (e.id = :edificio AND i.tipoAcceso=:tipoAccesoEdificio )
                ORDER BY i.nombre ASC
         ')->setParameters(array(
-            'edificio'=> $edificio_id,
             'residencial'=>$residencial_id,
             'tipoAccesoResidencial'=>Recurso::TIPO_ACCESO_RESIDENCIAL,
+            'edificio'=> $edificio_id,
             'tipoAccesoEdificio'=>Recurso::TIPO_ACCESO_EDIFICIO,
         ));
         return $query->getResult();

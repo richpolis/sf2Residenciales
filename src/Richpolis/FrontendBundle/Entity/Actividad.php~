@@ -393,4 +393,12 @@ class Actividad
     {
         return $this->edificios;
     }
+    
+    /**
+     * @Assert\True(message = "Los horarios no son correctos")
+     */
+    public function isHorarioValido()
+    {
+        return ($this->desde < $this->hasta);
+    }
 }

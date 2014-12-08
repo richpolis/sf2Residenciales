@@ -1,0 +1,122 @@
+{% extends 'FrontendBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <!-- Datatables -->
+  <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/style.css')}}">
+  <!-- Widgets stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+  <!-- Gritter Notifications stylesheet -->
+  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+  <link rel="stylesheet" href="{{asset('css/main.css')}}"> 
+{% endblock %}
+
+{% block mainbar %}
+    <!-- Main bar -->
+    <div class="mainbar">
+        <div class="matter">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="widget">
+                            <div class="widget-head">
+                                <h2>Tickets</h2>
+                            </div>
+                            <div class="widget-content">
+                                <div class="padd">
+                                    <article class="ticket-completa">
+                                        <header>
+                                            <h2 class="titulo">
+                                                {{ ticket.titulo }}
+                                            </h2>
+                                            <span class="datetime">{{ ticket.createdAt|date("m/d/Y g:ia","America/Mexico_City")}}</span>
+                                        </header>
+                                        <div class="contenido">
+                                            {{ticket.comentario | raw }}
+                                        </div>
+                                    </article>
+                                    {% if comentarios | length > 0 %}        
+                                        <article class="comentarios-formulario">
+                                            <header>
+                                                <h2 class="titulo">
+                                                    {{ticket.contComentarios ~ (ticket.contComentarios > 1?' comentarios':' comentario')}}
+                                                </h2>
+                                            </header>
+                                            {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': comentarios } %}
+                                        </article>
+                                    {% endif %}
+                                    <article class="comentarios-formulario">
+                                        <header>
+                                            <h2 class="titulo">
+                                                Ingrese su comentario
+                                            </h2>
+                                        </header>
+                                        <form action="{{ path('tickets_ticket',{'id': ticket.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
+                                            <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{form_errors(form)}}
+                                            <div class="controles-derechos form-group">
+                                                {{form_row(form.comentario)}}
+                                            </div>
+                                            {{form_rest(form)}}
+                                            <div class="group-control">
+                                                <input class="btn btn-success" type="submit" value="Enviar"/>
+                                            </div>
+                                        </form>
+                                    </article>  
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+  <!-- jQuery Notification - Noty -->
+  <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+  <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+  <!-- jQuery Notification ends -->
+
+  <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+  <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+  <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+  <script type="text/javascript">
+    var $boton;
+    $(document).ready(function(){
+        $(".boton-para-responder ").on("click",function(){
+            $boton = $(this);
+            var $controles = $boton.parent();
+            var idComentario = $boton.data('comentario');
+            var $formulario = $("<form>");
+            var $divComentarioFormulario = $("<div>");
+            var $formComentarios = $("#formComentarios");
+            $formulario.attr('action',$formComentarios.attr('action'));
+            $formulario.attr('method','post');
+            $formulario.html($formComentarios.html());
+            $divComentarioFormulario.attr('id','formulario-comentario-'+idComentario);
+            $divComentarioFormulario.addClass('formulario-comentario');
+            $divComentarioFormulario.append($formulario);
+            $controles.after($divComentarioFormulario);
+            $formulario.find(".closeForm").fadeIn();
+            $formulario.find("#richpolis_frontendbundle_comentario_parent").val(idComentario);
+            $boton.fadeOut();
+        });
+    });
+    function closeForm(){
+       $(".formulario-comentario").remove();
+       $boton.fadeIn();
+    }
+</script>
+{% endblock %}
+
