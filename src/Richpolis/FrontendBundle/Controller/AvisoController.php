@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -449,8 +450,8 @@ class AvisoController extends BaseController
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-		if($request->request->has('edificioId') == true){
-            $filtros['edificio'] = $request->query->get('edificioId');
+	if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->request->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
@@ -461,8 +462,9 @@ class AvisoController extends BaseController
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
         $cont = 0;
-        $nombreMes = $this->getMes($mes);
-		$monto = 0;
+        $nombreMes = $this->getNombreMes($mes);
+	$monto = 0;
+        $cont = 0;
         foreach($usuarios as $usuario){
             $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                          ->getCargosEnMes($mes,$year,$usuario);
@@ -480,7 +482,7 @@ class AvisoController extends BaseController
                 $aviso->addEdificio($edificio);
                 $aviso->setUsuario($usuario);
                 $em->persist($aviso);
-				$cont++;
+		$cont++;
             }
         }
         $em->flush();

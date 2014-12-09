@@ -375,8 +375,8 @@ class EstadoCuentaController extends BaseController
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-		if($request->request->has('edificioId') == true){
-            $filtros['edificio'] = $request->query->get('edificioId');
+	if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->request->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
@@ -387,7 +387,7 @@ class EstadoCuentaController extends BaseController
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
         $cont = 0;
-        $nombreMes = $this->getMes($mes);
+        $nombreMes = $this->getNombreMes($mes);
         foreach($usuarios as $usuario){
             $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
                         ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_NORMAL,$usuario);
@@ -397,7 +397,7 @@ class EstadoCuentaController extends BaseController
                 $cargo->setCargo("Cargo automatico de ".$nombreMes." del ".$year);
                 $cargo->setMonto($edificio->getCuota());
                 $cargo->setUsuario($usuario);
-				$cargo->setResidencial($residencial);
+		//$cargo->setResidencial($residencial);
                 $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_NORMAL);
                 $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
@@ -433,7 +433,7 @@ class EstadoCuentaController extends BaseController
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
         if ($request->request->has('edificioId') == true) {
-            $filtros['edificio'] = $request->query->get('edificioId');
+            $filtros['edificio'] = $request->request->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
@@ -445,7 +445,7 @@ class EstadoCuentaController extends BaseController
         $year = $fecha->format("Y");
         $fecha->modify("-1 month");
         $cont = 0;
-        $nombreMes = $this->getMes($mes);
+        $nombreMes = $this->getNombreMes($mes);
         foreach ($usuarios as $usuario) {
             $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
                     ->getCargoEnMes($mes, $year, EstadoCuenta::TIPO_CARGO_ADEUDO, $usuario);
@@ -469,7 +469,7 @@ class EstadoCuentaController extends BaseController
                         $anterior->setCargo("Cargo anterior");
                         $anterior->setMonto($$monto);
                         $anterior->setUsuario($usuario);
-                        $anterior->setResidencial($residencial);
+                        //$anterior->setResidencial($residencial);
                         $anterior->setTipoCargo(EstadoCuenta::TIPO_CARGO_ANTERIOR);
                         $anterior->setIsAcumulable(true);
                         $em->persist($anterior);
@@ -478,7 +478,7 @@ class EstadoCuentaController extends BaseController
                         $cargo->setCargo("Cargo por adeudo del " . $nombreMes . " del " . $year);
                         $cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
                         $cargo->setUsuario($usuario);
-                        $cargo->setResidencial($residencial);
+                        //$cargo->setResidencial($residencial);
                         $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
                         $cargo->setIsAcumulable(true);
                         $em->persist($cargo);
@@ -502,22 +502,7 @@ class EstadoCuentaController extends BaseController
         return $response;
     }
 
-    public function getMes($num){
-        switch($num){
-            case 1: return "Enero";
-            case 2: return "Febrero";
-            case 3: return "Marzo";
-            case 4: return "Abril";
-            case 5: return "Mayo";
-            case 6: return "Junio";
-            case 7: return "Julio";
-            case 8: return "Agosto";
-            case 9: return "Septiembre";
-            case 10: return "Octubre";
-            case 11: return "Noviembre";
-            case 12: return "Diciembre";
-        }
-    }
+    
     
     /**
      * Exportar los cargos.
@@ -600,13 +585,12 @@ class EstadoCuentaController extends BaseController
                 $this->setFilters($filtros);
             }
             $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-            $torres = $residencialActual->getEdificios();
+            $edificios = $residencialActual->getEdificios();
             $residenciales = $this->getResidenciales();
-            die;
             return array(
                 'residencial' => $residencialActual,
-                'residenciales' => $residenciales,
-                'edificios' => $torres,
+                'conjuntos' => $residenciales,
+                'torres' => $edificios,
             );
     }
 

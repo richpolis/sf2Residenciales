@@ -90,12 +90,12 @@
 <script>
 var residencialActual = {'id':{{residencial.id}},'nombre':'{{residencial.nombre}}' };
 var residenciales = [
-{% for res in residenciales %}
-	{'id':{{res.id}} ,'nombre':'{{res.nombre}}' },
+{% for residencial in conjuntos %}
+	{'id':{{residencial.id}} ,'nombre':'{{residencial.nombre}}' },
 {% endfor %}
 ];
 var edificios = [
-{% for edificio in edificios %}
+{% for edificio in torres %}
 	{'id':{{edificio.id}} ,'nombre':'{{edificio.nombre}}' },
 {% endfor %}
 ];
@@ -105,20 +105,21 @@ $(document).ready(function () {
 });
 function ejecutarCargosPorEdificio(){
 	debugger;
-	if(contEdificios<(edificios.length-1)){
-		ejecutarCargoAEdificio(contEdificio);
-		contEdificio++;
+	if(contEdificios<=(edificios.length-1)){
+		ejecutarCargoAEdificio(contEdificios);
+		contEdificios++;
 	}else{
 		//significa que ya no hay mas edificios en este residencial
 		//se mandaria a llamar a si misma pero con el cambio de residencial
-		for(var r = 0; r<(residenciales.length-1);r++){
+		for(var r = 0; r<=(residenciales.length-1);r++){
 			if(residenciales[r].id==residencialActual.id){
 				r++;
-				if( r<(residenciales.length-1)){
+				if( r<=(residenciales.length-1)){
 					location.href = '{{path('estadodecuentas_cargos_automaticos')}}?residencial='+residenciales[r].id;
 					break;
 				}else{
 					alert('Cargos automaticos terminados');
+                                        location.href="{{path('login')}}";
 				}
 			}
 		}
@@ -130,7 +131,7 @@ function ejecutarCargoAEdificio(edificio){
         $.ajax({
            url: '{{path('estadodecuentas_aplicar_cargo_normal')}}',
            type: 'POST',
-		   data: {'edificioId': edificio },
+		   data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
            success: function(data){
                $(".loader").fadeOut();
@@ -139,7 +140,7 @@ function ejecutarCargoAEdificio(edificio){
                noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
 			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos normales aplicados '+data.cargosAplicados+'</div>';
 			   $(".contenido-pagina").append(html);
-               setTimeOut(function(){
+               setTimeout(function(){
 			   		aplicarCargosAdeudo(edificio);
 			   },1000);
            },
@@ -156,7 +157,7 @@ function aplicarCargosAdeudo(edificio){
         $.ajax({
            url: '{{path('estadodecuentas_aplicar_cargo_adeudo')}}',
            type: 'POST',
-		   data: {'edificioId': edificio },
+		   data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
            success: function(data){
                $(".loader").fadeOut();
@@ -165,8 +166,8 @@ function aplicarCargosAdeudo(edificio){
                noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
 			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos anteriores y adeudos aplicados '+data.cargosAplicados+'</div>';
 			   $(".contenido-pagina").append(html);
-               setTimeOut(function(){
-			   		aplicarAvisosCargos();
+               setTimeout(function(){
+			   		aplicarAvisosCargos(edificio);
 			   },1000);
            },
            error: function(data){
@@ -181,18 +182,18 @@ function aplicarAvisosCargos(edificio){
         $.ajax({
            url: '{{path('avisos_avisos_cargos')}}',
            type: 'POST',
-		   data: {'edificioId': edificio },
+		   data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
            success: function(data){
-               $(".loader").fadeOut();
-               //data = JSON.parse(data);
-               console.log(data);
-               noty({text: data.avisos,layout:'bottom', type:'warning', timeout:2000 });
-			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' avisos '+data.avisos+'</div>';
-			   $(".contenido-pagina").append(html);
-               setTimeOut(function(){
-			   		ejecutarCargosPorEdificio();
-			   },1000);
+                $(".loader").fadeOut();
+                //data = JSON.parse(data);
+                console.log(data);
+                noty({text: data.avisos,layout:'bottom', type:'warning', timeout:2000 });
+                var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' avisos '+data.avisos+'</div>';
+                $(".contenido-pagina").append(html);
+                setTimeout(function(){
+                    ejecutarCargosPorEdificio();
+                },1000);
            },
            error: function(data){
                $(".loader").fadeOut();

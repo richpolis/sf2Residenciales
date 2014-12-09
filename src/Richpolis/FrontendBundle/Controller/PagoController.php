@@ -352,11 +352,12 @@ class PagoController extends BaseController
             $cargo->setCargo("Gracias por su pago");
             $cargo->setMonto(($monto - ($monto * 2)));
             $cargo->setUsuario($usuario);
-            $cargo->setResidencial($residencial);
+            //$cargo->setResidencial($residencial);
             $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
             $cargo->setIsAcumulable(true);
             $cargo->setIsPaid(true);
             $em->persist($cargo);
+            $em->flush();
             $pago->addCargo($cargo);
         }
         $em->flush();
