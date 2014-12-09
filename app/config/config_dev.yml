@@ -29,7 +29,7 @@ assetic:
 #    delivery_address: me@example.com
 
 
-swiftmailer:
-    transport: gmail
-    username:  richpolis@gmail.com
-    password:  sf2Galilea
+#swiftmailer:
+#    transport: gmail
+#    username:  richpolis@gmail.com
+#    password:  xxxxxxxxxx

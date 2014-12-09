@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Pago;
 use Richpolis\FrontendBundle\Form\PagoType;
+use Richpolis\FrontendBundle\Form\PagoFrontendType;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
@@ -335,54 +336,52 @@ class PagoController extends BaseController
      *
      * @Route("/aprobar/{id}", name="pagos_aprobar")
      */
-    public function aprobarAction(Request $request, $id)
-    {
-       $em = $this->getDoctrine()->getManager();
-       $pago = $em->find('FrontendBundle:Pago', $id);
-       $monto = 0;
-       foreach($pago->getCargos() as $cargo){
-		   $cargo->setIsPaid(true);
-		   $monto += $cargo->getMonto();
-           $em->persist($cargo);
-       }
-       $pago->setIsAproved(true);
-		if($monto>0){
-			//se realiza el cargo de pago
-			$cargo = new EstadoCuenta();
-			$cargo->setCargo("Gracias por su pago");
-			$cargo->setMonto(($monto - ($monto*2)));
-			$cargo->setUsuario($usuario);
-			$cargo->setResidencial($residencial);
-			$cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
-			$cargo->setIsAcumulable(true);
-			$cargo->setIsPaid(true);
-			$em->persist($cargo);
-			$pago->addCargo($cargo);
-		}
-       $em->flush();
-       return $this->redirect($this->generateUrl('pagos_show',array('id'=>$pago->getId())));
+    public function aprobarAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $pago = $em->find('FrontendBundle:Pago', $id);
+        $monto = 0;
+        foreach ($pago->getCargos() as $cargo) {
+            $cargo->setIsPaid(true);
+            $monto += $cargo->getMonto();
+            $em->persist($cargo);
+        }
+        $pago->setIsAproved(true);
+        if ($monto > 0) {
+            //se realiza el cargo de pago
+            $cargo = new EstadoCuenta();
+            $cargo->setCargo("Gracias por su pago");
+            $cargo->setMonto(($monto - ($monto * 2)));
+            $cargo->setUsuario($usuario);
+            $cargo->setResidencial($residencial);
+            $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
+            $cargo->setIsAcumulable(true);
+            $cargo->setIsPaid(true);
+            $em->persist($cargo);
+            $pago->addCargo($cargo);
+        }
+        $em->flush();
+        return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
-	
-	/**
+
+    /**
      * Rechazar pago.
      *
      * @Route("/rechazar/{id}", name="pagos_rechazar")
      */
-    public function rechazarAction(Request $request, $id)
-    {
-       $em = $this->getDoctrine()->getManager();
-       $pago = $em->find('FrontendBundle:Pago', $id);
-       
-       foreach($pago->getCargos() as $cargo){
-           $cargo->setIsPaid(true);
-           $em->persist($cargo);
-           $em->flush();
-       }
-       $pago->setIsAproved(false);
-       $em->flush();
-       return $this->redirect($this->generateUrl('pagos_show',array('id'=>$pago->getId())));
+    public function rechazarAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $pago = $em->find('FrontendBundle:Pago', $id);
+
+        foreach ($pago->getCargos() as $cargo) {
+            $cargo->setIsPaid(true);
+            $em->persist($cargo);
+            $em->flush();
+        }
+        $pago->setIsAproved(false);
+        $em->flush();
+        return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
-    
+
     /**
      * Seleccionar usuario para pago.
      *
@@ -459,8 +458,11 @@ class PagoController extends BaseController
         $entity->setUsuario($usuario);
         $entity->setMonto($monto);
         $entity->setIsAproved(false);
-        $form = $this->createCreateForm($entity);
-
+        $form = $this->createForm(new PagoFrontendType(), $entity, array(
+            'action' => $this->generateUrl('pagos_realizar_pago'),
+            'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
+        ));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -474,8 +476,8 @@ class PagoController extends BaseController
                     $em->flush();
                 }
                 $response = new JsonResponse(json_encode(array(
-                            'html' => '',
-                            'respuesta' => 'creado',
+                    'html' => '',
+                    'respuesta' => 'creado',
                 )));
                 return $response;
             }
@@ -506,13 +508,11 @@ class PagoController extends BaseController
         $entity->setUsuario($usuario);
         $entity->setMonto($reservacion->getMonto());
         $entity->setIsAproved(false);
-        $form = $this->createForm(new PagoType(), $entity, array(
+        $form = $this->createForm(new PagoFrontendType(), $entity, array(
             'action' => $this->generateUrl('pagos_realizar_pago_reservacion'),
             'method' => 'POST',
             'em'=>$this->getDoctrine()->getManager(),
-			
         ));
-
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -531,7 +531,6 @@ class PagoController extends BaseController
                 $em->persist($cargo);
                 $reservacion->setPago($pago);
                 $em->flush();
-                
                 $response = new JsonResponse(json_encode(array(
                     'html' => '',
                     'respuesta' => 'creado',
@@ -539,13 +538,12 @@ class PagoController extends BaseController
                 return $response;
             }
         }
-
         $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
-                        'form' => $form->createView(),
-                    )),
-                    'respuesta' => 'nuevo',
+            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
+                'form' => $form->createView(),
+            )),
+            'respuesta' => 'nuevo',
         )));
         return $response;
     }

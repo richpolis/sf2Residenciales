@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Foro;
 use Richpolis\FrontendBundle\Form\ForoType;
+use Richpolis\FrontendBundle\Form\ForoFrontendType;
 use Richpolis\FrontendBundle\Form\ForoPorEdificioType;
 use Richpolis\FrontendBundle\Form\ComentarioType;
 use Richpolis\FrontendBundle\Entity\Comentario;
@@ -467,7 +468,8 @@ class ForoController extends BaseController
         $entity->setTipoAcceso(Foro::TIPO_ACCESO_EDIFICIO);
         $entity->addEdificio($usuario->getEdificio());
         $entity->setResidencial($this->getResidencialActual($this->getResidencialDefault()));
-        $form = $this->createForm(new ForoType(), $entity, array(
+        $entity->setIsCerrado(true);
+        $form = $this->createForm(new ForoFrontendType(), $entity, array(
             'action' => $this->generateUrl('foros_crear_foro'),
             'method' => 'POST',
             'em' => $this->getDoctrine()->getManager(),
@@ -476,6 +478,7 @@ class ForoController extends BaseController
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $form->getData();
+                $entity->setIsCerrado(false);
                 $em->persist($entity);
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(

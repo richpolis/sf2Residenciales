@@ -9,7 +9,7 @@ use Richpolis\BackendBundle\Form\DataTransformer\UsuarioToNumberTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\EdificiosToArrayTransformer;
 use Richpolis\BackendBundle\Form\DataTransformer\ResidencialToNumberTransformer;
 
-class TicketType extends AbstractType
+class ForoFrontendType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -22,7 +22,7 @@ class TicketType extends AbstractType
         $edificiosTransformer = new EdificiosToArrayTransformer($em);
         $residencialTransformer = new ResidencialToNumberTransformer($em);
         $builder
-            ->add('titulo',null,array('read_only'=>true,'label'=>'Ticket num.','attr'=>array('class'=>'form-control'))) 
+            ->add('titulo',null,array('attr'=>array('class'=>'form-control'))) 
             ->add('comentario',null,array(
                 'label'=>'Descripcion',
                 'required'=>true,
@@ -33,7 +33,7 @@ class TicketType extends AbstractType
                 ))
             ->add('tipoDiscusion','hidden')
             ->add('tipoAcceso','hidden')
-            ->add('isCerrado',null,array('label'=>'Es cerrado?'))
+            ->add('isCerrado','hidden')
             ->add($builder->create('residencial', 'hidden')->addModelTransformer($residencialTransformer))
             ->add($builder->create('edificios', 'hidden')->addModelTransformer($edificiosTransformer))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))   
@@ -58,6 +58,6 @@ class TicketType extends AbstractType
      */
     public function getName()
     {
-        return 'richpolis_frontendbundle_ticket';
+        return 'richpolis_frontendbundle_foro';
     }
 }

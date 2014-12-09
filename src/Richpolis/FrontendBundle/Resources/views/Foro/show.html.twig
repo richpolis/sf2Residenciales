@@ -138,6 +138,9 @@
                                             {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': entity.comentarios } %}
                                         </article>
                                     {% endif %}
+                                    
+                                </div>
+                                <div class="widget-foot">
                                     <article class="comentarios-formulario">
                                         <header>
                                             <h2 class="titulo">
@@ -147,16 +150,14 @@
                                         <form action="{{ path('foros_foro',{'id': entity.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
                                             <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             {{form_errors(form)}}
-                                            <div class="controles-derechos form-group">
-                                                {{form_row(form.comentario)}}
+                                            <div class="form-group col-lg-10">
+                                                {{form_widget(form.comentario)}}
                                             </div>
                                             {{form_rest(form)}}
-                                            <div class="group-control">
-                                                <input class="btn btn-success" type="submit" value="Enviar"/>
-                                            </div>
+                                            <input class="btn btn-success" type="submit" value="Enviar"/>
                                         </form>
-                                    </article>  
-                                </div>
+                                    </article>
+                                </div> 
                             </div>
                             <!-- Widget ends -->
 

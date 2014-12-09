@@ -148,15 +148,15 @@ class Recurso
         $this->precio = 0;
     }
     
-    public function getDiasHidden(){
+    public function getDiasDisponibles(){
         $arreglo = array(
-            '0'=>($this->getDomingo()?'0':''),
-            '1'=>($this->getLunes()?'1':''),
-            '2'=>($this->getMartes()?'2':''),
-            '3'=>($this->getMiercoles()?'3':''),
-            '4'=>($this->getJueves()?'4':''),
-            '5'=>($this->getViernes()?'5':''),
-            '6'=>($this->getSabado()?'6':''),
+            '0'=>($this->getDomingo()?'Dom':''),
+            '1'=>($this->getLunes()?'Lun':''),
+            '2'=>($this->getMartes()?'Mar':''),
+            '3'=>($this->getMiercoles()?'Mie':''),
+            '4'=>($this->getJueves()?'Jue':''),
+            '5'=>($this->getViernes()?'Vie':''),
+            '6'=>($this->getSabado()?'Sab':''),
         );
         $cadena ="";
         $coma = false;
@@ -168,6 +168,14 @@ class Recurso
             $coma = false;
         }
         return "[$cadena]";
+    }
+    
+    public function getHorariosDisponibles(){
+        return $this->desde->format('G:ia') .' - '. $this->hasta->format('G:ia');
+    }
+    
+    public function getStringRecurso(){
+        return sprintf('%s %s %s', $this->nombre,$this->getDiasDisponibles(),$this->getHorariosDisponibles());
     }
 
     /**

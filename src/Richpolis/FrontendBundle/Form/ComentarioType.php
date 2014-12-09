@@ -23,12 +23,13 @@ class ComentarioType extends AbstractType
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
         
         $builder
-            ->add('comentario',null,array(
+            ->add('comentario','text',array(
                 'label'=>'Mensaje',
                 'required'=>true,
                 'attr'=>array(
                     'class'=>'cleditor tinymce form-control placeholder',
-                   'data-theme' => 'advanced',
+                    'data-theme' => 'advanced',
+                    'placeholder'=>'Mensaje',
                     )
                 ))
             ->add('nivel','hidden')

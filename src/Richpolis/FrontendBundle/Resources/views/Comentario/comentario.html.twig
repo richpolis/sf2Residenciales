@@ -3,7 +3,7 @@
 {% set width = 100 - paddingLeft %}
 <article class="comentario-publicacion nivel-{{comentario.nivel}}" style="padding-left: {{paddingLeft}}%; width: {{width}}%;">
     <div class="contenido">
-        <p class="fecha">{{comentario.createdAt|date("l,j F Y")}}</p>
+        <p class="fecha">{{comentario.fechaTwitter}}</p>
         <p class="publicado-por">Publicado por: <span class="username">{{comentario.usuario}} - {{comentario.usuario.numero}} - {{comentario.usuario.edificio}}</span></p>
         <p class="contenido">
             {{comentario.comentario | raw }}

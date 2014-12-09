@@ -411,15 +411,15 @@ class Reservacion
      */
     public function isDiasOperativos()
     {
-        switch($this->fechaEvento->format('w')){
-			case 0: return $this->getRecurso()->getDomingo();
-			case 1: return $this->getRecurso()->getLunes();
-			case 2: return $this->getRecurso()->getMartes();
-			case 3: return $this->getRecurso()->getMiercoles();
-			case 4: return $this->getRecurso()->getJueves();
-			case 5: return $this->getRecurso()->getViernes();
-			case 6: return $this->getRecurso()->getSabado();
-		}
+        switch ($this->fechaEvento->format('w')) {
+            case 0: return $this->getRecurso()->getDomingo();
+            case 1: return $this->getRecurso()->getLunes();
+            case 2: return $this->getRecurso()->getMartes();
+            case 3: return $this->getRecurso()->getMiercoles();
+            case 4: return $this->getRecurso()->getJueves();
+            case 5: return $this->getRecurso()->getViernes();
+            case 6: return $this->getRecurso()->getSabado();
+        }
     }
 	
 	/**
@@ -427,6 +427,14 @@ class Reservacion
      */
     public function isHorarioOperativo()
     {
-        return ($this->desde>=$this->getRecurso()->getDesde() && $this->hasta<=$this->getRecurso()->getHasta());
+        $recurso = $this->getRecurso();
+        $desde = false; $hasta = false;
+        if($recurso->getDesde() >= $this->desde){
+            $desde = true;
+        }
+        if($this->hasta <= $recurso->getHasta()){
+            $hasta = true;
+        }
+        return ($desde && $hasta);
     }
 }

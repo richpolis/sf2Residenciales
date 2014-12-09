@@ -25,48 +25,51 @@
                                 <h2>Tickets</h2>
                             </div>
                             <div class="widget-content">
-                                <div class="padd">
-                                    <article class="ticket-completa">
-                                        <header>
-                                            <h2 class="titulo">
-                                                {{ ticket.titulo }}
-                                            </h2>
-                                            <span class="datetime">{{ ticket.createdAt|date("m/d/Y g:ia","America/Mexico_City")}}</span>
-                                        </header>
-                                        <div class="contenido">
-                                            {{ticket.comentario | raw }}
-                                        </div>
-                                    </article>
-                                    {% if comentarios | length > 0 %}        
-                                        <article class="comentarios-formulario">
-                                            <header>
-                                                <h2 class="titulo">
-                                                    {{ticket.contComentarios ~ (ticket.contComentarios > 1?' comentarios':' comentario')}}
-                                                </h2>
-                                            </header>
-                                            {% include 'FrontendBundle:Comentario:listComentarios.html.twig' with {'comentarios': comentarios } %}
-                                        </article>
-                                    {% endif %}
-                                    <article class="comentarios-formulario">
-                                        <header>
-                                            <h2 class="titulo">
-                                                Ingrese su comentario
-                                            </h2>
-                                        </header>
-                                        <form action="{{ path('tickets_ticket',{'id': ticket.id}) }}" class="validate" id="formComentarios" method="post" {{ form_enctype(form)}}>
-                                            <button type="button" class="closeForm boton close" data-dismiss="modal" style="display: none; color: black; font-weight: bold;" onclick="javascript:closeForm()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                            {{form_errors(form)}}
-                                            <div class="controles-derechos form-group">
-                                                {{form_row(form.comentario)}}
-                                            </div>
-                                            {{form_rest(form)}}
-                                            <div class="group-control">
-                                                <input class="btn btn-success" type="submit" value="Enviar"/>
-                                            </div>
-                                        </form>
-                                    </article>  
+                                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 450px;">
+                                    <div class="padd sscroll" style="overflow: hidden; width: auto; height: 450px;">
+                                    <ul class="chats">
+                                        {% for comentario in comentarios %}
+                                            {% if comentario.usuario.id == app.user.id %}
+                                                {% set tipoUser = 'by-me' %}
+                                                {% set tipoPull = 'pull-left' %}
+                                            {% else %}
+                                                {% set tipoUser = 'by-other' %}
+                                                {% set tipoPull = 'pull-right' %}
+                                            {% endif %}    
+                                            <!-- Chat by us. Use the class "by-me". -->
+                                            <li class="{{tipoUser}}">
+                                                <!-- Use the class "{{tipoPull}}" in avatar -->
+                                                <div class="avatar {{tipoPull}}">
+                                                    <img src="/images/logo.png" style="height: 40px;" alt="">
+                                                </div>
+                                                <div class="chat-content">
+                                                    <!-- In meta area, first include "name" and then "time" -->
+                                                    <div class="chat-meta"> {{comentario.usuario.nombre}} <span class="pull-right">{{comentario.fechaTwitter}}</span></div>
+                                                    {{comentario.comentario | raw }}
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </li> 
+                                        {% endfor %}
+                                    </ul>
+                                    </div>
+                                    <div class="slimScrollBar" style="width: 7px; position: absolute; top: 17px; opacity: 0.3; display: none; border-radius: 0px; z-index: 99; right: 1px; height: 105.218855218855px; background: rgb(0, 0, 0);"></div>
+                                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 0px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div>
                                 </div>
                             </div>
+                            <div class="widget-foot">
+                                {% if ticket.isCerrado == false %}
+                                    <form action="{{ path('tickets_ticket',{'id': ticket.id}) }}" class="validate form-inline" id="formComentarios" method="post" {{ form_enctype(form)}}  role="form">
+                                        {{form_errors(form)}}
+                                        <div class="form-group col-lg-10">
+                                            {{form_widget(form.comentario)}}
+                                        </div>
+                                        {{form_rest(form)}}
+                                        <input class="btn btn-success" type="submit" value="Enviar"/>
+                                    </form>
+                                {% else %}
+                                    <br/>
+                                {% endif %}
+                            </div>        
                         </div>  
                     </div>
                 </div>

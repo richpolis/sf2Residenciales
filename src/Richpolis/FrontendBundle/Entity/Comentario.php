@@ -4,7 +4,7 @@ namespace Richpolis\FrontendBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
+use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 /**
  * Comentario
  *
@@ -40,7 +40,7 @@ class Comentario
      *
      * @ORM\ManyToOne(targetEntity="Richpolis\BackendBundle\Entity\Usuario")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="residencial_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
      * })
      */
     private $usuario;
@@ -110,7 +110,10 @@ class Comentario
         $this->nivel = 0;
         $this->isAdmin = false;
     }
-
+    
+    public function getFechaTwitter(){
+        return RpsStms::twitter_time($this->createdAt->format('Y-m-d H:i:s'));
+    }
 
     /**
      * Get id

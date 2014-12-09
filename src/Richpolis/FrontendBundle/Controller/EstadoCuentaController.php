@@ -424,85 +424,84 @@ class EstadoCuentaController extends BaseController
      *
      * @Route("/aplicar/cargo/adeudo", name="estadodecuentas_aplicar_cargo_adeudo")
      */
-    public function aplicarCargoAdeudoAction(Request $request)
-    {
+    public function aplicarCargoAdeudoAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //agregando funciones especiales de fecha para MySQL
-        
+
         $emConfig = $em->getConfiguration();
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-        if($request->request->has('edificioId') == true){
+        if ($request->request->has('edificioId') == true) {
             $filtros['edificio'] = $request->query->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                       ->findBy(array('edificio'=>$edificio));
+                ->findBy(array('edificio' => $edificio));
         $fecha = new \DateTime();
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
         $fecha->modify("-1 month");
         $cont = 0;
         $nombreMes = $this->getMes($mes);
-        foreach($usuarios as $usuario){
+        foreach ($usuarios as $usuario) {
             $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_ADEUDO,$usuario);
-            if(!$cargo){
+                    ->getCargoEnMes($mes, $year, EstadoCuenta::TIPO_CARGO_ADEUDO, $usuario);
+            if (!$cargo) {
                 // llama a los cargos anteriores a la fecha y del usuario y que sean acumulables.
                 $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                            ->getCargosAnteriores($fecha,$usuario,true);
-                if(count($cargos)>0){
+                        ->getCargosAnteriores($fecha, $usuario, true);
+                if (count($cargos) > 0) {
                     //existen cargos en el mes
                     $monto = 0;
-                    foreach($cargos as $registro){
+                    foreach ($cargos as $registro) {
                         $monto += $registro->getMonto();
-						//registro, se cierra el registro porque se reemplazara por registro nuevo.
-						$registro->setIsPaid(true);
-						$em->persist($registro);
+                        //registro, se cierra el registro porque se reemplazara por registro nuevo.
+                        $registro->setIsPaid(true);
+                        $em->persist($registro);
                     }
-					//cerramos los cargos anteriores y creamos el cargo nuevo
-					if($monto>0){
-						//aplicando el cargo anterior.
-						$anterior = new EstadoCuenta();
-						$anterior->setCargo("Cargo anterior");
-						$anterior->setMonto($$monto);
-						$anterior->setUsuario($usuario);
-						$anterior->setResidencial($residencial);
-						$anterior->setTipoCargo(EstadoCuenta::TIPO_CARGO_ANTERIOR);
-						$anterior->setIsAcumulable(true);
-						$em->persist($anterior);
-						//aplicamos la morosidad de la residencial
-						$cargo = new EstadoCuenta();
-						$cargo->setCargo("Cargo por adeudo del ".$nombreMes." del ".$year);
-						$cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
-						$cargo->setUsuario($usuario);
-						$cargo->setResidencial($residencial);
-						$cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
-						$cargo->setIsAcumulable(true);
-						$em->persist($cargo);
-						$cont++;
-					}
-					$em->flush();
-					/*$aviso = new Aviso();
-                    $aviso->setTitulo("Cargo por adeudo del ".$nombreMes." del ".$year);
-                    $aviso->setAviso("Cargo por adeudo del ".$nombreMes." del ".$year);
-                    $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-                    $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
-                    $aviso->setResidencial($residencial);
-                    $aviso->addEdificio($edificio);
-                    $aviso->setUsuario($usuario);
-                    $em->persist($aviso);*/
+                    //cerramos los cargos anteriores y creamos el cargo nuevo
+                    if ($monto > 0) {
+                        //aplicando el cargo anterior.
+                        $anterior = new EstadoCuenta();
+                        $anterior->setCargo("Cargo anterior");
+                        $anterior->setMonto($$monto);
+                        $anterior->setUsuario($usuario);
+                        $anterior->setResidencial($residencial);
+                        $anterior->setTipoCargo(EstadoCuenta::TIPO_CARGO_ANTERIOR);
+                        $anterior->setIsAcumulable(true);
+                        $em->persist($anterior);
+                        //aplicamos la morosidad de la residencial
+                        $cargo = new EstadoCuenta();
+                        $cargo->setCargo("Cargo por adeudo del " . $nombreMes . " del " . $year);
+                        $cargo->setMonto($residencial->getAplicarMorosidadAMonto($monto));
+                        $cargo->setUsuario($usuario);
+                        $cargo->setResidencial($residencial);
+                        $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_ADEUDO);
+                        $cargo->setIsAcumulable(true);
+                        $em->persist($cargo);
+                        $cont++;
+                    }
+                    $em->flush();
+                    /* $aviso = new Aviso();
+                      $aviso->setTitulo("Cargo por adeudo del ".$nombreMes." del ".$year);
+                      $aviso->setAviso("Cargo por adeudo del ".$nombreMes." del ".$year);
+                      $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                      $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                      $aviso->setResidencial($residencial);
+                      $aviso->addEdificio($edificio);
+                      $aviso->setUsuario($usuario);
+                      $em->persist($aviso); */
                 }
             }
         }
         $em->flush();
-        $response = new JsonResponse(array('cargosAplicados'=>"Cargos aplicados ".$cont));
+        $response = new JsonResponse(array('cargosAplicados' => "Cargos aplicados " . $cont));
         return $response;
     }
-    
+
     public function getMes($num){
         switch($num){
             case 1: return "Enero";
@@ -594,25 +593,24 @@ class EstadoCuentaController extends BaseController
      * @Route("/cargos/automaticos", name="estadodecuentas_cargos_automaticos")
      * @Template("FrontendBundle:EstadoCuenta:cargosAutomaticos.html.twig")
      */
-    public function cargosAutomaticosAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-		if($request->query->has('residencial') == true){
-            $filtros['residencial'] = $request->query->get('residencial');
-            $this->setFilters($filtros);
-        }
-		$residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-		$torres = $residencialActual->getEdificios();
-		$residenciales = $this->getResidenciales();
-		var_dump(count($torres)); die;
-        return array(
-			'residencial'=>$residencialActual,
-			'residenciales'=>$this->getResidenciales(),
-			'edificios'=>$torres,
-		);
+        public function cargosAutomaticosAction(Request $request) {
+            $em = $this->getDoctrine()->getManager();
+            if ($request->query->has('residencial') == true) {
+                $filtros['residencial'] = $request->query->get('residencial');
+                $this->setFilters($filtros);
+            }
+            $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+            $torres = $residencialActual->getEdificios();
+            $residenciales = $this->getResidenciales();
+            die;
+            return array(
+                'residencial' => $residencialActual,
+                'residenciales' => $residenciales,
+                'edificios' => $torres,
+            );
     }
-	
-	/**
+
+    /**
      * Cargo a residencial.
      *
      * @Route("/cargo/a/residencial", name="estadodecuentas_cargo_a_residencial")
