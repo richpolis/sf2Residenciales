@@ -27,7 +27,9 @@
         "liip/imagine-bundle": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "~1.0",
-        "beberlei/DoctrineExtensions": "*"
+        "beberlei/DoctrineExtensions": "*",
+        "psliwa/php-pdf": "*",
+        "psliwa/pdf-bundle": "~1.0"
     },
     "scripts": {
         "post-install-cmd": [

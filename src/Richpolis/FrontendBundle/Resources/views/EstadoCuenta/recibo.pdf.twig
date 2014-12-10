@@ -1,0 +1,27 @@
+<pdf>
+    <dynamic-page>
+        <h1>Estado de cuenta del mes {{nombreMes}} de {{year}}</h1>
+        <table>
+            <tr>
+                <td>Fecha</td>
+                <td>Cargo</td>
+                <td>Monto</td>
+            </tr>
+            {% set monto = 0 %}    
+            {% for entity in cargos %}
+                <tr>
+                    <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                    <td>
+                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
+                        <div class="descripcion-cargo">{{ entity.cargo }}</div>
+                    </td>
+                    <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
+                </tr>
+                {% set monto = monto + entity.monto %}
+            {% endfor %}
+            <tr>
+            <td colspan="3">Total al pagar $ {{monto|number_format(2,".",",")}}</td>
+            </tr>
+        </table>
+    </dynamic-page>
+</pdf>

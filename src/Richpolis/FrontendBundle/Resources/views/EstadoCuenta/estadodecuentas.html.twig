@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block mainbar %}
-     <!-- Main bar -->
+    <!-- Main bar -->
     <div class="mainbar">
         <div class="matter">
             <div class="container">
@@ -29,7 +29,7 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-									<div class="navegador-fechas">
+                                    <div class="navegador-fechas">
                                         {% set monthPrevious = month -1 %}
                                         {% set monthNext = month + 1 %}
                                         {% set yearPrevious = year %}
@@ -58,31 +58,38 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {% set monto = 0 %}    
-                                        {% for entity in entities %}
-                                            <tr>
-                                                <td>{{ entity.createdAt|date('d-m-Y') }}</td>
-                                                <td>
-													<div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
-													<div class="descripcion-cargo">{{ entity.cargo }}</div>
-												</td>
-                                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
-                                            </tr>
-                                            
-                                            {% set monto = monto + entity.monto %}
-                                        {% endfor %}
+                                            {% set monto = 0 %}    
+                                            {% for entity in entities %}
+                                                <tr>
+                                                    <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                                                    <td>
+                                                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
+                                                        <div class="descripcion-cargo">{{ entity.cargo }}</div>
+                                                    </td>
+                                                    <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
+                                                </tr>
+                                                {% set monto = monto + entity.monto %}
+                                            {% endfor %}
+                                        </tbody>
                                         <tfoot>
                                             <tr>
                                                 {% if monto > 0 %}
                                                     <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}
+                                                        {% if month == ("now"|date('m')) and year == ("now"|date('Y')) %}
                                                         <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Subir comprobante de pago</button>
+                                                        {% endif %}
+                                                        <a href="{{path('estadodecuentas_recibo',{'_format':'pdf'})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
                                                     </th>
                                                 {% else %}
-                                                    <th colspan="6">Sin saldo pendiente</th>
+                                                    <th colspan="6">
+                                                        Sin saldo pendiente
+                                                        {% if entities | length > 0 %}
+                                                            <a href="{{path('estadodecuentas_recibo',{'_format':'pdf'})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
+                                                        {% endif %}    
+                                                    </th>
                                                 {% endif %}
                                             </tr>
                                         </tfoot>
-                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -95,24 +102,24 @@
             </div>
         </div>
     </div>
-<!-- Modal -->
-<div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="labelFormulario"></h4>
-      </div>
-      <div class="modal-body" id="modalBodyFormulario">
-          
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>  
+    <!-- Modal -->
+    <div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="labelFormulario"></h4>
+                </div>
+                <div class="modal-body" id="modalBodyFormulario">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>  
 {% endblock %}
 
 {% block javascripts %}

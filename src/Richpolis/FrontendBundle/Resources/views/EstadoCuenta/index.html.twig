@@ -90,10 +90,10 @@
                            <tr>
                                <th>Id</th>
                                <th>Usuario</th>
+                               <th>Fecha</th>
                                <th>Cargo</th>
                                <th>Monto</th>
-                               <th>Fecha</th>
-                               <th>Pagado</th>
+                               <th>Validado</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -102,9 +102,9 @@
                            <tr>
                                <td><a href="{{ path('estadodecuentas_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                                <td>{{ entity.usuario }}</td>
-                               <td>{{ entity.cargo }}</td>
-                               <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.createdAt|date('d-m-Y') }}</td>
+                               <td>{{ entity.stringTipoCargo }}<br/>{{ entity.cargo }}</td>
+                               <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.isPaid|isActive|raw }}</td>
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('estadodecuentas_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>

@@ -15,7 +15,6 @@
 {% block mainbar %}
     <!-- Main bar -->
     <div class="mainbar">
-
         <!-- Page heading -->
         <div class="page-head">
             <h2 class="pull-left">Resevaciones</h2>
@@ -88,93 +87,69 @@
     <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 <script>
-var residencialActual = {'id':{{residencial.id}},'nombre':'{{residencial.nombre}}' };
-var residenciales = [
-{% for residencial in conjuntos %}
-	{'id':{{residencial.id}} ,'nombre':'{{residencial.nombre}}' },
-{% endfor %}
-];
-var edificios = [
-{% for edificio in torres %}
-	{'id':{{edificio.id}} ,'nombre':'{{edificio.nombre}}' },
-{% endfor %}
-];
-var contEdificios = 0;
-$(document).ready(function () {
+    var residencialActual = {'id':{{residencial.id}},'nombre':'{{residencial.nombre}}' };
+    var residenciales = [
+    {% for residencial in conjuntos %}
+            {'id':{{residencial.id}} ,'nombre':'{{residencial.nombre}}' },
+    {% endfor %}
+    ];
+    var edificios = [
+    {% for edificio in torres %}
+            {'id':{{edificio.id}} ,'nombre':'{{edificio.nombre}}' },
+    {% endfor %}
+    ];
+    var contEdificios = 0;
+    $(document).ready(function () {
 	ejecutarRevisionesPorEdificio();
-});
-function ejecutarRevisionesPorEdificio(){
+    });
+    function ejecutarRevisionesPorEdificio(){
 	debugger;
 	if(contEdificios<=(edificios.length-1)){
-		ejecutarRevisionAEdificio(contEdificios);
-		contEdificios++;
+            ejecutarRevisionAEdificio(contEdificios);
+            contEdificios++;
 	}else{
-		//significa que ya no hay mas edificios en este residencial
-		//se mandaria a llamar a si misma pero con el cambio de residencial
-		for(var r = 0; r<=(residenciales.length-1);r++){
-			if(residenciales[r].id==residencialActual.id){
-				r++;
-				if( r<=(residenciales.length-1)){
-					location.href = '{{path('reservaciones_revision_automatica')}}?residencial='+residenciales[r].id;
-					break;
-				}else{
-					alert('Cargos automaticos terminados');
-                    location.href="{{path('login')}}";
-				}
-			}
+            //significa que ya no hay mas edificios en este residencial
+            //se mandaria a llamar a si misma pero con el cambio de residencial
+            for(var r = 0; r<=(residenciales.length-1);r++){
+                if(residenciales[r].id==residencialActual.id){
+                    r++;
+                    if( r<=(residenciales.length-1)){
+                        location.href = '{{path('reservaciones_revision_automatica')}}?residencial='+residenciales[r].id;
+			break;
+                    }else{
+                        alert('Cargos automaticos terminados');
+                        location.href="{{path('login')}}";
+                    }
 		}
+            }
 	}
-}
-function ejecutarRevisionAEdificio(edificio){
+    }
+    function ejecutarRevisionAEdificio(edificio){
 	debugger;
 	$(".loader").fadeIn();
         $.ajax({
            url: '{{path('reservaciones_revisar_edificio')}}',
            type: 'POST',
-		   data: {'edificioId': edificios[edificio].id },
+           data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
            success: function(data){
                $(".loader").fadeOut();
-               //data = JSON.parse(data);
-               console.log(data);
-               noty({text: data.revisiones,layout:'bottom', type:'warning', timeout:2000 });
-			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' revisiones realizadas '+data.revisiones+'</div>';
-			   $(".contenido-pagina").append(html);
-               setTimeout(function(){
-			   		aplicarAvisosReservaciones(edificio);
-			   },1000);
-           },
-           error: function(data){
-               $(".loader").fadeOut();
-               console.log(data);
-           }
-        });
-}
-
-function aplicarAvisosReservaciones(edificio){
-	$(".loader").fadeIn();
-        $.ajax({
-           url: '{{path('avisos_avisos_reservaciones')}}',
-           type: 'POST',
-		   data: {'edificioId': edificios[edificio].id },
-           dataType: 'json',
-           success: function(data){
-                $(".loader").fadeOut();
                 //data = JSON.parse(data);
                 console.log(data);
-                noty({text: data.avisos,layout:'bottom', type:'warning', timeout:2000 });
-                var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' avisos '+data.avisos+'</div>';
-                $(".contenido-pagina").append(html);
+                noty({text: data.revisiones,layout:'bottom', type:'warning', timeout:2000 });
+		var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' revisiones realizadas '+data.revisiones+'</div>';
+		$(".contenido-pagina").append(html);
                 setTimeout(function(){
                     ejecutarRevisionesPorEdificio();
-                },1000);
+		},1000);
            },
            error: function(data){
                $(".loader").fadeOut();
                console.log(data);
            }
         });
-}
+    }
+
 </script>
 {% endblock %}
 

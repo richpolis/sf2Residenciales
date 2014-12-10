@@ -3,6 +3,7 @@
 namespace Richpolis\FrontendBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Richpolis\BackendBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -13,9 +14,12 @@ use Richpolis\FrontendBundle\Form\CargoAResidencialType;
 use Richpolis\FrontendBundle\Form\CargoPorEdificioType;
 use Richpolis\FrontendBundle\Entity\Aviso;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+
+use Ps\PdfBundle\Annotation\Pdf;
+use PHPPdf\Core\Node\Table\Cell;
+use PHPPdf\Core\Node\Table\Row;
+use PHPPdf\Core\Node\Table;
 
 /**
  * EstadoCuenta controller.
@@ -77,7 +81,7 @@ class EstadoCuentaController extends BaseController
         ));
     }
     
-    public function usuariosIndex(Request $request){
+    public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //agregando funciones especiales de fecha para MySQL
         $emConfig = $em->getConfiguration();
@@ -88,32 +92,32 @@ class EstadoCuentaController extends BaseController
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-		$usuario = $this->getUsuarioActual();
-        $todos = $request->query->get('todos',false);
-		
-		$fecha = new \DateTime();
-		$year = $request->query->get('year', $fecha->format('Y'));
+        $usuario = $this->getUsuarioActual();
+        $todos = $request->query->get('todos', false);
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
         $month = $request->query->get('month', $fecha->format('m'));
-		$nombreMes = $this->getNombreMes($month);
-		$actual = false;
-		if($fecha->format('Y') == $year && $fecha->format('m')==$month){
-			$actual = true;
-		}
-        
+        $nombreMes = $this->getNombreMes($month);
+        $actual = false;
+        if ($fecha->format('Y') == $year && $fecha->format('m') == $month) {
+            $actual = true;
+        }
+
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                     ->getCargosEnMes($month,$year,$usuario);
+                ->getCargosEnMes($month, $year, $usuario);
 
         return $this->render("FrontendBundle:EstadoCuenta:estadodecuentas.html.twig", array(
-            'entities' => $cargos,
-            'residencial'=> $residencialActual,
-            'edificio' => $edificioActual,
-			'edoCuentaActual' => $actual,
-			'month'=>$month,
-			'year'=>$year,
-			'nombreMes' => $nombreMes,
+                    'entities' => $cargos,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'edoCuentaActual' => $actual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
-    
+
     /**
      * Creates a new EstadoCuenta entity.
      *
@@ -716,7 +720,7 @@ class EstadoCuentaController extends BaseController
         );
     }
 	
-	/**
+    /**
      * Usuarios por edificios.
      *
      * @Route("/usuarios/por/edificio", name="estadodecuentas_usuarios_por_edificio")
@@ -743,6 +747,46 @@ class EstadoCuentaController extends BaseController
         return $response;
     }
 	
-    
+    /**
+     * Recibo de estado de cuenta.
+     *
+     * @Route("/mostrar/recibo", name="estadodecuentas_recibo")
+     * @Pdf()
+     */
+   public function reciboAction(Request $request)
+   {
+        $em = $this->getDoctrine()->getManager();
+        $format = $this->get('request')->get('_format');
+        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+            if ($request->query->has('usuario') == true) {
+                $usuarioId = $request->query->get('usuario');
+                $usuario = $em->find('BackendBundle:Usuario', $usuarioId);
+            }
+        }else{
+            $usuario = $this->getUsuarioActual();
+        }
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
+        $month = $request->query->get('month', $fecha->format('m'));
+        $nombreMes = $this->getNombreMes($month);
+        
+        $registros = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosEnMes($month, $year, $usuario);
+       
+        
+       return $this->render(sprintf('FrontendBundle:EstadoCuenta:recibo.%s.twig',$format), array(
+           'cargos' => $registros,
+           'nombreMes'=>$nombreMes,
+           'year'=>$year,
+           'month'=>$month,
+           'usuario'=>$usuario,
+       ));
+   }
 
 }
