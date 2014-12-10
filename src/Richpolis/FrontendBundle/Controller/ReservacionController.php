@@ -480,6 +480,7 @@ class ReservacionController extends BaseController
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
         $aviso->setResidencial($residencial);
         $aviso->setUsuario($reservacion->getUsuario());
+		$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
         $em->persist($aviso);
         $em->flush();
         
@@ -513,6 +514,7 @@ class ReservacionController extends BaseController
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
         $aviso->setResidencial($residencial);
         $aviso->setUsuario($reservacion->getUsuario());
+		$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
         $em->persist($aviso);
         $em->flush();
         
@@ -595,5 +597,85 @@ class ReservacionController extends BaseController
             }
         }
         return $resp;
+    }
+	
+	/**
+     * Revision automatica de reservaciones.
+     *
+     * @Route("/revision/automatica", name="reservaciones_revision_automatica")
+     * @Template("FrontendBundle:Reservacion:revisionAutomatica.html.twig")
+     */
+        public function cargosAutomaticosAction(Request $request) {
+            $em = $this->getDoctrine()->getManager();
+            if ($request->query->has('residencial') == true) {
+                $filtros['residencial'] = $request->query->get('residencial');
+                $this->setFilters($filtros);
+            }
+            $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+            $edificios = $residencialActual->getEdificios();
+            $residenciales = $this->getResidenciales();
+            return array(
+                'residencial' => $residencialActual,
+                'conjuntos' => $residenciales,
+                'torres' => $edificios,
+            );
+    }
+	
+	/**
+     * Aplicar cargo normal a todos los inquilinos del edificio.
+     *
+     * @Route("/revision/edificio", name="reservaciones_revisar_edificio")
+     */
+    public function revisionEdificioAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        //agregando funciones especiales de fecha para MySQL
+        $emConfig = $em->getConfiguration();
+        //$emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        //$emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        //$emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+		if($request->request->has('edificioId') == true){
+            $filtros['edificio'] = $request->request->get('edificioId');
+            $this->setFilters($filtros);
+        }
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $usuarios = $em->getRepository('BackendBundle:Usuario')
+                       ->findBy(array('edificio'=>$edificio));
+        $fecha = new \DateTime();
+		$fecha->modify('-1 day');
+        $cont = 0;
+        foreach($usuarios as $usuario){
+            $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
+                        		->findReservacionesPorUsuarioSolicitadas($usuario);
+            if(count($reservaciones)>0){
+                foreach($reservaciones as $reservacion){
+					if(!$reservacion->getPago() && $fecha>$reservacion->getCreatedAt()){
+						$reservacion->setIsAproved(false);
+					    $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
+					    $em->persist($reservacion);
+
+					    $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y')."<br/>";
+					    $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia')."<br/>";
+					    $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia')."<br/>";
+					    $texto .= "ha sido rechazada<br/>";
+
+						$aviso = new Aviso();
+						$aviso->setTitulo("Reservación rechazada");
+						$aviso->setAviso($texto);
+						$aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+						$aviso->setResidencial($residencial);
+						$aviso->setUsuario($reservacion->getUsuario());
+						$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+						$em->persist($aviso);
+						$cont++;
+					}
+				}
+                
+            }
+        }
+        $em->flush();
+        $response = new JsonResponse(array('revisiones'=>"Reservaciones rechazadas ".$cont));
+        return $response;
     }
 }

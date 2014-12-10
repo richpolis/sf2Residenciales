@@ -155,4 +155,25 @@ class ReservacionRepository extends EntityRepository
     public function findReservacionesPorUsuarioPorFecha(Usuario $usuario,$month,$year) {
         return $this->queryFindReservacionesPorUsuarioPorFecha($usuario,$month,$year)->getResult();
     }
+	
+	public function queryFindReservacionesPorUsuarioSolicitadas(Usuario $usuario) {
+        $em = $this->getEntityManager();
+        $consulta = $em->createQuery("SELECT s,i,u,e "
+                . "FROM FrontendBundle:Reservacion s "
+                . "JOIN s.recurso i "
+                . "JOIN s.usuario u "
+                . "JOIN u.edificio e "
+                . "WHERE u.id=:usuario "
+				. "AND s.status=:status "
+                . "ORDER BY s.createdAt DESC");
+        $consulta->setParameters(array(
+            'usuario' => $usuario->getId(),
+			'status'=>Reservacion::STATUS_SOLICITUD,
+        ));
+        return $consulta;
+    }
+
+    public function findReservacionesPorUsuarioSolicitadas(Usuario $usuario) {
+        return $this->queryFindReservacionesPorUsuarioSolicitadas($usuario)->getResult();
+    }
 }

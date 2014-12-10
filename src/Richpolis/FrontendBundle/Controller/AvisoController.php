@@ -463,26 +463,30 @@ class AvisoController extends BaseController
         $year = $fecha->format("Y");
         $cont = 0;
         $nombreMes = $this->getNombreMes($mes);
-	$monto = 0;
+		$monto = 0;
         $cont = 0;
         foreach($usuarios as $usuario){
             $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
                          ->getCargosEnMes($mes,$year,$usuario);
 			foreach($cargos as $cargo){
-				$monto+=$cargo->getMonto();
+				if(!$cargo->getAvisoEnviado()){
+					$monto+=$cargo->getMonto();
+					$cargo->setAvisoEnviado(true);
+					$em->persist($cargo);
+				}
 			}
 			
             if($monto>0){
                 $aviso = new Aviso();
                 $aviso->setTitulo("Estado de cuenta de ".$nombreMes." del ".$year);
-                $aviso->setAviso("Su estado de cuenta es de ".number_format(''));
+                $aviso->setAviso("Su estado de cuenta es de $ ".number_format($monto, 2, '.', ','));
                 $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
                 $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
                 $aviso->setResidencial($residencial);
                 $aviso->addEdificio($edificio);
                 $aviso->setUsuario($usuario);
                 $em->persist($aviso);
-		$cont++;
+				$cont++;
             }
         }
         $em->flush();

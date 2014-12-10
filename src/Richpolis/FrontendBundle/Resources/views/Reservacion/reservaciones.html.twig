@@ -76,6 +76,8 @@
                                                         {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
                                                             {% if entity.pago is null %}    
                                                             <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Realizar Pago</button>
+                                                            {% else %}
+															<button class="btn btn-info">Comprobante</button>
                                                             {% endif %}
                                                         {% endif %}
                                                     </td>

@@ -18,7 +18,7 @@
 
         <!-- Page heading -->
         <div class="page-head">
-            <h2 class="pull-left">Cargos</h2>
+            <h2 class="pull-left">Resevaciones</h2>
             <div class="clearfix"></div>
             <!-- Breadcrumb -->
             <div class="bread-crumb">
@@ -31,7 +31,7 @@
                 <a href="#" class="bread-current">{{residencial}}</a>    
                 {% endif %}    
                 <span class="divider">/</span>  
-                <a href="#" class="bread-current">Cargos automaticos</a>
+                <a href="#" class="bread-current">Revision automatica</a>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -45,7 +45,7 @@
                         <div class="widget">
 
                             <div class="widget-head">
-                                <div class="pull-left">Cargos automaticos</div>
+                                <div class="pull-left">Revision automatica</div>
                                 <div class="clearfix"></div>
                             </div>
 
@@ -55,7 +55,7 @@
                                 </div>
 							</div>
                             <div class="widget-foot">
-                                <h3>Generando cargs automaticos a: {{residencial}}</h3>
+                                <h3>Revision automatica de reservaciones: {{residencial}}</h3>
                             </div>
                         </div>  
 
@@ -101,12 +101,12 @@ var edificios = [
 ];
 var contEdificios = 0;
 $(document).ready(function () {
-	ejecutarCargosPorEdificio();
+	ejecutarRevisionesPorEdificio();
 });
-function ejecutarCargosPorEdificio(){
+function ejecutarRevisionesPorEdificio(){
 	debugger;
 	if(contEdificios<=(edificios.length-1)){
-		ejecutarCargoAEdificio(contEdificios);
+		ejecutarRevisionAEdificio(contEdificios);
 		contEdificios++;
 	}else{
 		//significa que ya no hay mas edificios en este residencial
@@ -115,21 +115,21 @@ function ejecutarCargosPorEdificio(){
 			if(residenciales[r].id==residencialActual.id){
 				r++;
 				if( r<=(residenciales.length-1)){
-					location.href = '{{path('estadodecuentas_cargos_automaticos')}}?residencial='+residenciales[r].id;
+					location.href = '{{path('reservaciones_revision_automatica')}}?residencial='+residenciales[r].id;
 					break;
 				}else{
 					alert('Cargos automaticos terminados');
-                                        location.href="{{path('login')}}";
+                    location.href="{{path('login')}}";
 				}
 			}
 		}
 	}
 }
-function ejecutarCargoAEdificio(edificio){
+function ejecutarRevisionAEdificio(edificio){
 	debugger;
 	$(".loader").fadeIn();
         $.ajax({
-           url: '{{path('estadodecuentas_aplicar_cargo_normal')}}',
+           url: '{{path('reservaciones_revisar_edificio')}}',
            type: 'POST',
 		   data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
@@ -137,11 +137,11 @@ function ejecutarCargoAEdificio(edificio){
                $(".loader").fadeOut();
                //data = JSON.parse(data);
                console.log(data);
-               noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
-			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos normales aplicados '+data.cargosAplicados+'</div>';
+               noty({text: data.revisiones,layout:'bottom', type:'warning', timeout:2000 });
+			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' revisiones realizadas '+data.revisiones+'</div>';
 			   $(".contenido-pagina").append(html);
                setTimeout(function(){
-			   		aplicarCargosAdeudo(edificio);
+			   		aplicarAvisosReservaciones(edificio);
 			   },1000);
            },
            error: function(data){
@@ -151,36 +151,10 @@ function ejecutarCargoAEdificio(edificio){
         });
 }
 
-function aplicarCargosAdeudo(edificio){
-	debugger;
+function aplicarAvisosReservaciones(edificio){
 	$(".loader").fadeIn();
         $.ajax({
-           url: '{{path('estadodecuentas_aplicar_cargo_adeudo')}}',
-           type: 'POST',
-		   data: {'edificioId': edificios[edificio].id },
-           dataType: 'json',
-           success: function(data){
-               $(".loader").fadeOut();
-               //data = JSON.parse(data);
-               console.log(data);
-               noty({text: data.cargosAplicados,layout:'bottom', type:'warning', timeout:2000 });
-			   var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' cargos anteriores y adeudos aplicados '+data.cargosAplicados+'</div>';
-			   $(".contenido-pagina").append(html);
-               setTimeout(function(){
-			   		aplicarAvisosCargos(edificio);
-			   },1000);
-           },
-           error: function(data){
-               $(".loader").fadeOut();
-               console.log(data);
-           }
-        });
-}
-
-function aplicarAvisosCargos(edificio){
-	$(".loader").fadeIn();
-        $.ajax({
-           url: '{{path('avisos_avisos_cargos')}}',
+           url: '{{path('avisos_avisos_reservaciones')}}',
            type: 'POST',
 		   data: {'edificioId': edificios[edificio].id },
            dataType: 'json',
@@ -192,7 +166,7 @@ function aplicarAvisosCargos(edificio){
                 var html = '<div class="text-center">Torre: '+edificios[edificio].nombre+' avisos '+data.avisos+'</div>';
                 $(".contenido-pagina").append(html);
                 setTimeout(function(){
-                    ejecutarCargosPorEdificio();
+                    ejecutarRevisionesPorEdificio();
                 },1000);
            },
            error: function(data){
