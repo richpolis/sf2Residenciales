@@ -73,6 +73,13 @@ class Pago
      */
     private $createdAt;
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="referencia", type="string", length=255)
+     */
+    private $referencia;
+    
     /*
      * Timestable
      */

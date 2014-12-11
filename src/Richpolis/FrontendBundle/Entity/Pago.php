@@ -73,6 +73,13 @@ class Pago
      */
     private $createdAt;
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="referencia", type="string", length=255)
+     */
+    private $referencia;
+    
     /*
      * Timestable
      */
@@ -364,5 +371,28 @@ class Pago
     public function getCargos()
     {
         return $this->cargos;
+    }
+
+    /**
+     * Set referencia
+     *
+     * @param string $referencia
+     * @return Pago
+     */
+    public function setReferencia($referencia)
+    {
+        $this->referencia = $referencia;
+
+        return $this;
+    }
+
+    /**
+     * Get referencia
+     *
+     * @return string 
+     */
+    public function getReferencia()
+    {
+        return $this->referencia;
     }
 }

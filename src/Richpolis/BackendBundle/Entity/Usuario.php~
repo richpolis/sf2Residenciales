@@ -357,7 +357,9 @@ class Usuario implements UserInterface, \Serializable
         ) = unserialize($serialized);
     }
 
-    
+    public function getFolioDePago(){
+        return str_pad($this->getId(), 10, "0", STR_PAD_LEFT)."-".$this->getNumero();
+    }
 
 
     /**

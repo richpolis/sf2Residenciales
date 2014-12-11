@@ -17,9 +17,6 @@ use Richpolis\FrontendBundle\Entity\Aviso;
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 use Ps\PdfBundle\Annotation\Pdf;
-use PHPPdf\Core\Node\Table\Cell;
-use PHPPdf\Core\Node\Table\Row;
-use PHPPdf\Core\Node\Table;
 
 /**
  * EstadoCuenta controller.
@@ -395,7 +392,7 @@ class EstadoCuentaController extends BaseController
         foreach($usuarios as $usuario){
             $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
                         ->getCargoEnMes($mes,$year,EstadoCuenta::TIPO_CARGO_NORMAL,$usuario);
-            if(!$cargo){
+            if(!$cargo && $usuario->getIsActive()){
                 //no existe cargo en el mes, creamos el cargo
                 $cargo = new EstadoCuenta();
                 $cargo->setCargo("Cargo automatico de ".$nombreMes." del ".$year);
@@ -406,16 +403,6 @@ class EstadoCuentaController extends BaseController
                 $cargo->setIsAcumulable(true);
                 $em->persist($cargo);
                 $cont++;
-                /*$aviso = new Aviso();
-                $aviso->setTitulo("Cargo automatico de ".$nombreMes." del ".$year);
-                $aviso->setAviso("Cargo automatico de ".$nombreMes." del ".$year);
-                $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-                $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
-                $aviso->setResidencial($residencial);
-                $aviso->addEdificio($edificio);
-                $aviso->setUsuario($usuario);
-                $em->persist($aviso);*/
-                
             }
         }
         $em->flush();
@@ -453,10 +440,10 @@ class EstadoCuentaController extends BaseController
         foreach ($usuarios as $usuario) {
             $cargo = $em->getRepository('FrontendBundle:EstadoCuenta')
                     ->getCargoEnMes($mes, $year, EstadoCuenta::TIPO_CARGO_ADEUDO, $usuario);
-            if (!$cargo) {
+            if (!$cargo && $usuario->getIsActive()) {
                 // llama a los cargos anteriores a la fecha y del usuario y que sean acumulables.
                 $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                        ->getCargosAnteriores($fecha, $usuario, true);
+                             ->getCargosAnteriores($fecha, $usuario, true);
                 if (count($cargos) > 0) {
                     //existen cargos en el mes
                     $monto = 0;
@@ -489,15 +476,6 @@ class EstadoCuentaController extends BaseController
                         $cont++;
                     }
                     $em->flush();
-                    /* $aviso = new Aviso();
-                      $aviso->setTitulo("Cargo por adeudo del ".$nombreMes." del ".$year);
-                      $aviso->setAviso("Cargo por adeudo del ".$nombreMes." del ".$year);
-                      $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-                      $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
-                      $aviso->setResidencial($residencial);
-                      $aviso->addEdificio($edificio);
-                      $aviso->setUsuario($usuario);
-                      $em->persist($aviso); */
                 }
             }
         }
@@ -610,7 +588,7 @@ class EstadoCuentaController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                ->findUsuariosResidencial($residencial->getId());
+                       ->findUsuariosResidencial($residencial->getId());
         $entity = new EstadoCuenta();
         $form = $this->createForm(new CargoAResidencialType(), $entity, array(
             'action' => $this->generateUrl('estadodecuentas_cargo_a_residencial'),
@@ -626,15 +604,17 @@ class EstadoCuentaController extends BaseController
             $isAcumulable = $data->getIsAcumulable();
             $cont = 0;
             foreach ($usuarios as $usuario) {
-                $cargo = new EstadoCuenta();
-                $cargo->setCargo($descripcion);
-                $cargo->setMonto($montoPorUsuario);
-                $cargo->setUsuario($usuario);
-                $cargo->setTipoCargo($tipoCargo);
-                $cargo->setIsAcumulable($isAcumulable);
-				$cargo->setResidencial($residencial);
-                $em->persist($cargo);
-                $cont++;
+                if($usuario->getIsActive()){
+                    $cargo = new EstadoCuenta();
+                    $cargo->setCargo($descripcion);
+                    $cargo->setMonto($montoPorUsuario);
+                    $cargo->setUsuario($usuario);
+                    $cargo->setTipoCargo($tipoCargo);
+                    $cargo->setIsAcumulable($isAcumulable);
+                    //$cargo->setResidencial($residencial);
+                    $em->persist($cargo);
+                    $cont++;
+                }
             }
             if($cont>0){
                 $aviso = new Aviso();
@@ -688,14 +668,16 @@ class EstadoCuentaController extends BaseController
                 $tipoCargo = $data->getTipoCargo();
                 $isAcumulable = $data->getIsAcumulable();
                 foreach ($usuarios as $usuario) {
-                    $cargo = new EstadoCuenta();
-                    $cargo->setCargo($descripcion);
-                    $cargo->setMonto($montoPorUsuario);
-                    $cargo->setUsuario($usuario);
-                    $cargo->setTipoCargo($tipoCargo);
-                    $cargo->setIsAcumulable($isAcumulable);
-					$cargo->setResidencial($residencial);
-                    $em->persist($cargo);
+                    if($usuario->getIsActive()){
+                        $cargo = new EstadoCuenta();
+                        $cargo->setCargo($descripcion);
+                        $cargo->setMonto($montoPorUsuario);
+                        $cargo->setUsuario($usuario);
+                        $cargo->setTipoCargo($tipoCargo);
+                        $cargo->setIsAcumulable($isAcumulable);
+                        //$cargo->setResidencial($residencial);
+                        $em->persist($cargo);
+                    }
                 }
                 $aviso = new Aviso();
                 $aviso->setTitulo($descripcion);

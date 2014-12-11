@@ -143,4 +143,4 @@ ps_pdf:
 parameters:
     # dirección de correo electrónico
     richpolis.emails.to_email: richpolis@gmail.com
-    richpolis.uploads: %kernel.root_dir%/../html/uploads
+    richpolis.uploads: %kernel.root_dir%/../web/uploads

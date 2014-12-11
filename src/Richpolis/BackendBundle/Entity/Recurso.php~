@@ -147,6 +147,36 @@ class Recurso
         $this->edificios = new \Doctrine\Common\Collections\ArrayCollection();
         $this->precio = 0;
     }
+    
+    public function getDiasDisponibles(){
+        $arreglo = array(
+            '0'=>($this->getDomingo()?'Dom':''),
+            '1'=>($this->getLunes()?'Lun':''),
+            '2'=>($this->getMartes()?'Mar':''),
+            '3'=>($this->getMiercoles()?'Mie':''),
+            '4'=>($this->getJueves()?'Jue':''),
+            '5'=>($this->getViernes()?'Vie':''),
+            '6'=>($this->getSabado()?'Sab':''),
+        );
+        $cadena ="";
+        $coma = false;
+        foreach($arreglo as $dia){
+            if(strlen($dia)>0 && strlen($cadena)>0){
+                $coma = true;
+            }
+            $cadena .=($coma?",".$dia:$dia);
+            $coma = false;
+        }
+        return "[$cadena]";
+    }
+    
+    public function getHorariosDisponibles(){
+        return $this->desde->format('G:ia') .' - '. $this->hasta->format('G:ia');
+    }
+    
+    public function getStringRecurso(){
+        return sprintf('%s %s %s', $this->nombre,$this->getDiasDisponibles(),$this->getHorariosDisponibles());
+    }
 
     /**
      * Get id
@@ -259,4 +289,213 @@ class Recurso
     {
         return $this->edificios;
     }
+
+    /**
+     * Set desde
+     *
+     * @param \DateTime $desde
+     * @return Recurso
+     */
+    public function setDesde($desde)
+    {
+        $this->desde = $desde;
+
+        return $this;
+    }
+
+    /**
+     * Get desde
+     *
+     * @return \DateTime 
+     */
+    public function getDesde()
+    {
+        return $this->desde;
+    }
+
+    /**
+     * Set hasta
+     *
+     * @param \DateTime $hasta
+     * @return Recurso
+     */
+    public function setHasta($hasta)
+    {
+        $this->hasta = $hasta;
+
+        return $this;
+    }
+
+    /**
+     * Get hasta
+     *
+     * @return \DateTime 
+     */
+    public function getHasta()
+    {
+        return $this->hasta;
+    }
+
+    /**
+     * Set lunes
+     *
+     * @param boolean $lunes
+     * @return Recurso
+     */
+    public function setLunes($lunes)
+    {
+        $this->lunes = $lunes;
+
+        return $this;
+    }
+
+    /**
+     * Get lunes
+     *
+     * @return boolean 
+     */
+    public function getLunes()
+    {
+        return $this->lunes;
+    }
+
+    /**
+     * Set martes
+     *
+     * @param boolean $martes
+     * @return Recurso
+     */
+    public function setMartes($martes)
+    {
+        $this->martes = $martes;
+
+        return $this;
+    }
+
+    /**
+     * Get martes
+     *
+     * @return boolean 
+     */
+    public function getMartes()
+    {
+        return $this->martes;
+    }
+
+    /**
+     * Set miercoles
+     *
+     * @param boolean $miercoles
+     * @return Recurso
+     */
+    public function setMiercoles($miercoles)
+    {
+        $this->miercoles = $miercoles;
+
+        return $this;
+    }
+
+    /**
+     * Get miercoles
+     *
+     * @return boolean 
+     */
+    public function getMiercoles()
+    {
+        return $this->miercoles;
+    }
+
+    /**
+     * Set jueves
+     *
+     * @param boolean $jueves
+     * @return Recurso
+     */
+    public function setJueves($jueves)
+    {
+        $this->jueves = $jueves;
+
+        return $this;
+    }
+
+    /**
+     * Get jueves
+     *
+     * @return boolean 
+     */
+    public function getJueves()
+    {
+        return $this->jueves;
+    }
+
+    /**
+     * Set viernes
+     *
+     * @param boolean $viernes
+     * @return Recurso
+     */
+    public function setViernes($viernes)
+    {
+        $this->viernes = $viernes;
+
+        return $this;
+    }
+
+    /**
+     * Get viernes
+     *
+     * @return boolean 
+     */
+    public function getViernes()
+    {
+        return $this->viernes;
+    }
+
+    /**
+     * Set sabado
+     *
+     * @param boolean $sabado
+     * @return Recurso
+     */
+    public function setSabado($sabado)
+    {
+        $this->sabado = $sabado;
+
+        return $this;
+    }
+
+    /**
+     * Get sabado
+     *
+     * @return boolean 
+     */
+    public function getSabado()
+    {
+        return $this->sabado;
+    }
+
+    /**
+     * Set domingo
+     *
+     * @param boolean $domingo
+     * @return Recurso
+     */
+    public function setDomingo($domingo)
+    {
+        $this->domingo = $domingo;
+
+        return $this;
+    }
+
+    /**
+     * Get domingo
+     *
+     * @return boolean 
+     */
+    public function getDomingo()
+    {
+        return $this->domingo;
+    }
+    
+    
 }

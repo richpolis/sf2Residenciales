@@ -134,7 +134,9 @@ class BaseController extends Controller
         $usuarios = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($edificios as $edificio) {
             foreach ($edificio->getUsuarios() as $usuario) {
-                $usuarios[] = $usuario;
+                if($usuario->getIsActive()){
+                    $usuarios[] = $usuario;
+                }
             }
         }
         return $usuarios;

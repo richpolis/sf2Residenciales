@@ -77,7 +77,7 @@
                        {% for entity in pagination %}
                            <tr>
                                <td><a href="{{ path('pagos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.usuario }}</td>
+                               <td>{{entity.usuario.folioDePago}}<br/>{{ entity.usuario }}</td>
                                <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
                                <td>{{ entity.isAproved | isActive | raw }}</td>

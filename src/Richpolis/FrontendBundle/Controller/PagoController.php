@@ -459,6 +459,7 @@ class PagoController extends BaseController
         $entity->setUsuario($usuario);
         $entity->setMonto($monto);
         $entity->setIsAproved(false);
+        $entity->setReferencia($usuario->getFolioDePago());
         $form = $this->createForm(new PagoFrontendType(), $entity, array(
             'action' => $this->generateUrl('pagos_realizar_pago'),
             'method' => 'POST',
@@ -509,6 +510,7 @@ class PagoController extends BaseController
         $entity->setUsuario($usuario);
         $entity->setMonto($reservacion->getMonto());
         $entity->setIsAproved(false);
+        $entity->setReferencia($usuario->getFolioDePago());
         $form = $this->createForm(new PagoFrontendType(), $entity, array(
             'action' => $this->generateUrl('pagos_realizar_pago_reservacion'),
             'method' => 'POST',

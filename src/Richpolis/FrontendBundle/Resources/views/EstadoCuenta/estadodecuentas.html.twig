@@ -63,7 +63,7 @@
                                                 <tr>
                                                     <td>{{ entity.createdAt|date('d-m-Y') }}</td>
                                                     <td>
-                                                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
+                                                        <div class="tipo-cargo" style="font-style: italic; color: gray;">{{ entity.stringTipoCargo }}</div>
                                                         <div class="descripcion-cargo">{{ entity.cargo }}</div>
                                                     </td>
                                                     <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
@@ -77,14 +77,15 @@
                                                     <th colspan="6">Total al pagar $ {{monto|number_format(2,".",",")}}
                                                         {% if month == ("now"|date('m')) and year == ("now"|date('Y')) %}
                                                         <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Subir comprobante de pago</button>
+                                                        <span style="padding: 10px">Referencia del pago: {{app.user.folioDePago}}</span>
                                                         {% endif %}
-                                                        <a href="{{path('estadodecuentas_recibo',{'_format':'pdf'})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
+                                                        <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
                                                     </th>
                                                 {% else %}
                                                     <th colspan="6">
                                                         Sin saldo pendiente
                                                         {% if entities | length > 0 %}
-                                                            <a href="{{path('estadodecuentas_recibo',{'_format':'pdf'})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
+                                                            <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
                                                         {% endif %}    
                                                     </th>
                                                 {% endif %}
