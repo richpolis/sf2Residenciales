@@ -1,8 +1,39 @@
+{% set urlAbsolutaFoto = 'http://'
+                             ~ app.request.server.get('SERVER_NAME')
+							 ~ ":3000"
+                             ~ asset('images/logo.png') %}
 <pdf>
     <dynamic-page>
+		<placeholders>
+            <header height="20px">
+				<div text-align="right" height="20px">
+                    <page-info format="Pagina %s de %s" />
+                </div>
+            </header>
+			<footer height="50px">
+                <div height="50px" width="100%" text-align="center">
+                    Mosaico Real Estate Management | Los Cormoran 102, Lomas de las Águilas, Álvaro Obregón C.P. 01730, México DF |  63 78 99 05
+                </div>
+            </footer>
+        </placeholders>
+		<div text-align="left" height="auto">
+			<img src="dir:{{'/web/images/logo.png')}}" />
+		</div>
         <h1>Estado de cuenta del mes {{nombreMes}} de {{year}}</h1>
+		<hr/>
+		<br/>
+		<h2>Cobros del mes</h2>
         <table>
-            <tr>
+			<stylesheet>
+				<complex-attribute name="border" size="0px"/>
+			</stylesheet>
+			<tr>
+				<stylesheet>
+					<attribute name="color" value="white"/>
+					<attribute name="text-align" value="center"/>
+					<attribute name="padding" value="10px"/>
+					<complex-attribute name="background" color="gray" />
+				</stylesheet>
                 <td>Fecha</td>
                 <td>Cargo</td>
                 <td>Monto</td>

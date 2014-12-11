@@ -1466,12 +1466,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipImagineBundle.git",
-                "reference": "9a7f49505741d84d78929a99c9c4c45e17d0497a"
+                "reference": "5838f67a4fd31a459bb23066f3b6264f78dd083a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/9a7f49505741d84d78929a99c9c4c45e17d0497a",
-                "reference": "9a7f49505741d84d78929a99c9c4c45e17d0497a",
+                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/5838f67a4fd31a459bb23066f3b6264f78dd083a",
+                "reference": "5838f67a4fd31a459bb23066f3b6264f78dd083a",
                 "shasum": ""
             },
             "require": {
@@ -1531,7 +1531,7 @@
                 "image",
                 "imagine"
             ],
-            "time": "2014-11-18 13:03:01"
+            "time": "2014-12-10 13:01:07"
         },
         {
             "name": "monolog/monolog",
