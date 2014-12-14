@@ -1,0 +1,26 @@
+<tr>
+    <td><a href="{{ path('reservaciones_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+    <td>
+        {{ entity.usuario }}
+        <br/>
+        {{ entity.usuario.telefono }}
+        <br/>
+        {{ entity.usuario.email }}
+    </td>
+    <td>{{ entity.recurso }}</td>
+    <td>{{ entity.usuario.edificio }}</td>
+    <td>{{ entity.createdAt | date('d-m-Y G:ia') }}</td>
+    <td>{{ entity.fechaEvento | date('d-m-Y') }} <br/> {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
+    <td>{{ entity.status | reservacionStatus | raw }}<br/>$ {{ entity.monto|number_format(2,".",",") }}</td>
+    <td>
+        <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+        <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}', '#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+        <button onclick="javascript:mostrarReservacion({{entity.id}});" class="btn btn-xs btn-warning"><i class="fa fa-eye"></i></button>
+        {% if entity.isAproved == false %}
+            {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
+            <button onclick="javascript:aprobarReservacion({{entity.id}});" class="btn btn-xs btn-success"><i class="fa fa-check"></i></button>
+            <button onclick="javascript:rezacharReservacion({{entity.id}});" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></button>
+            {% endif %}
+        {% endif %}
+    </td>
+</tr>

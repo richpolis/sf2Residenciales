@@ -79,6 +79,13 @@ class Pago
      * @ORM\Column(name="referencia", type="string", length=255)
      */
     private $referencia;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
+     */
+    private $status;
     
     /*
      * Timestable
@@ -93,6 +100,28 @@ class Pago
         {
           $this->createdAt = new \DateTime();
         }
+    }
+
+    const STATUS_SOLICITUD=1;
+    const STATUS_APROBADA=2;
+    const STATUS_RECHAZADA=3;
+        
+    static public $sStatus=array(
+        self::STATUS_SOLICITUD=>'En solicitud',
+        self::STATUS_APROBADA=>'Aprobada',
+        self::STATUS_RECHAZADA=>'Rechazada',
+    );
+    
+    public function getStringStatus(){
+        return self::$sStatus[$this->getStatus()];
+    }
+    
+    static function getArrayStatus(){
+        return self::$sStatus;
+    }
+    
+    static function getPreferedStatus(){
+        return array(self::STATUS_SOLICITUD);
     }
 	
     /**
@@ -394,5 +423,28 @@ class Pago
     public function getReferencia()
     {
         return $this->referencia;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     * @return Pago
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer 
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

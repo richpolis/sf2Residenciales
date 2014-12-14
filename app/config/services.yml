@@ -1,8 +1,12 @@
 # app/config/services.yml
 parameters:
     richpolis.controller.aviso.class: Richpolis\FrontendBundle\Controller\AvisoController
+    richpolis.controller.cargo.class: Richpolis\FrontendBundle\Controller\EstadoCuentaController
 
 services:
+    richpolis.cargo.controller:
+        class: "%richpolis.controller.cargo.class%"
+    
     richpolis.aviso.controller:
         class: "%richpolis.controller.aviso.class%"
     

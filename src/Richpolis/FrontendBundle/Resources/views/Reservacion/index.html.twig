@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+  <!-- modal -->
+  <link rel="stylesheet" href="{{asset('css/modal.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -59,28 +61,18 @@
                        <thead>
                            <tr>
                                <th>Id</th>
-                               <th>Recurso</th>
                                <th>Usuario</th>
+                               <th>Recurso</th>
+                               <th>Edificio</th>
                                <th>Fecha reservacion</th>
                                <th>Fecha evento</th>
-                               <th>Aprobado</th>
+                               <th>Estatus</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
                        <tbody>
                        {% for entity in entities %}
-                           <tr>
-                               <td><a href="{{ path('reservaciones_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{ entity.recurso }}</td>
-                               <td>{{ entity.usuario }}</td>
-                               <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                               <td>{{ entity.fechaEvento | date('d-m-Y') }} <br/> {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
-                               <td>{{ entity.isAproved | isActive | raw }}<br/>$ {{ entity.monto|number_format(2,".",",") }}</td>
-                               <td>
-                                    <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                    <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
-                                </td>
-                           </tr>
+                           {% include 'FrontendBundle:Reservacion:item.html.twig' with {'entity': entity} %}
                        {% endfor %}
                        </tbody>
                    </table>
@@ -117,6 +109,7 @@
 
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+<script src="{{asset('js/jquery.modal2.js')}}"></script> <!-- ventana modal -->
 
 <script>
 var editarRegistro = function(url){
@@ -145,6 +138,54 @@ $(document).ready(function() {
         "sPrevious": "Anterior",
     });
 });
+
+
+function mostrarReservacion(reservacion){
+    var url = '{{path('reservaciones_show',{'id':0})}}'+reservacion;
+    $.dialogModalRS(url);
+}
+
+function aprobarPago(reservacion){
+    var url = '{{path('reservaciones_aprobar')}}';
+    bootbox.confirm("Confirma aprobar la reservacion?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'reservacion': reservacion },
+            success: function(data){
+               $("#registro-"+reservacion).html($(data).html());
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
+
+function rechazarPago(reservacion){
+    var url = '{{path('reservaciones_rechazar')}}';
+    bootbox.confirm("Confirma rechazarla la reservación?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'reservacion': reservacion},
+            success: function(data){
+               $("#registro-"+reservacion).html($(data).html());
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
 </script>
 
     

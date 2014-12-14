@@ -168,7 +168,7 @@ class ReservacionController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Request $request,$id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -177,7 +177,13 @@ class ReservacionController extends BaseController
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Reservacion entity.');
         }
-
+        
+        if($request->isXmlHttpRequest()){
+            return $this->renderView('FrontendBundle:Reservacion:comprobante.html.twig', array(
+               'entity'=>$entity, 
+            ));
+        }
+        
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
@@ -457,40 +463,36 @@ class ReservacionController extends BaseController
     /**
      * Aprobar reservacion.
      *
-     * @Route("/aprobar/{id}", name="reservaciones_aprobar")
+     * @Route("/aprobar/reservacion", name="reservaciones_aprobar")
+     * @Method({"POST"})
      */
     public function aprobarAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $reservacion = $em->find('FrontendBundle:Reservacion', $id);
-
-        $reservacion->setIsAproved(true);
-        $reservacion->setStatus(Reservacion::STATUS_APROBADA);
-        $em->persist($reservacion);
+        
+        if($reservacion){
+            $reservacion->setIsAproved(true);
+            $reservacion->setStatus(Reservacion::STATUS_APROBADA);
+            $em->persist($reservacion);
+            $this->get('richpolis.controller.aviso')->aprobarReservacion($reservacion,$em);
+        }
         $em->flush();
-
-        $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
-        $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
-        $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia') . "<br/>";
-        $texto .= "ha sido aprobada<br/>";
-
-        $aviso = new Aviso();
-        $aviso->setTitulo("Reservación aprobada");
-        $aviso->setAviso($texto);
-        $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($reservacion->getUsuario());
-        $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
-        $em->persist($aviso);
-        $em->flush();
-
+        
+        if($request->isXmlHttpRequest()){
+            return $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
+               'entity'=> $reservacion,
+            ));
+        }
+        
         return $this->redirect($this->generateUrl('reservaciones_show', array('id' => $reservacion->getId())));
     }
 
     /**
      * Aprobar rechazar reservacion.
      *
-     * @Route("/rechazar/{id}", name="reservaciones_rechazar")
+     * @Route("/rechazar/reservacion", name="reservaciones_rechazar")
+     * @Method({"POST"})
      */
     public function rechazarAction(Request $request, $id)
     {
@@ -498,27 +500,21 @@ class ReservacionController extends BaseController
        $residencial = $this->getResidencialActual($this->getResidencialDefault());
        $reservacion = $em->find('FrontendBundle:Reservacion', $id);
        
-       $reservacion->setIsAproved(false);
-       $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
-       $em->persist($reservacion);
+       if($reservacion){
+            $reservacion->setIsAproved(false);
+            $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
+            $em->persist($reservacion);
+            $this->get('richpolis.controller.aviso')->rechazarReservacion($reservacion,$em);
+       }
        $em->flush();
        
-       $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y')."<br/>";
-       $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia')."<br/>";
-       $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia')."<br/>";
-       $texto .= "ha sido rechazada<br/>";
-       
-        $aviso = new Aviso();
-        $aviso->setTitulo("Reservación rechazada");
-        $aviso->setAviso($texto);
-        $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($reservacion->getUsuario());
-		$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
-        $em->persist($aviso);
-        $em->flush();
+       if($request->isXmlHttpRequest()){
+            return $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
+               'entity'=> $reservacion,
+            ));
+        }
         
-        return $this->redirect($this->generateUrl('reservaciones_show',array('id'=>$reservacion->getId())));
+       return $this->redirect($this->generateUrl('reservaciones_show',array('id'=>$reservacion->getId())));
     }
 
     /**
@@ -587,7 +583,7 @@ class ReservacionController extends BaseController
                             ->getReservacionesPorFechaEvento($reservacion->getFechaEvento());
         $horarios = array();
         foreach($reservaciones as $reser){
-            $horarios[]= $reser->getHasta()->modify('+2 hour');
+            $horarios[]= $reser->getHasta()->modify('+2 hours');
         }
         $resp = true;
         foreach($horarios as $horario){
@@ -703,5 +699,6 @@ class ReservacionController extends BaseController
            'reservacion' => $reservacion,
        ));
    }
-
+   
+   
 }

@@ -1,0 +1,18 @@
+<tr id="registro-{{entity.id}}}">
+    <td><a href="{{ path('pagos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+    <td>{{entity.referencia}}<br/>{{ entity.usuario }}</td>
+    <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
+    <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+    <td>{{ entity.status | reservacionStatus | raw }}</td>
+    <td>
+        <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
+        <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}', '#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+        <button onclick="javascript:mostrarPago({{entity.id}});" class="btn btn-xs btn-warning"><i class="fa fa-eye"></i></button>
+        {% if entity.isAproved == false %}
+            {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Pago::STATUS_SOLICITUD') %}
+          r  <button onclick="javascript:aprobarPago({{entity.id}});" class="btn btn-xs btn-success"><i class="fa fa-check"></i></button>
+            <button onclick="javascript:rezacharPago({{entity.id}});" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></button>
+            {% endif %}
+        {% endif %}
+    </td>
+</tr>

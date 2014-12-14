@@ -770,5 +770,30 @@ class EstadoCuentaController extends BaseController
            'usuario'=>$usuario,
        ));
    }
+   
+    public function generarPago($monto,&$usuario,&$em) {
+        //se realiza el cargo de pago
+        $cargo = new EstadoCuenta();
+        $cargo->setCargo("Gracias por su pago");
+        $cargo->setMonto(($monto - ($monto * 2)));
+        $cargo->setUsuario($usuario);
+        $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
+        $cargo->setIsAcumulable(true);
+        $cargo->setIsPaid(true);
+        $em->persist($cargo);
+        return true;
+    }
+    
+    public function generarCargoReservacion(&$reservacion,&$usuario,&$pago,&$em) {
+        //se realiza el cargo por la reservacion
+        $cargo = new EstadoCuenta();
+        $cargo->setCargo("Cargo por reservacion evento dia: " . $reservacion->getFechaEvento()->format('d-m-Y') . " a las " . $reservacion->getDesde()->format('g:ia'));
+        $cargo->setMonto($reservacion->getMonto());
+        $cargo->setUsuario($usuario);
+        $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_RESERVACION);
+        $cargo->setIsAcumulable(false);
+        $cargo->setPago($pago);
+        $em->persist($cargo);
+    }
 
 }

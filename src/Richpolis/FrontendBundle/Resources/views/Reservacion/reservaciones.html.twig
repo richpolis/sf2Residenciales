@@ -50,8 +50,6 @@
                                         <thead>
                                             <tr>
                                                 <th>Recurso</th>
-                                                <th>Usuario</th>
-                                                <th>Fecha reservacion</th>
                                                 <th>Fecha evento</th>
                                                 <th>Status</th>
                                                 <th>Actions</th>
@@ -60,9 +58,11 @@
                                         <tbody>
                                             {% for entity in entities %}
                                                 <tr>
-                                                    <td>{{ entity.recurso }}</td>
-                                                    <td>{{ entity.usuario }}</td>
-                                                    <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+                                                    <td>
+                                                        {{ entity.recurso }}
+                                                        <br/>
+                                                        {{ entity.createdAt | date('d-m-Y g:ia')}}
+                                                    </td>
                                                     <td>
                                                         {{ entity.fechaEvento | date('d-m-Y') }} 
                                                         <br/>
@@ -92,7 +92,7 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="6">Reservaciones</th>
+                                                <th colspan="4">Reservaciones</th>
                                             </tr>
                                         </tfoot>
                                         </tbody>

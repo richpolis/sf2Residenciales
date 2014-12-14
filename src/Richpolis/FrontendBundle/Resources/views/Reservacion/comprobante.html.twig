@@ -1,0 +1,32 @@
+<table class="record_properties">
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ entity.id }}</td>
+            <th>Residencial</th>
+            <td>{{ entity.usuario.edificio.residencial }}</td>
+            <th>Edificio</th>
+            <td>{{ entity.usuario.edificio }}</td>
+        </tr>
+        <tr>
+            <th>Recurso</th>
+            <td>{{ entity.recurso}}</td>
+            <th>Usuario</th>
+            <td>{{ entity.usuario}}</td>
+            <th>Fecha apartado</th>
+            <td>{{ entity.createdAt|date('d-m-Y')}}</td>
+        </tr>
+        <tr>
+            <th>Fecha evento</th>
+            <td>{{ entity.fechaEvento|date('d-m-Y')}}</td>
+            <th>Duracion</th>
+            <td>{{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}</td>
+            <th>Estatus</th>
+            <td>{{ entity.status | reservacionStatus | raw }}</td>
+        </tr>
+        <tr>
+            <th>Cuota</th>
+            <td colspan="5">$ {{ entity.monto|number_format(2,".",",") }}</td>
+        </tr>
+    </tbody>
+</table>

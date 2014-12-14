@@ -24,18 +24,25 @@
                     <div class="col-md-12">
 
                         <div class="widget">
-                            <div class="widget-head">
+                            <div class="widget-head container">
                                 {% if recurso is not null %}
                                 <h2>{{recurso.stringRecurso}}</h2>
-                                <select id="selectRecurso">
-                                    {% for rec in amenidades %}
-                                        {% if rec.id == recurso.id %}
-                                        <option value="{{rec.id}}" selected>{{rec.nombre}}</option>
-                                        {% else %}
-                                        <option value="{{rec.id}}">{{rec.nombre}}</option>
-                                        {% endif %}    
-                                    {% endfor %}    
-                                </select>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select id="selectRecurso">
+                                            {% for rec in amenidades %}
+                                                {% if rec.id == recurso.id %}
+                                                <option value="{{rec.id}}" selected>{{rec.nombre}}</option>
+                                                {% else %}
+                                                <option value="{{rec.id}}">{{rec.nombre}}</option>
+                                                {% endif %}    
+                                            {% endfor %}    
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        Seleccione la amenidad a Consultar/Reservar.
+                                    </div>
+                                </div>
                                 <p>Haga click sobre el día deseado en el calendario para generar reservaciones.</p>
                                 {% else %}
                                 <h2>Calendario</h2>    
@@ -117,6 +124,11 @@
         right: 'month,agendaWeek,agendaDay,next'
       },
       editable: false,
+      titleFormat: {
+        month: "MMMM yyyy",
+        week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
+        day: "dddd, MMM d, yyyy"
+      },
       monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
       monthNamesShort: ["Ene","Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
       dayNames: ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"],
@@ -220,7 +232,8 @@
               activarDateTimePicker();
           }else if(data.respuesta == 'creado'){
               $("#modalFormulario").modal("hide");
-               location.href='{{path('reservaciones')}}';
+              alert("Gracias, su reservación ha sido agendada, por favor cubra la cuota de uso en un lapso de 24 horas para ser respetada.");
+              location.href='{{path('reservaciones')}}';
           }else if(data.respuesta == 'error'){
               alert(data.error);
           }

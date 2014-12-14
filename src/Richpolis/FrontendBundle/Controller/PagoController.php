@@ -189,7 +189,7 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -197,6 +197,12 @@ class PagoController extends BaseController
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Pago entity.');
+        }
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FrontendBundle:Pago:comprobante.html.twig', array(
+               'entity'=>$entity, 
+            ));
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -288,6 +294,7 @@ class PagoController extends BaseController
             'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
+    
     /**
      * Deletes a Pago entity.
      *
@@ -334,12 +341,15 @@ class PagoController extends BaseController
     /**
      * Aprobar pago.
      *
-     * @Route("/aprobar/{id}", name="pagos_aprobar")
+     * @Route("/aprobar/pago", name="pagos_aprobar")
+     * @Method({"POST"})
      */
-    public function aprobarAction(Request $request, $id) {
+    public function aprobarAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $pago = $em->find('FrontendBundle:Pago', $id);
+        $pago = $em->find('FrontendBundle:Pago', $request->request->get('pago'));
         $monto = 0;
+        $pago->setIsAproved(true);
+        $avisoController = $this->get('richpolis.aviso.controller');
         foreach ($pago->getCargos() as $cargo) {
             $cargo->setIsPaid(true);
             $monto += $cargo->getMonto();
@@ -347,56 +357,50 @@ class PagoController extends BaseController
                 $reservacion = $em->getRepository('FrontendBundle:Reservacion')
                                   ->findOneBy(array('pago'=>$pago));
                 if($reservacion){
-                    $reservacion->setIsAproved(true);
-                    $em->persist($reservacion);
-                    $aviso = new \Richpolis\FrontendBundle\Entity\Aviso();
-                    $aviso->setTitulo("Estado de cuenta de " . $nombreMes . " del " . $year);
-                    $aviso->setAviso("Su estado de cuenta es de $ " . number_format($monto, 2, '.', ','));
-                    $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-                    $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
-                    $aviso->setResidencial($residencial);
-                    $aviso->addEdificio($edificio);
-                    $aviso->setUsuario($usuario);
-                    $em->persist($aviso);
+                    $avisoController->aprobarReservacion($reservacion,$em);
                 }
             }
             $em->persist($cargo);
         }
-        $pago->setIsAproved(true);
         if ($monto > 0) {
-            //se realiza el cargo de pago
-            $cargo = new EstadoCuenta();
-            $cargo->setCargo("Gracias por su pago");
-            $cargo->setMonto(($monto - ($monto * 2)));
-            $cargo->setUsuario($pago->getUsuario());
-            //$cargo->setResidencial($residencial);
-            $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_PAGO);
-            $cargo->setIsAcumulable(true);
-            $cargo->setIsPaid(true);
-            $em->persist($cargo);
+            $this->get('richpolis.cargo.controller')->generarPago($monto,$pago->getUsuario(),$em);
             $em->flush();
             $pago->addCargo($cargo);
         }
+        $avisoController->aprobarPago($pago,$em);
         $em->flush();
+        
+        if($request->isXmlHttpRequest()){
+            return $this->renderView('FrontendBundle:Pago:item.html.twig', array(
+               'entity'=>$entity, 
+            ));
+        }
+        
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
 
     /**
      * Rechazar pago.
      *
-     * @Route("/rechazar/{id}", name="pagos_rechazar")
+     * @Route("/rechazar/pago", name="pagos_rechazar")
+     * @Method({"POST"})
      */
-    public function rechazarAction(Request $request, $id) {
+    public function rechazarAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $pago = $em->find('FrontendBundle:Pago', $id);
-
+        $pago = $em->find('FrontendBundle:Pago', $request->request->get('pago'));
         foreach ($pago->getCargos() as $cargo) {
-            $cargo->setIsPaid(true);
+            $cargo->setIsPaid(false);
             $em->persist($cargo);
             $em->flush();
         }
         $pago->setIsAproved(false);
+        $this->get('richpolis.aviso.controller')->rechazarPago($pago,$em);
         $em->flush();
+        if($request->isXmlHttpRequest()){
+            return $this->renderView('FrontendBundle:Pago:item.html.twig', array(
+               'entity'=>$entity, 
+            ));
+        }
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
 
@@ -511,6 +515,46 @@ class PagoController extends BaseController
         )));
         return $response;
     }
+
+    /**
+     * Formulario para actualizar pago.
+     *
+     * @Route("/actualizar/pago", name="pagos_actualizar_pago")
+     * @Method({"GET","POST"})
+     */
+    public function actualizarPagoAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUsuarioActual();
+        $pago = $em->find("FrontendBundle:Pago",$request->query->get('pago'));
+        $form = $this->createForm(new PagoFrontendType(), $pago, array(
+            'action' => $this->generateUrl('pagos_realizar_pago',array('pago'=>$pago->getId())),
+            'method' => 'POST',
+            'em'=>$this->getDoctrine()->getManager(),
+        ));
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $form->getData();
+                $entity->setIsAproved(false);
+                $em->persist($entity);
+                $em->flush();
+                $response = new JsonResponse(json_encode(array(
+                    'html' => '',
+                    'respuesta' => 'creado',
+                )));
+                return $response;
+            }
+        }
+
+        $response = new JsonResponse(json_encode(array(
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('pagos_realizar_pago',array('pago'=>$pago->getId())),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
+        )));
+        return $response;
+    }
     
     /**
      * Formulario para realizar pago.
@@ -539,17 +583,13 @@ class PagoController extends BaseController
                 $pago = $form->getData();
                 $pago->setIsAproved(false);
                 $em->persist($pago);
-                $em->flush();
-                //aplicamos la morosidad de la residencial
-                $cargo = new EstadoCuenta();
-                $cargo->setCargo("Cargo por reservacion evento dia: ". $reservacion->getFechaEvento()->format('d-m-Y') . " a las ". $reservacion->getDesde()->format('g:ia'));
-                $cargo->setMonto($reservacion->getMonto());
-                $cargo->setUsuario($usuario);
-                $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_RESERVACION);
-                $cargo->setIsAcumulable(false);
-                $cargo->setPago($pago);
-                $em->persist($cargo);
+                $this->get('richpolis.cargo.controller')
+                     ->generarCargoReservacion($reservacion,$usuario,$pago,$em);
+                
                 $reservacion->setPago($pago);
+                $reservacion->setIsAproved(true);
+                $em->persist($reservacion);
+
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
                     'html' => '',

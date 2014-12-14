@@ -1,20 +1,20 @@
 {% extends 'FrontendBundle::layout.html.twig' %}
 
 {% block stylesheets %}
-  {{ parent() }}
-  <!-- Datatables -->
-  <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/style.css')}}">
-  <!-- Widgets stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
-  <!-- Gritter Notifications stylesheet -->
-  <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
-  <link rel="stylesheet" href="{{asset('css/main.css')}}">   
+    {{ parent() }}
+    <!-- Datatables -->
+    <link rel="stylesheet" href="{{asset('js/datatables/css/dataTables.bootstrap.css')}}">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    <!-- Widgets stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
+    <!-- Gritter Notifications stylesheet -->
+    <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">   
 {% endblock %}
 
 {% block mainbar %}
-     <!-- Main bar -->
+    <!-- Main bar -->
     <div class="mainbar">
         <div class="matter">
             <div class="container">
@@ -29,23 +29,23 @@
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-									<div class="navegador-fechas">
-										{% set monthPrevious = month -1 %}
-										{% set monthNext = month + 1 %}
-										{% set yearPrevious = year %}
-										{% set yearNext = year %}
+                                    <div class="navegador-fechas">
+                                        {% set monthPrevious = month -1 %}
+                                        {% set monthNext = month + 1 %}
+                                        {% set yearPrevious = year %}
+                                        {% set yearNext = year %}
 
-										{% if month == 1 %}
-											{% set monthPrevious = 12 %}
-											{% set yearPrevious = year - 1 %}
-										{% elseif month == 12 %}
-											{% set monthNext = 1 %}
-											{% set yearNext = year + 1 %}
-										{% endif %}
-										<span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('pagos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
-										<span class="navegador-fechas-mes">{{nombreMes}}</span>
-										<span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('pagos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
-									</div>
+                                        {% if month == 1 %}
+                                            {% set monthPrevious = 12 %}
+                                            {% set yearPrevious = year - 1 %}
+                                        {% elseif month == 12 %}
+                                            {% set monthNext = 1 %}
+                                            {% set yearNext = year + 1 %}
+                                        {% endif %}
+                                        <span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href = '{{path('pagos')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
+                                        <span class="navegador-fechas-mes">{{nombreMes}}</span>
+                                        <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href = '{{path('pagos')}}?month={{monthNext}}&year={{yearNext}}'">></span>
+                                    </div>
                                     <table id="datatable" class="table table-striped table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -55,13 +55,19 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {% for entity in entities %}
-                                            <tr>
-                                                <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-												<td>$ {{ entity.monto | number_format(2,".",",") }}</td>
-                                                <td>{{ entity.isAproved | isActive | raw }}</td>
-                                            </tr>
-                                        {% endfor %}
+                                            {% for entity in entities %}
+                                                <tr>
+                                                    <td>{{ entity.createdAt | date('d-m-Y') }}</td>
+                                                    <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
+                                                    <td>
+                                                        {% if entity.isAproved == false %}
+                                                         <button id="actualizarPago" onclick="actualizarPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Actualizar comprobante</button>   
+                                                        {% else %}    
+                                                        {{ entity.isAproved | isActive | raw }}
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -81,46 +87,117 @@
             </div>
         </div>
     </div>
-    
+<!-- Modal -->
+    <div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="labelFormulario"></h4>
+                </div>
+                <div class="modal-body" id="modalBodyFormulario">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>  
 {% endblock %}
 
 {% block javascripts %}
-  {{ parent() }}
+    {{ parent() }}
 
-<script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-<!-- jQuery Notification - Noty -->
-<script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
-<script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
-<!-- jQuery Notification ends -->
+    <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
 
-<script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
-<script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
+    <!-- jQuery Notification - Noty -->
+    <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/bottom.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/topRight.js')}}"></script> <!-- jQuery Notify -->
+    <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
+    <!-- jQuery Notification ends -->
 
-<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
-<script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+    <script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
 
-<script>
-var editarRegistro = function(url){
-        location.href=url;
-};
+    <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+    <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+    <script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
 
-var eliminarRegistro = function(){
-  {% if is_granted('ROLE_ADMIN') %}
-    bootbox.confirm("Esta seguro de eliminar el registro?", function(result) {
-      if(result){
-         $("#formEliminar").submit();
-      }
-    });
-  {% else %}
-    noty({text: 'No tienes los permisos suficientes para realizar esta accion',layout:'bottom', type:'warning', timeout:2000 });
-  {% endif %}      
-};
+    <script>
+        var editarRegistro = function (url) {
+            location.href = url;
+        };
 
-</script>
-
-    
+        var eliminarRegistro = function () {
+            {% if is_granted('ROLE_ADMIN') %}
+                bootbox.confirm("Esta seguro de eliminar el registro?", function (result) {
+                    if (result) {
+                        $("#formEliminar").submit();
+                    }
+                });
+            {% else %}
+                noty({text: 'No tienes los permisos suficientes para realizar esta accion', layout: 'bottom', type: 'warning', timeout: 2000});
+            {% endif %}      
+        };
+        
+        function actualizarPago(pago){
+            mostrarFormulario("Actualizar comprobante de pago");
+            getFormulario();
+        }
+        
+        function mostrarFormulario(titulo){
+            $("#modalFormulario").modal("show");
+            $("#labelFormulario").html(titulo);
+            $loader = $("<img>");
+            $loader.attr({'src': '{{asset('images/loader.GIF')}}','id': 'loader'});
+            $loader.css({'maxWidth': '80px'});
+            $("#modalBodyFormulario").html($loader);
+        }
+        
+        function guardar(){
+            var $form = $("#modalBodyFormulario form");
+            var data = $form.serializefiles();
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+				cache: false,
+    			contentType: false,
+    			processData: false,
+            }).done(function(data, textStatus,jqXHR){
+                debugger;
+                data = JSON.parse(data);
+                if(data.respuesta == 'nuevo'){
+                    $("#modalBodyFormulario").html(data.form);
+                    $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                }else if(data.respuesta == 'creado'){
+                    $("#modalFormulario").modal("hide");
+					location.href='{{path('pagos')}}';
+                }
+            }).fail(function(data){
+                console.log(data);
+            });
+        }
+        
+        function getFormulario(pago){
+                $.ajax({
+                    url: '{{path('pagos_actualizar_pago')}}',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {'pago': pago},
+                }).done(function(data, textStatus,jqXHR){
+                    data = JSON.parse(data);
+                    if(data.respuesta == 'nuevo'){
+                        $("#modalBodyFormulario").html(data.form);
+                        $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+                    }
+                });
+        }
+    </script>
 {% endblock %}
 

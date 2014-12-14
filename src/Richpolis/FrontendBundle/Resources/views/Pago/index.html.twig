@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
-  <!-- prettyPhoto -->
-  <link rel="stylesheet" href="{{asset('css/prettyPhoto.css')}}">    
+  <!-- modal -->
+  <link rel="stylesheet" href="{{asset('css/modal.css')}}">    
 {% endblock %}
 
 {% block mainbar %}
@@ -75,27 +75,13 @@
                        </thead>
                        <tbody>
                        {% for entity in pagination %}
-                           <tr>
-                               <td><a href="{{ path('pagos_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                               <td>{{entity.usuario.folioDePago}}<br/>{{ entity.usuario }}</td>
-                               <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
-                               <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-                               <td>{{ entity.isAproved | isActive | raw }}</td>
-                               <td>
-                                    <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
-                                    <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
-                                    <a href="{{path('pagos_show', { 'id': entity.id })}}?iframe=true&width=100%&height=100%" rel="prettyPhoto[iframes]" title="" class="btn btn-xs btn-warning"><i class="fa fa-eye"></i></a>
-                                    
-                                </td>
-                           </tr>
-                           
+                           {% include 'FrontendBundle:Pago:item.html.twig' with {'entity': entity } %}
                        {% endfor %}
                        </tbody>
                    <tfoot>
                            <tr>
-                               <td colspan="8">
+                               <td colspan="6">
                                    <a href="{{path('pagos_exportar')}}" class="btn btn-info pull-right" style="color: white; margin-left: 5px;">Exportar</a>
-                                   
                                </td>
                            </tr>
                        </tfoot>
@@ -116,6 +102,7 @@
     </div>
    <!-- Mainbar ends -->        
    <div class="clearfix"></div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -133,13 +120,12 @@
 <script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
 <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
 
-<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
+<script src="{{asset('js/bootbox.min.js')}}"></script> <!-- BootBox -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
-<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
-<script src="{{asset('js/sfrichpolis.js')}}"></script> <!-- libreria richpolis -->
+<script src="{{asset('js/jquery.modal2.js')}}"></script> <!-- Ventana modal -->
 <script>
 var editarRegistro = function(url){
-        location.href=url;
+    location.href=url;
 };
 
 var eliminarRegistro = function(){
@@ -164,8 +150,53 @@ $(document).ready(function() {
         "sPrevious": "Anterior",
     });
 });
-</script>
 
-    
+function mostrarPago(pago){
+    var url = '{{path('pagos_show',{'id':0})}}'+pago;
+    $.dialogModalRS(url);
+}
+
+function aprobarPago(pago){
+    var url = '{{path('pagos_aprobar')}}';
+    bootbox.confirm("Confirma aprobar el pago?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'pago': pago},
+            success: function(data){
+               $("#registro-"+pago).html($(data).html());
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
+
+function rechazarPago(pago){
+    var url = '{{path('pagos_rechazar')}}';
+    bootbox.confirm("Confirma rechazar el pago?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'pago': pago},
+            success: function(data){
+               $("#registro-"+pago).html($(data).html());
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
+</script>  
 {% endblock %}
 

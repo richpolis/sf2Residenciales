@@ -1,0 +1,57 @@
+<table class="record_properties">
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ entity.id }}</td>
+            <th>Residencial</th>
+            <td>{{ entity.usuario.edificio.residencial }}</td>
+            <th>Edificio</th>
+            <td>{{ entity.usuario.edificio }}</td>
+        </tr>
+        <tr>
+            <th>Usuario</th>
+            <td>{{ entity.usuario.nombre}}</td>
+            <th>Departemento</th>
+            <td>{{ entity.usuario.numero}}</td>
+            <th>Fecha Pago</th>
+            <td>{{ entity.createdAt|date('d-m-Y')}}</td>
+        </tr>
+        <tr>
+            <th>Monto</th>
+            <td>$ {{ entity.monto|number_format(2,".",",")}}</td>
+            <th>Estatus</th>
+            <td>{{ entity.status | reservacionStatus | raw }}</td>
+            <th>Referencia</th>
+            <td>{{ entity.referencia }}</td>
+        </tr>
+        <tr>
+            <th>Comprobante</th>
+            <td colspan="5">
+                {% if entity.archivo | length > 0 %}
+                    <img src="{{entity.webPath}}" style="max-width: 100%;" />
+                {% endif %}    
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="datatable" class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Cargo</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cargo in entity.cargos %}
+            <tr>
+                <td>{{ cargo.stringTipoCargo }}</td>
+                <td>{{ cargo.cargo }}</td>
+                <td>$ {{ cargo.monto | number_format(2,".",",") }}</td>
+                <td>{{ cargo.createdAt|date('d-m-Y') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

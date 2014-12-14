@@ -269,6 +269,10 @@ class Reservacion
     public function setMonto($monto)
     {
         $this->monto = $monto;
+        
+        if($monto==0){
+            $this->isAproved = true;
+        }
 
         return $this;
     }
