@@ -343,6 +343,23 @@ class PagoController extends BaseController
         foreach ($pago->getCargos() as $cargo) {
             $cargo->setIsPaid(true);
             $monto += $cargo->getMonto();
+            if($cargo->getTipoCargo()==EstadoCuenta::TIPO_CARGO_RESERVACION){
+                $reservacion = $em->getRepository('FrontendBundle:Reservacion')
+                                  ->findOneBy(array('pago'=>$pago));
+                if($reservacion){
+                    $reservacion->setIsAproved(true);
+                    $em->persist($reservacion);
+                    $aviso = new \Richpolis\FrontendBundle\Entity\Aviso();
+                    $aviso->setTitulo("Estado de cuenta de " . $nombreMes . " del " . $year);
+                    $aviso->setAviso("Su estado de cuenta es de $ " . number_format($monto, 2, '.', ','));
+                    $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                    $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
+                    $aviso->setResidencial($residencial);
+                    $aviso->addEdificio($edificio);
+                    $aviso->setUsuario($usuario);
+                    $em->persist($aviso);
+                }
+            }
             $em->persist($cargo);
         }
         $pago->setIsAproved(true);

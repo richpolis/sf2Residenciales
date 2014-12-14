@@ -12,6 +12,7 @@ use Richpolis\FrontendBundle\Entity\Aviso;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
 use Richpolis\FrontendBundle\Form\AvisoType;
 use Richpolis\FrontendBundle\Form\AvisoPorEdificioType;
+use Richpolis\FrontendBundle\Entity\Reservacion;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
@@ -437,60 +438,85 @@ class AvisoController extends BaseController
         $this->get('mailer')->send($message);
     }
 	
-	/**
+    /**
      * Aplicar avisos de cargos del mes.
      *
      * @Route("/aplicar/avisos/cargos", name="avisos_avisos_cargos")
      */
-    public function aplicarAvisosCargosAction(Request $request)
-    {
+    public function aplicarAvisosCargosAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //agregando funciones especiales de fecha para MySQL
         $emConfig = $em->getConfiguration();
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-	if($request->request->has('edificioId') == true){
+        if ($request->request->has('edificioId') == true) {
             $filtros['edificio'] = $request->request->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                       ->findBy(array('edificio'=>$edificio));
+                ->findBy(array('edificio' => $edificio));
         $fecha = new \DateTime();
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
         $cont = 0;
         $nombreMes = $this->getNombreMes($mes);
-		$monto = 0;
+        $monto = 0;
         $cont = 0;
-        foreach($usuarios as $usuario){
+        foreach ($usuarios as $usuario) {
             $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                         ->getCargosEnMes($mes,$year,$usuario);
-			foreach($cargos as $cargo){
-				if(!$cargo->getAvisoEnviado()){
-					$monto+=$cargo->getMonto();
-					$cargo->setAvisoEnviado(true);
-					$em->persist($cargo);
-				}
-			}
-			
-            if($monto>0){
+                    ->getCargosEnMes($mes, $year, $usuario);
+            foreach ($cargos as $cargo) {
+                if (!$cargo->getAvisoEnviado()) {
+                    $monto+=$cargo->getMonto();
+                    $cargo->setAvisoEnviado(true);
+                    $em->persist($cargo);
+                }
+            }
+
+            if ($monto > 0) {
                 $aviso = new Aviso();
-                $aviso->setTitulo("Estado de cuenta de ".$nombreMes." del ".$year);
-                $aviso->setAviso("Su estado de cuenta es de $ ".number_format($monto, 2, '.', ','));
+                $aviso->setTitulo("Estado de cuenta de " . $nombreMes . " del " . $year);
+                $aviso->setAviso("Su estado de cuenta es de $ " . number_format($monto, 2, '.', ','));
                 $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
                 $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
                 $aviso->setResidencial($residencial);
                 $aviso->addEdificio($edificio);
                 $aviso->setUsuario($usuario);
                 $em->persist($aviso);
-				$cont++;
+                $cont++;
             }
         }
         $em->flush();
-        $response = new JsonResponse(array('avisos'=>"Avisos creados ".$cont));
+        $response = new JsonResponse(array('avisos' => "Avisos creados " . $cont));
         return $response;
+    }
+
+    /**
+     * Aprobar reservacion.
+     */
+    public function aprobarReservacion(Reservacion &$reservacion, &$em) {
+        $reservacion->setIsAproved(true);
+        $reservacion->setStatus(Reservacion::STATUS_APROBADA);
+        $em->persist($reservacion);
+        
+        $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
+        $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
+        $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia') . "<br/>";
+        $texto .= "ha sido aprobada<br/>";
+
+        $aviso = new Aviso();
+        $aviso->setTitulo("Reservación aprobada");
+        $aviso->setAviso($texto);
+        $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+        $aviso->setResidencial($residencial);
+        $aviso->setUsuario($reservacion->getUsuario());
+        $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+        $em->persist($aviso);
+        //$em->flush();
+
+        return true;
     }
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pdf>
+    <stylesheet>
+        <attribute name="color" value="white"/>
+        <attribute name="text-align" value="center"/>
+        <attribute name="padding" value="10px"/>
+        <complex-attribute name="background" color="gray" />
+    </stylesheet>
+    <dynamic-page>
+        <placeholders>
+            <header height="20px">
+                <div text-align="right" height="20px">
+                    {{"now"|date('d-m-Y G:ia')}}
+                </div>
+            </header>
+            <footer height="50px">
+                <div height="50px" widtd="100%" text-align="center">
+                    <hr/>
+                    Mosaico Real Estate Management | Los Cormoran 102, Lomas de las Águilas, Álvaro Obregón C.P. 01730, México DF | Tel. 63-78-99-05
+                </div>
+            </footer>
+            <watermark>
+                <div rotate="diagonally" alpha="0.1" font-size="44px" text-align="center">www.mosaicors.com</div>
+            </watermark>
+        </placeholders>
+        <div text-align="left" height="auto">
+            <img src="{{ pdf_image('FrontendBundle:logo.png') }}" height="150px" />
+        </div>
+        <h1>
+            Comprobante de reservacion - {{reservacion.usuario.nombre}}
+        </h1>
+        <div color="gray" text-align="right" font-size="14px">Fecha de evento: {{reservacion.fechaEvento|date('d-m-Y')}}</div>
+        <hr/>
+        <br/>
+        <h2>Detalle de reservación</h2>
+        <table font-size="14px">
+            <tr>
+                <td>Residencial</td>
+                <td>{{ reservacion.usuario.edificio.residencial }}</td>
+            </tr>
+            <tr>
+                <td>Edificio</td>
+                <td>{{ reservacion.usuario.edificio }}</td>
+            </tr>
+            <tr>
+                <td>Recurso</td>
+                <td>{{ reservacion.recurso}}</td>
+            </tr>                                                                
+            <tr>
+                <td>Usuario</td>
+                <td>{{ reservacion.usuario}}</td>
+            </tr>
+            <tr>
+                <td>Fecha apartado</td>
+                <td>{{ reservacion.createdAt|date('d-m-Y')}}</td>
+            </tr>
+            <tr>
+                <td>Fecha evento</td>
+                <td>{{ reservacion.fechaEvento|date('d-m-Y')}}</td>
+            </tr>
+            <tr>
+                <td>Duración</td>
+                <td>{{ reservacion.desde | date('g:ia')}} - {{ reservacion.hasta | date('g:ia')}}</td>
+            </tr>
+            <tr>
+                <td>Estatus</td>
+                <td>{{ reservacion.stringStatus }}</td>
+            </tr>
+            <tr>
+                <td>Cuota</td>
+                <td>$ {{ reservacion.monto|number_format(2,".",",") }}</td>
+            </tr>
+        </table>
+    </dynamic-page>
+</pdf>

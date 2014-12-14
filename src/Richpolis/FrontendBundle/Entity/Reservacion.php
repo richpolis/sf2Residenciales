@@ -82,7 +82,7 @@ class Reservacion
      */
     private $monto;
 	
-	/**
+    /**
      * @var \Pago
      * @todo Pago de la reservacion
      *

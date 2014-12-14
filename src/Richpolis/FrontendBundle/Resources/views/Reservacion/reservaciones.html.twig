@@ -64,21 +64,27 @@
                                                     <td>{{ entity.usuario }}</td>
                                                     <td>{{ entity.createdAt | date('d-m-Y') }}</td>
                                                     <td>
-                                                        {{ entity.fechaEvento | date('d-m-Y') }} <br/>
+                                                        {{ entity.fechaEvento | date('d-m-Y') }} 
+                                                        <br/>
                                                         {{ entity.desde | date('g:ia')}} - {{ entity.hasta | date('g:ia')}}
                                                     </td>
                                                     <td>
-													{{ entity.stringStatus }}
-													<br/>
-													$ {{ entity.monto|number_format(2,".",",") }}
-													</td>
+                                                        {{ entity.status | reservacionStatus | raw }}
+                                                        <br/>
+                                                        $ {{ entity.monto|number_format(2,".",",") }}
+                                                    </td>
                                                     <td>
                                                         {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
                                                             {% if entity.pago is null %}    
-                                                            <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Realizar Pago</button>
+                                                                <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Subir comprobante de pago</button>
                                                             {% else %}
-															<button class="btn btn-info">Comprobante</button>
+                                                                <a href="{{path('reservaciones_recibo')}}?reservacion={{entity.id}}" target="_blank" class="btn btn-info">Comprobante</a>
                                                             {% endif %}
+                                                        {% elseif entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
+                                                            {% if entity.pago is null %}    
+                                                                <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Subir comprobante de pago</button>
+                                                            {% endif %}
+                                                            <a href="{{path('reservaciones_recibo')}}?reservacion={{entity.id}}" target="_blank" class="btn btn-info">Comprobante</a>
                                                         {% endif %}
                                                     </td>
                                                 </tr>

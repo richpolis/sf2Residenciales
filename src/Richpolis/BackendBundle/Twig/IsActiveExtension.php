@@ -14,9 +14,9 @@ class IsActiveExtension extends \Twig_Extension
     public function isActiveFilter($is_active)
     {
         if($is_active){
-            $img="<i class='fa fa-check-circle'></i>";
+            $img='<i class="fa fa-check-circle"></i>';
         }else{
-            $img="<i class='fa fa-circle'></i>";
+            $img='<i class="fa fa-circle"></i>';
         }
         
         return $img;
@@ -24,6 +24,6 @@ class IsActiveExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'is_active_extension';
+        return "is_active_extension";
     }
 }

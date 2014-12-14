@@ -13,6 +13,7 @@ use Richpolis\FrontendBundle\Form\ReservacionType;
 use Richpolis\FrontendBundle\Entity\Aviso;
 
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
+use Ps\PdfBundle\Annotation\Pdf;
 
 /**
  * Reservacion controller.
@@ -458,35 +459,34 @@ class ReservacionController extends BaseController
      *
      * @Route("/aprobar/{id}", name="reservaciones_aprobar")
      */
-    public function aprobarAction(Request $request, $id)
-    {
-       $em = $this->getDoctrine()->getManager();
-       $residencial = $this->getResidencialActual($this->getResidencialDefault());
-       $reservacion = $em->find('FrontendBundle:Reservacion', $id);
-       
-       $reservacion->setIsAproved(true);
-       $reservacion->setStatus(Reservacion::STATUS_APROBADA);
-       $em->persist($reservacion);
-       $em->flush();
-       
-       $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y')."<br/>";
-       $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia')."<br/>";
-       $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia')."<br/>";
-       $texto .= "ha sido aprobada<br/>";
-       
+    public function aprobarAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $reservacion = $em->find('FrontendBundle:Reservacion', $id);
+
+        $reservacion->setIsAproved(true);
+        $reservacion->setStatus(Reservacion::STATUS_APROBADA);
+        $em->persist($reservacion);
+        $em->flush();
+
+        $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
+        $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
+        $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia') . "<br/>";
+        $texto .= "ha sido aprobada<br/>";
+
         $aviso = new Aviso();
         $aviso->setTitulo("Reservación aprobada");
         $aviso->setAviso($texto);
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
         $aviso->setResidencial($residencial);
         $aviso->setUsuario($reservacion->getUsuario());
-		$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+        $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
         $em->persist($aviso);
         $em->flush();
-        
-        return $this->redirect($this->generateUrl('reservaciones_show',array('id'=>$reservacion->getId())));
+
+        return $this->redirect($this->generateUrl('reservaciones_show', array('id' => $reservacion->getId())));
     }
-    
+
     /**
      * Aprobar rechazar reservacion.
      *
@@ -621,61 +621,87 @@ class ReservacionController extends BaseController
             );
     }
 	
-	/**
+    /**
      * Aplicar cargo normal a todos los inquilinos del edificio.
      *
      * @Route("/revision/edificio", name="reservaciones_revisar_edificio")
      */
-    public function revisionEdificioAction(Request $request)
-    {
+    public function revisionEdificioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //agregando funciones especiales de fecha para MySQL
         $emConfig = $em->getConfiguration();
         //$emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         //$emConfig->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         //$emConfig->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-		if($request->request->has('edificioId') == true){
+        if ($request->request->has('edificioId') == true) {
             $filtros['edificio'] = $request->request->get('edificioId');
             $this->setFilters($filtros);
         }
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                       ->findBy(array('edificio'=>$edificio));
+                ->findBy(array('edificio' => $edificio));
         $fecha = new \DateTime();
-		$fecha->modify('-1 day');
+        $fecha->modify('-1 day');
         $cont = 0;
-        foreach($usuarios as $usuario){
+        foreach ($usuarios as $usuario) {
             $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                        		->findReservacionesPorUsuarioSolicitadas($usuario);
-            if(count($reservaciones)>0){
-                foreach($reservaciones as $reservacion){
-					if(!$reservacion->getPago() && $fecha>$reservacion->getCreatedAt()){
-						$reservacion->setIsAproved(false);
-					    $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
-					    $em->persist($reservacion);
+                    ->findReservacionesPorUsuarioSolicitadas($usuario);
+            if (count($reservaciones) > 0) {
+                foreach ($reservaciones as $reservacion) {
+                    if (!$reservacion->getPago() && $fecha > $reservacion->getCreatedAt()) {
+                        $reservacion->setIsAproved(false);
+                        $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
+                        $em->persist($reservacion);
 
-					    $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y')."<br/>";
-					    $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia')."<br/>";
-					    $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia')."<br/>";
-					    $texto .= "ha sido rechazada<br/>";
+                        $texto = "Reservacion: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
+                        $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
+                        $texto .= "hasta las : " . $reservacion->getHasta()->format('g:ia') . "<br/>";
+                        $texto .= "ha sido rechazada<br/>";
 
-						$aviso = new Aviso();
-						$aviso->setTitulo("Reservación rechazada");
-						$aviso->setAviso($texto);
-						$aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-						$aviso->setResidencial($residencial);
-						$aviso->setUsuario($reservacion->getUsuario());
-						$aviso->addEdificio($reservacion->getUsuario()->getEdificio());
-						$em->persist($aviso);
-						$cont++;
-					}
-				}
-                
+                        $aviso = new Aviso();
+                        $aviso->setTitulo("Reservación rechazada");
+                        $aviso->setAviso($texto);
+                        $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
+                        $aviso->setResidencial($residencial);
+                        $aviso->setUsuario($reservacion->getUsuario());
+                        $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+                        $em->persist($aviso);
+                        $cont++;
+                    }
+                }
             }
         }
         $em->flush();
-        $response = new JsonResponse(array('revisiones'=>"Reservaciones rechazadas ".$cont));
+        $response = new JsonResponse(array('revisiones' => "Reservaciones rechazadas " . $cont));
         return $response;
     }
+    
+    /**
+     * Recibo de estado de cuenta.
+     *
+     * @Route("/mostrar/recibo", name="reservaciones_recibo")
+     * @Pdf()
+     */
+   public function reciboAction(Request $request)
+   {
+        $em = $this->getDoctrine()->getManager();
+        $format = $this->get('request')->get('_format');
+        if ($request->query->has('reservacion') == true) {
+            $reservacionId = $request->query->get('reservacion');
+        }else{
+            return new \Symfony\Component\HttpFoundation\Response("Sin contenido");
+        }
+       
+       $reservacion = $em->find('FrontendBundle:Reservacion', $reservacionId);
+       if(!$reservacion){
+           throw $this->createNotFoundException('La reservacion solicitada no existe.');
+       }
+        
+        
+       return $this->render(sprintf('FrontendBundle:Reservacion:recibo.%s.twig',$format), array(
+           'reservacion' => $reservacion,
+       ));
+   }
+
 }
