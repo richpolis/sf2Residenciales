@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pdf>
-    <stylesheet>
-        <attribute name="color" value="white"/>
-        <attribute name="text-align" value="center"/>
-        <attribute name="padding" value="10px"/>
-        <complex-attribute name="background" color="gray" />
-    </stylesheet>
     <dynamic-page>
         <placeholders>
             <header height="20px">
@@ -35,39 +29,104 @@
         <h2>Detalle de reservación</h2>
         <table font-size="14px">
             <tr>
-                <td>Residencial</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+                    Residencial
+                </td>
                 <td>{{ reservacion.usuario.edificio.residencial }}</td>
             </tr>
             <tr>
-                <td>Edificio</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Edificio</td>
                 <td>{{ reservacion.usuario.edificio }}</td>
             </tr>
             <tr>
-                <td>Recurso</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Recurso</td>
                 <td>{{ reservacion.recurso}}</td>
             </tr>                                                                
             <tr>
-                <td>Usuario</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Usuario</td>
                 <td>{{ reservacion.usuario}}</td>
             </tr>
             <tr>
-                <td>Fecha apartado</td>
+                <td><stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            
+            Fecha apartado</td>
                 <td>{{ reservacion.createdAt|date('d-m-Y')}}</td>
             </tr>
             <tr>
-                <td>Fecha evento</td>
+                <td>
+                    
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Fecha evento</td>
                 <td>{{ reservacion.fechaEvento|date('d-m-Y')}}</td>
             </tr>
             <tr>
-                <td>Duración</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Duración</td>
                 <td>{{ reservacion.desde | date('g:ia')}} - {{ reservacion.hasta | date('g:ia')}}</td>
             </tr>
             <tr>
-                <td>Estatus</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Estatus</td>
                 <td>{{ reservacion.stringStatus }}</td>
             </tr>
             <tr>
-                <td>Cuota</td>
+                <td>
+                    <stylesheet>
+                        <attribute name="color" value="white"/>
+                        <attribute name="text-align" value="center"/>
+                        <attribute name="padding" value="10px"/>
+                        <complex-attribute name="background" color="gray" />
+                    </stylesheet>
+            Cuota</td>
                 <td>$ {{ reservacion.monto|number_format(2,".",",") }}</td>
             </tr>
         </table>
