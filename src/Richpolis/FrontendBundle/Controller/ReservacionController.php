@@ -583,7 +583,9 @@ class ReservacionController extends BaseController
                             ->getReservacionesPorFechaEvento($reservacion->getFechaEvento());
         $horarios = array();
         foreach($reservaciones as $reser){
-            $horarios[]= $reser->getHasta()->modify('+2 hours');
+            //$horarios[]= 
+            $reser->getHasta()->modify('+2 hours');
+            $horarios[] = $reser;
         }
         $resp = true;
         foreach($horarios as $horario){
