@@ -29,7 +29,8 @@
                                 <h2>{{recurso.stringRecurso}}</h2>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <select id="selectRecurso">
+                                        <div class="form-group">
+                                        <select id="selectRecurso" class="form-control">
                                             {% for rec in amenidades %}
                                                 {% if rec.id == recurso.id %}
                                                 <option value="{{rec.id}}" selected>{{rec.nombre}}</option>
@@ -38,6 +39,7 @@
                                                 {% endif %}    
                                             {% endfor %}    
                                         </select>
+                                        </div>
                                     </div>
                                     <div class="col-md-8">
                                         Seleccione la amenidad a Consultar/Reservar.
@@ -124,33 +126,28 @@
         right: 'month,agendaWeek,agendaDay,next'
       },
       editable: false,
-      titleFormat: {
-        month: "MMMM yyyy",
-        week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
-        day: "dddd, MMM d, yyyy"
-      },
       monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
       monthNamesShort: ["Ene","Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
       dayNames: ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"],
       dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
       buttonText: {
-                prev: "&nbsp;&#9668;&nbsp;",
-                next: "&nbsp;&#9658;&nbsp;",
-                prevYear: "&nbsp;&lt;&lt;&nbsp;",
-                nextYear: "&nbsp;&gt;&gt;&nbsp;",
-                today: "hoy",
-                month: "mes",
-                week: "semana",
-                day: "día"
+        prev: "&nbsp;&#9668;&nbsp;",
+        next: "&nbsp;&#9658;&nbsp;",
+        prevYear: "&nbsp;&lt;&lt;&nbsp;",
+        nextYear: "&nbsp;&gt;&gt;&nbsp;",
+        today: "hoy",
+        month: "mes",
+        week: "semana",
+        day: "día"
       },
       events: [
 	{% for reservacion in entities %}
         {
           {% if reservacion.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}  
-          title: 'Apartado',
+          title: '{{(reservacion.desde|date('ga'))~'-'~(reservacion.hasta|date('ga'))}} Apartado',
           color: 'orange',        
           {% elseif reservacion.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
-          title: 'Reservacion',
+          title: '{{(reservacion.desde|date('ga'))~'-'~(reservacion.hasta|date('ga'))}} Reservado',
           color: 'green',        
           {% endif %}
           start: '{{ (reservacion.fechaEvento|date('Y-m-d')) ~ 'T' ~ (reservacion.desde|date('H:i:00')) }}',
@@ -160,8 +157,8 @@
         {% endfor %}
       ],
       dayClick: function(date, allDay, jsEvent, view) {
-        
-        if(!(date >= fechaActual)){
+        debugger;
+        if(date < fechaActual){
             alert("Esta fecha no puede ser seleccionada");
             return false;
         }
@@ -183,11 +180,11 @@
             end: new Date(y, m, d, h2, m2),
             allDay: false,
             year: y,
-			month: m,
-			day: d,
-			hora: h1,
-			minuto: m1,
-			fecha: (y + "-" + (m+1) + "-" + d)
+            month: m,
+            day: d,
+            hora: h1,
+            minuto: m1,
+            fecha: (y + "-" + (m+1) + "-" + d)
         }
 	addReservacion(calEvent);
     }
@@ -270,15 +267,15 @@
             });
             
             $('#richpolis_frontendbundle_reservacion_desde').timepicker({
-                    timeFormat: 'HH:mm',
+                    timeFormat: 'HH:00',
                     stepHour: 1,
-                    stepMinute: 60,
+                    minute: 0,
             });
             
             $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
-                    timeFormat: 'HH:mm',
+                    timeFormat: 'HH:00',
                     stepHour: 1,
-                    stepMinute: 60,
+                    minute: 0,
             });
   }
 </script>

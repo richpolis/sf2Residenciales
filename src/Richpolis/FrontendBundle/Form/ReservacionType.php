@@ -36,7 +36,12 @@ class ReservacionType extends AbstractType
                 'attr'=>array('class'=>'form-control')
                 ))
             ->add('isAproved','hidden')
-            ->add('monto','text',array('read_only'=>true,'attr'=>array('class'=>'form-control')))
+            ->add('monto','money',array(
+                'currency'=>'MXN',
+                'grouping'=>true,
+                'read_only'=>true,
+                'attr'=>array('class'=>'form-control')
+                ))
             ->add('status','hidden')
             ->add($builder->create('recurso', 'hidden')->addModelTransformer($recursoTransformer))
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
