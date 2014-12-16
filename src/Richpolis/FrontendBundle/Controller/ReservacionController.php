@@ -545,10 +545,15 @@ class ReservacionController extends BaseController
                 $entity = $form->getData();
                 if($this->getValidarHorariosDisponibles($entity)){
                     $em->persist($entity);
+					if($entity->getMonto()==0){
+						$entity->setIsAproved(true);
+						$entity->setStatus(Reservacion::STATUS_APROBADA);
+					}
                     $em->flush();
                     $response = new JsonResponse(json_encode(array(
                        'html' => '',
                        'respuesta' => 'creado',
+						'costo'=>$entity->getMonto(),
                     )));
                     return $response;
                 }else{
@@ -580,7 +585,7 @@ class ReservacionController extends BaseController
     protected function getValidarHorariosDisponibles(Reservacion $reservacion){
         $em = $this->getDoctrine()->getManager();
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->getReservacionesPorFechaEvento($reservacion->getFechaEvento());
+                            ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(),$reservacion->getRecurso()->getId());
         $horarios = array();
         foreach($reservaciones as $reser){
             //$horarios[]= 

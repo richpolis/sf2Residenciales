@@ -108,6 +108,13 @@
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 <script>
     /* Calendar */
+	var lunes = {{(recurso.lunes)?"true":"false"}},
+		martes={{(recurso.martes)?"true":"false"}},
+		miercoles={{(recurso.miercoles)?"true":"false"}},
+		jueves = {{(recurso.jueves)?"true":"false"}},
+		viernes={{(recurso.viernes)?"true":"false"}},
+		sabado={{(recurso.sabado)?"true":"false"}},
+		domingo = {{(recurso.domingo)?"true":"false"}};
   var calEvent;
   $(document).ready(function() {
    
@@ -166,6 +173,54 @@
 
         h1 = date.getHours();
         m1 = date.getMinutes();
+		
+		diaSemana = date.getDay();
+		
+		switch(diaSemana){
+			case 0: //domingo
+				if(!domingo){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 1: // lunes
+				if(!lunes){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 2: //martes
+				if(!martes){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 3: //miercoles
+				if(!miercoles){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 4: //jueves
+				if(!jueves){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 5: //viernes
+				if(!viernes){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			case 6: //sabado
+				if(!sabado){
+					alert("Este dia no esta disponible para reservar");
+					return false;
+				}
+				break;
+			
+		}
 
         h2 = h1 + 1;
         m2 = m1;
@@ -226,7 +281,11 @@
               activarDateTimePicker();
           }else if(data.respuesta == 'creado'){
               $("#modalFormulario").modal("hide");
-              alert("Gracias, su reservación ha sido agendada, por favor cubra la cuota de uso en un lapso de 24 horas para ser respetada.");
+			  if(data.monto>0){
+			  	alert("Gracias, su reservación ha sido agendada, por favor cubra la cuota de uso en un lapso de 24 horas para ser respetada.");
+              }else{
+			  	alert("Gracias, su reservación ha sido agendada y aprobada.");
+			  }
               location.href='{{path('reservaciones')}}';
           }else if(data.respuesta == 'error'){
               alert(data.error);
@@ -267,12 +326,16 @@
                     timeFormat: 'HH:00',
                     stepHour: 1,
                     minute: 0,
+					hourMin: {{recurso.desde|date('G')}},
+					hourMax: {{recurso.hasta|date('G')}}
             });
             
             $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
                     timeFormat: 'HH:00',
                     stepHour: 1,
                     minute: 0,
+					hourMin: {{recurso.desde|date('G')}},
+					hourMax: {{recurso.hasta|date('G')}}
             });
   }
 </script>

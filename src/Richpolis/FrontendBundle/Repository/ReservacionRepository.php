@@ -16,14 +16,17 @@ use Richpolis\FrontendBundle\Entity\Reservacion;
  */
 class ReservacionRepository extends EntityRepository
 {
-    public function getReservacionesPorFechaEvento($fecha){
+    public function getReservacionesPorFechaEvento($fecha, $recurso){
         $em = $this->getEntityManager();
         $consulta = $em->createQuery("SELECT s "
             . "FROM FrontendBundle:Reservacion s "
+			. "JOIN s.recurso i "
             . "WHERE s.fechaEvento=:fecha "
+			. "AND i.id=:recurso "
             . "ORDER BY s.desde ASC");
         $consulta->setParameters(array(
             'fecha'=>$fecha->format('Y-m-d'),
+			'recurso'=>$recurso,
         ));
         return $consulta->getResult();
     }
