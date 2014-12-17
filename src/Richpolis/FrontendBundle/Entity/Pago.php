@@ -131,6 +131,7 @@ class Pago
     {
         $this->cargos = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isAproved = false;
+        $this->status = Pago::STATUS_SOLICITUD;
     }
 
     /*** uploads ***/

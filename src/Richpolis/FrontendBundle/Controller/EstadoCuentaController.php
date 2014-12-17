@@ -781,7 +781,7 @@ class EstadoCuentaController extends BaseController
         $cargo->setIsAcumulable(true);
         $cargo->setIsPaid(true);
         $em->persist($cargo);
-        return true;
+        return $cargo;
     }
     
     public function generarCargoReservacion(&$reservacion,&$usuario,&$pago,&$em) {
@@ -794,6 +794,7 @@ class EstadoCuentaController extends BaseController
         $cargo->setIsAcumulable(false);
         $cargo->setPago($pago);
         $em->persist($cargo);
+        return $cargo;
     }
 
 }

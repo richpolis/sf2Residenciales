@@ -499,9 +499,6 @@ class AvisoController extends BaseController
      * Aprobar reservacion.
      */
     public function aprobarReservacion(Reservacion &$reservacion, &$em) {
-        $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        
-        
         $texto = "Reservación " . $reservacion->getRecurso()->getNombre() . " Aprobada.<br/>";
         $texto = "reservación: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
         $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
@@ -511,9 +508,9 @@ class AvisoController extends BaseController
         $aviso->setTitulo("Reservación aprobada");
         $aviso->setAviso($texto);
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($reservacion->getUsuario());
+        $aviso->setResidencial($reservacion->getUsuario()->getEdificio()->getResidencial());
         $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+        $aviso->setUsuario($reservacion->getUsuario());
         $em->persist($aviso);
         //$em->flush();
 
@@ -524,8 +521,6 @@ class AvisoController extends BaseController
      * Rechazar reservacion.
      */
     public function rechazarReservacion(Reservacion &$reservacion, &$em) {
-        $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        
         $texto = "Reservación " . $reservacion->getRecurso()->getNombre() . " Rechazada.<br/>";
         $texto = "reservación: " . $reservacion->getFechaEvento()->format('d-m-Y') . "<br/>";
         $texto .= "desde las : " . $reservacion->getDesde()->format('g:ia') . "<br/>";
@@ -536,9 +531,9 @@ class AvisoController extends BaseController
         $aviso->setAviso($texto);
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
         $aviso->getTipoAviso(Aviso::TIPO_NOTIFICACION);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($reservacion->getUsuario());
+        $aviso->setResidencial($reservacion->getUsuario()->getEdificio()->getResidencial());
         $aviso->addEdificio($reservacion->getUsuario()->getEdificio());
+        $aviso->setUsuario($reservacion->getUsuario());
         $em->persist($aviso);
         //$em->flush();
         
@@ -549,8 +544,6 @@ class AvisoController extends BaseController
      * Aprobar pago.
      */
     public function aprobarPago(Pago &$pago, &$em) {
-        $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        
         $texto = "Su pago con monto " . $pago->getMonto() . " ha sido aprobado.<br/>";
         $texto .= "Con fecha de pago: ".$pago->getCreatedAt()->format('d-m-Y G:ia').".<br/>";
         $texto .= "Gracias por su pago.<br/>";
@@ -559,9 +552,9 @@ class AvisoController extends BaseController
         $aviso->setTitulo("Gracias por su pago");
         $aviso->setAviso($texto);
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($pago->getUsuario());
+        $aviso->setResidencial($pago->getUsuario()->getEdificio()->getResidencial());
         $aviso->addEdificio($pago->getUsuario()->getEdificio());
+        $aviso->setUsuario($pago->getUsuario());
         $em->persist($aviso);
         //$em->flush();
 
@@ -572,8 +565,6 @@ class AvisoController extends BaseController
      * Rechazar pago.
      */
     public function rechazarPago(Pago &$pago, &$em) {
-        $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        
         $texto = "Su pago con monto " . $pago->getMonto() . " ha sido rechazado.<br/>";
         $texto .= "Con fecha de pago: ".$pago->getCreatedAt()->format('d-m-Y G:ia').".<br/>";
         $texto .= "Favor de revisar su comprobante de pago<br/>";
@@ -583,9 +574,9 @@ class AvisoController extends BaseController
         $aviso->setAviso($texto);
         $aviso->setTipoAcceso(Aviso::TIPO_ACCESO_PRIVADO);
         $aviso->setTipoAviso(Aviso::TIPO_NOTIFICACION);
-        $aviso->setResidencial($residencial);
-        $aviso->setUsuario($pago->getUsuario());
+        $aviso->setResidencial($pago->getUsuario()->getEdificio()->getResidencial());
         $aviso->addEdificio($pago->getUsuario()->getEdificio());
+        $aviso->setUsuario($pago->getUsuario());
         $em->persist($aviso);
         //$em->flush();
 

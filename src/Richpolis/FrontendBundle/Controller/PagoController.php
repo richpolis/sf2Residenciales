@@ -349,6 +349,7 @@ class PagoController extends BaseController
         $pago = $em->find('FrontendBundle:Pago', $request->request->get('pago'));
         $monto = 0;
         $pago->setIsAproved(true);
+        $pago->setStatus(Pago::STATUS_APROBADA);
         $avisoController = $this->get('richpolis.aviso.controller');
         foreach ($pago->getCargos() as $cargo) {
             $cargo->setIsPaid(true);
@@ -363,7 +364,8 @@ class PagoController extends BaseController
             $em->persist($cargo);
         }
         if ($monto > 0) {
-            $this->get('richpolis.cargo.controller')->generarPago($monto,$pago->getUsuario(),$em);
+            $usuario = $pago->getUsuario();
+            $cargo = $this->get('richpolis.cargo.controller')->generarPago($monto,$usuario,$em);
             $em->flush();
             $pago->addCargo($cargo);
         }
@@ -371,8 +373,8 @@ class PagoController extends BaseController
         $em->flush();
         
         if($request->isXmlHttpRequest()){
-            return $this->renderView('FrontendBundle:Pago:item.html.twig', array(
-               'entity'=>$entity, 
+            return $this->render('FrontendBundle:Pago:item.html.twig', array(
+               'entity'=>$pago, 
             ));
         }
         
@@ -394,11 +396,12 @@ class PagoController extends BaseController
             $em->flush();
         }
         $pago->setIsAproved(false);
+        $pago->setStatus(Pago::STATUS_RECHAZADA);
         $this->get('richpolis.aviso.controller')->rechazarPago($pago,$em);
         $em->flush();
         if($request->isXmlHttpRequest()){
-            return $this->renderView('FrontendBundle:Pago:item.html.twig', array(
-               'entity'=>$entity, 
+            return $this->render('FrontendBundle:Pago:item.html.twig', array(
+               'entity'=>$pago, 
             ));
         }
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));

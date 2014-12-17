@@ -21,6 +21,7 @@ class PagoFrontendType extends AbstractType
             ->add('isAproved','hidden')
             ->add('referencia',null,array('label'=>'Referencia','attr'=>array('class'=>'form-control'))) 
             ->add('archivo','hidden')
+            ->add('status','hidden')
             ->add('file','file',array('label'=>'Comprobante','attr'=>array('class'=>'form-control')))
             ->add('monto','hidden')
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))

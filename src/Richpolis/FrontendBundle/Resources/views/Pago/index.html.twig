@@ -69,7 +69,7 @@
                                <th>Usuario</th>
                                <th>Monto</th>
                                <th>Fecha pago</th>
-                               <th>Aprobado</th>
+                               <th>Estatus</th>
                                <th>Actions</th>
                            </tr>
                        </thead>
@@ -153,10 +153,11 @@ $(document).ready(function() {
 
 function mostrarPago(pago){
     var url = '{{path('pagos_show',{'id':0})}}'+pago;
-    $.dialogModalRS(url);
+    $().dialogModalRS(url);
 }
 
 function aprobarPago(pago){
+    debugger;
     var url = '{{path('pagos_aprobar')}}';
     bootbox.confirm("Confirma aprobar el pago?", function(result) {
       if(result){
@@ -168,7 +169,7 @@ function aprobarPago(pago){
             success: function(data){
                $("#registro-"+pago).html($(data).html());
             },
-            fail: function(data){
+            error: function(data){
                 alert("Error");
                 console.log(data);
             }
@@ -178,6 +179,7 @@ function aprobarPago(pago){
 }
 
 function rechazarPago(pago){
+    debugger;
     var url = '{{path('pagos_rechazar')}}';
     bootbox.confirm("Confirma rechazar el pago?", function(result) {
       if(result){
@@ -189,7 +191,7 @@ function rechazarPago(pago){
             success: function(data){
                $("#registro-"+pago).html($(data).html());
             },
-            fail: function(data){
+            error: function(data){
                 alert("Error");
                 console.log(data);
             }

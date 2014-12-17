@@ -171,8 +171,19 @@ class DefaultController extends BaseController {
     
     public function residencialNameAction(){
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        
+        $context = $this->get('security.context');
+        if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
+            $entities = $this->getDoctrine()->getRepository('BackendBundle:Residencial')->findAll();
+        }else if(true === $context->isGranted('ROLE_ADMIN')){
+           $entities = $this->getUser()->getResidenciales();
+        }else{
+            $entities = array();
+        }
+        
         return $this->render('FrontendBundle:Default:residencialName.html.twig', array(
             'objeto'=>$residencial,
+            'residenciales'=>$entities,
         ));
     }
     
@@ -189,13 +200,14 @@ class DefaultController extends BaseController {
         ));
     }
 	
-	/**
+    /**
      * @Route("/cambiar/residencial", name="cambiar_residencial")
      */
     public function cambiarResidencialAction(Request $request) {
         $filtros = $this->getFilters();
         if($request->query->has('residencial') == true){
             $filtros['residencial'] = $request->query->get('residencial');
+            unset($filtros['edificio']);
             $pagina = $request->query->get('pagina','homepage');
             $this->setFilters($filtros);
         }

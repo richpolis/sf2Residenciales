@@ -79,13 +79,13 @@
                                                         <button id="realizarPago" onclick="addPago();" data-monto="{{monto}}" class="btn btn-success">Subir comprobante de pago</button>
                                                         <span style="padding: 10px">Referencia del pago: {{app.user.folioDePago}}</span>
                                                         {% endif %}
-                                                        <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
+                                                        <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Recibo</a>
                                                     </th>
                                                 {% else %}
                                                     <th colspan="6">
                                                         Sin saldo pendiente
                                                         {% if entities | length > 0 %}
-                                                            <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Comprobante</a>
+                                                            <a href="{{path('estadodecuentas_recibo',{'_format':'pdf','month':month,'year':year})}}" class="btn btn-info pull-right" target="_blank">Recibo</a>
                                                         {% endif %}    
                                                     </th>
                                                 {% endif %}

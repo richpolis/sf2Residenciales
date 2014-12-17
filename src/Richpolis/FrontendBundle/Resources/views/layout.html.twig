@@ -97,9 +97,7 @@
                     <i class="fa fa-bars"></i>
                 </a>
                 <!-- Site name for smallar screens -->
-                <a href="{{path('homepage')}}" class="navbar-brand">
-                    <span class="bold">Dashboard | {{render(controller('FrontendBundle:Default:residencialName'))}}</span>
-                </a>
+                {{render(controller('FrontendBundle:Default:residencialName'))}}
             </div>
             <!-- Navigation starts -->
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">         
@@ -265,6 +263,12 @@
         });
         function cambiarEdificio(){
             var select = $('.cambiar-edificio');
+            var url = select.find('option:selected').data('url');
+            var actualUrl = '{{pagina}}';
+            location.href = url + "&pagina=" + actualUrl;
+        }
+        function cambiarResidencial(){
+            var select = $('.cambiar-residencial');
             var url = select.find('option:selected').data('url');
             var actualUrl = '{{pagina}}';
             location.href = url + "&pagina=" + actualUrl;

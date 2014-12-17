@@ -77,12 +77,11 @@
                                                         {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
                                                             {% if entity.monto>0 and entity.pago is null %}    
                                                                 <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Subir comprobante de pago</button>
-                                                            {% else %}
-                                                                <a href="{{path('reservaciones_recibo',{'reservacion': entity.id,'_format':'pdf'})}}" target="_blank" class="btn btn-info">Comprobante</a>
+                                                            {% elseif entity.monto>0 %}
+                                                                <span class="label label-info">Validando pago</span>
                                                             {% endif %}
                                                         {% elseif entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
-                                                            {{entity.pago}}
-															{% if entity.monto>0 and entity.pago is null %}    
+                                                            {% if entity.monto>0 and entity.pago is null %}    
                                                                 <button onclick="addPago({{entity.id}});" data-monto="{{entity.monto}}" class="btn btn-success">Subir comprobante de pago</button>
                                                             {% endif %}
                                                             <a href="{{path('reservaciones_recibo',{'reservacion': entity.id,'_format':'pdf'})}}" target="_blank" class="btn btn-info">Comprobante</a>

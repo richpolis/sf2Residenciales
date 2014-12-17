@@ -480,7 +480,7 @@ class ReservacionController extends BaseController
         $em->flush();
         
         if($request->isXmlHttpRequest()){
-            return $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
+            return $this->render('FrontendBundle:Reservacion:item.html.twig', array(
                'entity'=> $reservacion,
             ));
         }
@@ -509,7 +509,7 @@ class ReservacionController extends BaseController
        $em->flush();
        
        if($request->isXmlHttpRequest()){
-            return $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
+            return $this->render('FrontendBundle:Reservacion:item.html.twig', array(
                'entity'=> $reservacion,
             ));
         }

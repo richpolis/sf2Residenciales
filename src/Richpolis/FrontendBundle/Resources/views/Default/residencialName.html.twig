@@ -1,1 +1,23 @@
-{{ objeto }}
+{% if is_granted('ROLE_ADMIN') %}
+<form class="navbar-form navbar-left" role="form" action="#" method="post" style="margin: none; background-color: transparent; padding: 5px; width: 300px;">
+    <div class="form-group">
+        <select name="seleccionar" onchange="cambiarResidencial()" class="form-control cambiar-residencial" style="color: #000000;">
+            {% for residencial in residenciales %}
+                {% if residencial.id == objeto.id %}
+                <option value="{{objeto.id}}" selected>{{objeto}}</option>
+                {% else %}
+                <option value="{{residencial.id}}" data-url="{{path('cambiar_residencial')}}?residencial={{residencial.id}}">{{residencial}}</option>
+                {% endif %}    
+            {% else %}
+                <option value="0" selected>Crear Residenciales</option>
+            {% endfor %}    
+        </select>
+    </div>
+</form>
+{% else %}
+    <a href="{{path('homepage')}}" class="navbar-brand">
+        <span class="bold">Dashboard | {{ objeto }}</span>
+    </a>   
+{% endif %}
+
+
