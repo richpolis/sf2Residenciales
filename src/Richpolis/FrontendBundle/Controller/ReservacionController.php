@@ -179,7 +179,7 @@ class ReservacionController extends BaseController
         }
         
         if($request->isXmlHttpRequest()){
-            return $this->renderView('FrontendBundle:Reservacion:comprobante.html.twig', array(
+            return $this->render('FrontendBundle:Reservacion:comprobante.html.twig', array(
                'entity'=>$entity, 
             ));
         }
@@ -189,7 +189,7 @@ class ReservacionController extends BaseController
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
-			'edificio' => $this->getEdificioActual(),
+            'edificio' => $this->getEdificioActual(),
         );
     }
 

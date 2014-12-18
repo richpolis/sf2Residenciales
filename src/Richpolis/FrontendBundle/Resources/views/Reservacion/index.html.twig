@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
   <!-- modal -->
   <link rel="stylesheet" href="{{asset('css/modal.css')}}"> 
+  
+  <!-- prettyPhoto -->
+  <link rel="stylesheet" href="{{asset('css/prettyPhoto.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -96,6 +99,7 @@
   {{ parent() }}
 
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -110,6 +114,7 @@
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
 <script src="{{asset('js/jquery.modal2.js')}}"></script> <!-- ventana modal -->
+
 
 <script>
 var editarRegistro = function(url){
@@ -130,19 +135,19 @@ var eliminarRegistro = function(){
 
 
 $(document).ready(function() {
-    $('#datatable').dataTable({
+    /*$('#datatable').dataTable({
         "sPaginationType": "full_numbers",
         "sNext":"Siguiente",
         "sLast":"Ultimo",
         "sFirst":"Primero",
         "sPrevious": "Anterior",
-    });
+    });*/
+    $("a[rel^='prettyPhoto']").prettyPhoto();
 });
 
 
 function mostrarReservacion(reservacion){
-    var url = '{{path('reservaciones_show',{'id':0})}}'+reservacion;
-    $.dialogModalRS(url);
+   
 }
 
 function aprobarPago(reservacion){
@@ -156,6 +161,7 @@ function aprobarPago(reservacion){
             data: {'reservacion': reservacion },
             success: function(data){
                $("#registro-"+reservacion).html($(data).html());
+               $("a[rel^='prettyPhoto']").prettyPhoto();
             },
             fail: function(data){
                 alert("Error");
@@ -177,6 +183,7 @@ function rechazarPago(reservacion){
             data: {'reservacion': reservacion},
             success: function(data){
                $("#registro-"+reservacion).html($(data).html());
+               $("a[rel^='prettyPhoto']").prettyPhoto();
             },
             fail: function(data){
                 alert("Error");

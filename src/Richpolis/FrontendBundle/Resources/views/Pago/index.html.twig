@@ -11,7 +11,9 @@
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
   <!-- modal -->
-  <link rel="stylesheet" href="{{asset('css/modal.css')}}">    
+  <link rel="stylesheet" href="{{asset('css/modal.css')}}">   
+  <!-- prettyPhoto -->
+  <link rel="stylesheet" href="{{asset('css/prettyPhoto.css')}}">   
 {% endblock %}
 
 {% block mainbar %}
@@ -109,6 +111,7 @@
   {{ parent() }}
 
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
+<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -149,6 +152,7 @@ $(document).ready(function() {
         "sFirst":"Primero",
         "sPrevious": "Anterior",
     });
+     $("a[rel^='prettyPhoto']").prettyPhoto();
 });
 
 function mostrarPago(pago){
@@ -167,10 +171,13 @@ function aprobarPago(pago){
             dataType: 'json',
             data: {'pago': pago},
             success: function(data){
+                debugger;
                $("#registro-"+pago).html($(data).html());
+               $("a[rel^='prettyPhoto']").prettyPhoto();
             },
             error: function(data){
                 alert("Error");
+                debugger;
                 console.log(data);
             }
          });
@@ -189,10 +196,13 @@ function rechazarPago(pago){
             dataType: 'json',
             data: {'pago': pago},
             success: function(data){
+                debugger;
                $("#registro-"+pago).html($(data).html());
+               $("a[rel^='prettyPhoto']").prettyPhoto();
             },
             error: function(data){
                 alert("Error");
+                debugger;
                 console.log(data);
             }
          });

@@ -7,7 +7,7 @@
     <td>
         <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
         <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}', '#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
-        <button onclick="javascript:mostrarPago({{entity.id}});" class="btn btn-xs btn-warning"><i class="fa fa-eye"></i></button>
+        <a rel="prettyPhoto[ajax]" href="{{ path('pagos_show', { 'id': entity.id }) }}?ajax=true&width=90%" class="btn btn-xs btn-warning"><i class="fa fa-eye"></i></button>
         {% if entity.isAproved == false %}
             {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Pago::STATUS_SOLICITUD') %}
             <button onclick="javascript:aprobarPago({{entity.id}});" class="btn btn-xs btn-success"><i class="fa fa-check"></i></button>
