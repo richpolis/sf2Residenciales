@@ -31,7 +31,19 @@
                                     <div class="padd contenido-formulario">
                                         <!-- Form starts.  -->
                                         <form action="{{ path('perfil_usuario') }}" id="formUsuarios" method="post" {{ form_enctype(form)}}>
-                                            {{form_widget(form)}}
+                                            <fieldset>
+                                                <legend>Generales:</legend>
+                                                {{ form_row(form.email) }}
+                                                {{ form_row(form.nombre) }}
+                                                {{ form_row(form.telefono) }}
+                                                {{ form_row(form.numero) }}
+                                            </fieldset>
+                                            <br/>
+                                            <fieldset>
+                                                <legend>Seguridad:</legend>
+                                                {{ form_row(form.password) }}
+                                                {{ form_rest(form) }}
+                                            </fieldset>
                                         </form>
                                     </div>
                                 </div>

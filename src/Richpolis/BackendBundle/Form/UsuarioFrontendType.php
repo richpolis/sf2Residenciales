@@ -21,7 +21,16 @@ class UsuarioFrontendType extends AbstractType
         
         $builder
             ->add('email','email',array('attr'=>array('class'=>'form-control')))
-            ->add('password','password',array('attr'=>array('class'=>'form-control')))
+            ->add('password', 'repeated', array(
+                'type' => 'password',
+                'invalid_message' => 'Las dos contraseñas deben coincidir',
+                'first_options'   => array('label' => 'Contraseña'),
+                'second_options'  => array('label' => 'Repite Contraseña'),
+                'required'        => false,
+                'options' => array(
+                    'attr'=>array('class'=>'form-control placeholder')
+                )
+            )) 
             ->add('salt','hidden')
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
             ->add('telefono','text',array('attr'=>array('class'=>'form-control')))
@@ -32,14 +41,7 @@ class UsuarioFrontendType extends AbstractType
                 'attr'=>array('class'=>'form-control')
                 ))
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
-            ->add('isActive',null,array(
-                'label'=>'Activo?',
-                'read_only'=>true,
-                'attr'=>array(
-                    'class'=>'checkbox-inline',
-                    'placeholder'=>'Es activo',
-                    'data-bind'=>'value: isActive'
-                )))
+            ->add('isActive','hidden')
             ->add('grupo','hidden')    
         ;
     }

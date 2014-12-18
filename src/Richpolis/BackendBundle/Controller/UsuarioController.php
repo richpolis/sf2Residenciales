@@ -66,12 +66,13 @@ class UsuarioController extends BaseController
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
         $data = $form->getData();
+        $password = $data->getPassword();
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $this->setSecurePassword($entity);
             $em->persist($entity);
             $em->flush();
-            $this->enviarUsuarioCreado($data->getEmail(), $data->getPassword(), $entity);
+            $this->enviarUsuarioCreado($data->getEmail(), $password, $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $entity->getId())));
         }
 
