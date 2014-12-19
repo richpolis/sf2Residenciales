@@ -792,7 +792,8 @@ class EstadoCuentaController extends BaseController
         $cargo->setUsuario($usuario);
         $cargo->setTipoCargo(EstadoCuenta::TIPO_CARGO_RESERVACION);
         $cargo->setIsAcumulable(false);
-        $cargo->setPago($pago);
+        //$cargo->setPago($pago);
+        $pago->addCargo($cargo);
         $em->persist($cargo);
         return $cargo;
     }

@@ -35,11 +35,7 @@ class UsuarioFrontendType extends AbstractType
             ->add('nombre','text',array('attr'=>array('class'=>'form-control')))
             ->add('telefono','text',array('attr'=>array('class'=>'form-control')))
             ->add('imagen','hidden')
-            ->add('numero','text',array(
-                'label'=>'Departamento',
-                'read_only'=>true,
-                'attr'=>array('class'=>'form-control')
-                ))
+            ->add('numero','hidden')
             ->add($builder->create('edificio', 'hidden')->addModelTransformer($edificioTransformer))
             ->add('isActive','hidden')
             ->add('grupo','hidden')    

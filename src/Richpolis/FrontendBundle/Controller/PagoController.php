@@ -586,13 +586,16 @@ class PagoController extends BaseController
                 $pago = $form->getData();
                 $pago->setIsAproved(false);
                 $em->persist($pago);
-                $this->get('richpolis.cargo.controller')
+                $cargo = $this->get('richpolis.cargo.controller')
                      ->generarCargoReservacion($reservacion,$usuario,$pago,$em);
                 
                 $reservacion->setPago($pago);
                 $reservacion->setIsAproved(true);
                 $em->persist($reservacion);
-
+                // se agrego el cargo en el pago.
+                //$pago->addCargo($cargo);
+                $em->persist($pago);
+                
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
                     'html' => '',
