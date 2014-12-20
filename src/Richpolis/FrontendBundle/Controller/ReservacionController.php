@@ -11,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Richpolis\FrontendBundle\Entity\Reservacion;
 use Richpolis\FrontendBundle\Form\ReservacionType;
 use Richpolis\FrontendBundle\Entity\Aviso;
-
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 use Ps\PdfBundle\Annotation\Pdf;
 
@@ -20,8 +19,7 @@ use Ps\PdfBundle\Annotation\Pdf;
  *
  * @Route("/reservaciones")
  */
-class ReservacionController extends BaseController
-{
+class ReservacionController extends BaseController {
 
     /**
      * Lists all Reservacion entities.
@@ -29,34 +27,31 @@ class ReservacionController extends BaseController
      * @Route("/", name="reservaciones")
      * @Method("GET")
      */
-    public function indexAction(Request $request)
-    {
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+    public function indexAction(Request $request) {
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             return $this->adminIndex($request);
-        }else{
+        } else {
             return $this->usuariosIndex($request);
         }
     }
-    
-    public function adminIndex(Request $request)
-    {
+
+    public function adminIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        
+
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                        ->findReservacionesPorEdificio($edificioActual);
+                ->findReservacionesPorEdificio($edificioActual);
 
         return $this->render("FrontendBundle:Reservacion:index.html.twig", array(
-            'entities' => $reservaciones,
-            'residencial'=>$residencialActual,
-            'edificio'=>$edificioActual,
+                    'entities' => $reservaciones,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
         ));
     }
-    
-    public function usuariosIndex(Request $request)
-    {
+
+    public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
@@ -71,15 +66,15 @@ class ReservacionController extends BaseController
                 ->findReservacionesPorUsuarioPorFecha($this->getUser(), $month, $year);
 
         return $this->render("FrontendBundle:Reservacion:reservaciones.html.twig", array(
-              'entities' => $reservaciones,
-              'residencial' => $residencialActual,
-              'edificio' => $edificioActual,
-              'month' => $month,
-              'year' => $year,
-              'nombreMes' => $nombreMes,
+                    'entities' => $reservaciones,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
-    
+
     /**
      * Creates a new Reservacion entity.
      *
@@ -87,8 +82,7 @@ class ReservacionController extends BaseController
      * @Method("POST")
      * @Template("FrontendBundle:Reservacion:new.html.twig")
      */
-    public function createAction(Request $request)
-    {
+    public function createAction(Request $request) {
         $entity = new Reservacion();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -97,7 +91,7 @@ class ReservacionController extends BaseController
             $em = $this->getDoctrine()->getManager();
             if ($entity->getMonto() == 0) {
                 $entity->setIsAproved(true);
-            }else{
+            } else {
                 $entity->setIsAproved(false);
             }
             $entity->setStatus(Reservacion::STATUS_SOLICITUD);
@@ -109,7 +103,7 @@ class ReservacionController extends BaseController
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form)
         );
     }
@@ -121,8 +115,7 @@ class ReservacionController extends BaseController
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(Reservacion $entity)
-    {
+    private function createCreateForm(Reservacion $entity) {
         $form = $this->createForm(new ReservacionType(), $entity, array(
             'action' => $this->generateUrl('reservaciones_create'),
             'method' => 'POST',
@@ -168,8 +161,7 @@ class ReservacionController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function showAction(Request $request,$id)
-    {
+    public function showAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Reservacion')->find($id);
@@ -177,17 +169,17 @@ class ReservacionController extends BaseController
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Reservacion entity.');
         }
-        
-        if($request->isXmlHttpRequest()){
+
+        if ($request->isXmlHttpRequest()) {
             return $this->render('FrontendBundle:Reservacion:comprobante.html.twig', array(
-               'entity'=>$entity, 
+                        'entity' => $entity,
             ));
         }
-        
+
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'      => $entity,
+            'entity' => $entity,
             'delete_form' => $deleteForm->createView(),
             'edificio' => $this->getEdificioActual(),
         );
@@ -200,8 +192,7 @@ class ReservacionController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
-    {
+    public function editAction($id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Reservacion')->find($id);
@@ -214,23 +205,22 @@ class ReservacionController extends BaseController
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
-			'edificio' => $this->getEdificioActual(),
+            'edificio' => $this->getEdificioActual(),
         );
     }
 
     /**
-    * Creates a form to edit a Reservacion entity.
-    *
-    * @param Reservacion $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createEditForm(Reservacion $entity)
-    {
+     * Creates a form to edit a Reservacion entity.
+     *
+     * @param Reservacion $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(Reservacion $entity) {
         $form = $this->createForm(new ReservacionType(), $entity, array(
             'action' => $this->generateUrl('reservaciones_update', array('id' => $entity->getId())),
             'method' => 'PUT',
@@ -241,6 +231,7 @@ class ReservacionController extends BaseController
 
         return $form;
     }
+
     /**
      * Edits an existing Reservacion entity.
      *
@@ -248,8 +239,7 @@ class ReservacionController extends BaseController
      * @Method("PUT")
      * @Template("FrontendBundle:Reservacion:edit.html.twig")
      */
-    public function updateAction(Request $request, $id)
-    {
+    public function updateAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Reservacion')->find($id);
@@ -269,21 +259,21 @@ class ReservacionController extends BaseController
         }
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
-			'edificio' => $this->getEdificioActual(),
+            'edificio' => $this->getEdificioActual(),
         );
     }
+
     /**
      * Deletes a Reservacion entity.
      *
      * @Route("/{id}", name="reservaciones_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
-    {
+    public function deleteAction(Request $request, $id) {
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 
@@ -309,132 +299,124 @@ class ReservacionController extends BaseController
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm($id)
-    {
+    private function createDeleteForm($id) {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('reservaciones_delete', array('id' => $id)))
-            ->setMethod('DELETE')
-            //->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
+                        ->setAction($this->generateUrl('reservaciones_delete', array('id' => $id)))
+                        ->setMethod('DELETE')
+                        //->add('submit', 'submit', array('label' => 'Delete'))
+                        ->getForm()
         ;
     }
-    
+
     /**
      * Seleccionar edificio para la reservacion.
      *
      * @Route("/seleccionar/edificio", name="reservaciones_select_edificio")
      * @Template("FrontendBundle:Reservacion:select.html.twig")
      */
-    public function selectEdificioAction(Request $request)
-    {
+    public function selectEdificioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
-        if($request->query->has('edificio')){
+        if ($request->query->has('edificio')) {
             $filtros = $this->getFilters();
             $filtros['edificio'] = $request->query->get('edificio');
             $this->setFilters($filtros);
             return $this->redirect($this->generateUrl('reservaciones_select_recurso'));
         }
-        
+
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificios = $em->getRepository('BackendBundle:Edificio')
-                        ->findBy(array('residencial'=>$residencialActual));
-        
+                ->findBy(array('residencial' => $residencialActual));
+
         return array(
-            'entities'=>$edificios,
-            'residencial'=>$residencialActual,
+            'entities' => $edificios,
+            'residencial' => $residencialActual,
             'ruta' => 'reservaciones_select_edificio',
             'campo' => 'edificio',
             'titulo' => 'Seleccionar edificio',
             'return' => 'reservaciones',
         );
-        
     }
-    
+
     /**
      * Seleccionar recurso para reservacion.
      *
      * @Route("/seleccionar/recurso", name="reservaciones_select_recurso")
      * @Template("FrontendBundle:Reservacion:select.html.twig")
      */
-    public function selectRecursoAction(Request $request)
-    {
+    public function selectRecursoAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        
-        if($request->query->has('recurso')){
+
+        if ($request->query->has('recurso')) {
             $filtros = $this->getFilters();
             $filtros['recurso'] = $request->query->get('recurso');
             $this->setFilters($filtros);
             return $this->redirect($this->generateUrl('reservaciones_select_usuario'));
         }
-        
+
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $recursos = $em->getRepository('BackendBundle:Recurso')
-                       ->getRecursosPorEdificio($edificio->getId(),$residencialActual->getId());
-        
+                ->getRecursosPorEdificio($edificio->getId(), $residencialActual->getId());
+
         return array(
-            'entities'=>$recursos,
-            'residencial'=>$residencialActual,
-            'edificio'=> $edificio,
+            'entities' => $recursos,
+            'residencial' => $residencialActual,
+            'edificio' => $edificio,
             'ruta' => 'reservaciones_select_recurso',
             'campo' => 'recurso',
             'titulo' => 'Seleccionar recurso',
             'return' => 'reservaciones',
         );
-        
     }
-    
+
     /**
      * Seleccionar usuario para reservacion.
      *
      * @Route("/seleccionar/usuario", name="reservaciones_select_usuario")
      * @Template("FrontendBundle:Reservacion:selectUsuario.html.twig")
      */
-    public function selectUsuarioAction(Request $request)
-    {
+    public function selectUsuarioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        
-        if($request->query->has('usuario')){
+
+        if ($request->query->has('usuario')) {
             $filtros = $this->getFilters();
             $filtros['usuario'] = $request->query->get('usuario');
             $this->setFilters($filtros);
             return $this->redirect($this->generateUrl('reservaciones_new'));
         }
-        
+
         //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                       ->findBy(array('edificio'=>$edificio));
-        
+                ->findBy(array('edificio' => $edificio));
+
         return array(
-            'entities'=>$usuarios,
-            'residencial'=>$residencialActual,
-            'edificio'=> $edificio,
+            'entities' => $usuarios,
+            'residencial' => $residencialActual,
+            'edificio' => $edificio,
             'ruta' => 'reservaciones_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Seleccionar usuario que hace la reservacion',
             'return' => 'reservaciones_select_recurso',
         );
-        
     }
-    
+
     /**
      * Calendario de reservaciones.
      *
      * @Route("/calendario", name="reservaciones_calendario")
      * @Template()
      */
-    public function calendarioAction(Request $request)
-    {
+    public function calendarioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
         $recursos = $em->getRepository('BackendBundle:Recurso')
-                               ->getRecursosPorEdificio($edificioActual->getId(),$residencialActual->getId());
-        if($request->query->has('recurso')){
+                ->getRecursosPorEdificio($edificioActual->getId(), $residencialActual->getId());
+        if ($request->query->has('recurso')) {
             $filtros = $this->getFilters();
             $filtros['recurso'] = $request->query->get('recurso');
             $this->setFilters($filtros);
@@ -442,24 +424,24 @@ class ReservacionController extends BaseController
         $recursoActual = $this->getRecursoActual();
         $fecha = new \DateTime();
         $fecha->modify('-1 month');
-        if($recursoActual){
+        if ($recursoActual) {
             $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                                 ->findReservacionesPorRecursoReservadas($recursoActual, $fecha);
-        }else{
+                    ->findReservacionesPorRecursoReservadas($recursoActual, $fecha);
+        } else {
             $reservaciones = array();
         }
-        /*$recursosR = array();
-        foreach($recursosEdificio as $recurso){
-            $recursosR[]=array('id'=>$recurso->getId(),'nombre'=>$recurso->getNombre());
-        }*/
-        
+        /* $recursosR = array();
+          foreach($recursosEdificio as $recurso){
+          $recursosR[]=array('id'=>$recurso->getId(),'nombre'=>$recurso->getNombre());
+          } */
+
         return array(
             'amenidades' => $recursos,
             'entities' => $reservaciones,
             'recurso' => $recursoActual,
         );
     }
-    
+
     /**
      * Aprobar reservacion.
      *
@@ -470,22 +452,22 @@ class ReservacionController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $reservacion = $em->find('FrontendBundle:Reservacion', $id);
-        
-        if($reservacion){
+
+        if ($reservacion) {
             $reservacion->setIsAproved(true);
             $reservacion->setStatus(Reservacion::STATUS_APROBADA);
             $em->persist($reservacion);
-            $this->get('richpolis.controller.aviso')->aprobarReservacion($reservacion,$em);
+            $this->get('richpolis.controller.aviso')->aprobarReservacion($reservacion, $em);
         }
         $em->flush();
-        
-        if($request->isXmlHttpRequest()){
+
+        if ($request->isXmlHttpRequest()) {
             $html = $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
-               'entity'=> $reservacion,
+                'entity' => $reservacion,
             ));
-            return new JsonResponse(array('html'=>$html));
+            return new JsonResponse(array('html' => $html));
         }
-        
+
         return $this->redirect($this->generateUrl('reservaciones_show', array('id' => $reservacion->getId())));
     }
 
@@ -495,28 +477,27 @@ class ReservacionController extends BaseController
      * @Route("/rechazar/reservacion", name="reservaciones_rechazar")
      * @Method({"POST"})
      */
-    public function rechazarAction(Request $request, $id)
-    {
-       $em = $this->getDoctrine()->getManager();
-       $residencial = $this->getResidencialActual($this->getResidencialDefault());
-       $reservacion = $em->find('FrontendBundle:Reservacion', $id);
-       
-       if($reservacion){
+    public function rechazarAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $residencial = $this->getResidencialActual($this->getResidencialDefault());
+        $reservacion = $em->find('FrontendBundle:Reservacion', $id);
+
+        if ($reservacion) {
             $reservacion->setIsAproved(false);
             $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
             $em->persist($reservacion);
-            $this->get('richpolis.controller.aviso')->rechazarReservacion($reservacion,$em);
-       }
-       $em->flush();
-       
-       if($request->isXmlHttpRequest()){
-            $html = $this->render('FrontendBundle:Reservacion:item.html.twig', array(
-               'entity'=> $reservacion,
-            ));
-            return new JsonResponse(array('html'=>$html));
+            $this->get('richpolis.controller.aviso')->rechazarReservacion($reservacion, $em);
         }
-        
-       return $this->redirect($this->generateUrl('reservaciones_show',array('id'=>$reservacion->getId())));
+        $em->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            $html = $this->renderView('FrontendBundle:Reservacion:item.html.twig', array(
+                'entity' => $reservacion,
+            ));
+            return new JsonResponse(array('html' => $html));
+        }
+
+        return $this->redirect($this->generateUrl('reservaciones_show', array('id' => $reservacion->getId())));
     }
 
     /**
@@ -545,87 +526,85 @@ class ReservacionController extends BaseController
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $form->getData();
-                if($this->getValidarHorariosDisponibles($entity)){
+                if ($this->getValidarHorariosDisponibles($entity)) {
                     $em->persist($entity);
-					if($entity->getMonto()==0){
-						$entity->setIsAproved(true);
-						$entity->setStatus(Reservacion::STATUS_APROBADA);
-					}
+                    if ($entity->getMonto() == 0) {
+                        $entity->setIsAproved(true);
+                        $entity->setStatus(Reservacion::STATUS_APROBADA);
+                    }
                     $em->flush();
                     $response = new JsonResponse(json_encode(array(
-                       'html' => '',
-                       'respuesta' => 'creado',
-						'costo'=>$entity->getMonto(),
+                                'html' => '',
+                                'respuesta' => 'creado',
+                                'costo' => $entity->getMonto(),
                     )));
                     return $response;
-                }else{
+                } else {
                     $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                          'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
-                          'form' => $form->createView(),
-                     )),
-                     'respuesta' => 'error',
-                     'error'=>'La fecha y horarios no estan disponibles',   
-                  )));
-                  return $response;
+                                'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                                    'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
+                                    'form' => $form->createView(),
+                                )),
+                                'respuesta' => 'error',
+                                'error' => 'La fecha y horarios no estan disponibles',
+                    )));
+                    return $response;
                 }
-                
-                
             }
         }
 
         $response = new JsonResponse(json_encode(array(
-          'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-          		'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
-            	'form' => $form->createView(),
-          	)),
-          	'respuesta' => 'nuevo',
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
         )));
         return $response;
     }
-    
-    protected function getValidarHorariosDisponibles(Reservacion $reservacion){
+
+    protected function getValidarHorariosDisponibles(Reservacion $reservacion) {
         $em = $this->getDoctrine()->getManager();
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(),$reservacion->getRecurso()->getId());
+                ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(), $reservacion->getRecurso()->getId());
         $horarios = array();
-        foreach($reservaciones as $reser){
+        foreach ($reservaciones as $reser) {
             //$horarios[]= 
             $reser->getHasta()->modify('+2 hours');
             $horarios[] = $reser;
         }
         $resp = true;
-        foreach($horarios as $horario){
-            if($horario>$reservacion->getDesde()){
+        foreach ($horarios as $horario) {
+            if ($horario > $reservacion->getDesde()) {
                 $resp = false;
                 break;
             }
         }
         return $resp;
     }
-	
-	/**
+
+    /**
      * Revision automatica de reservaciones.
      *
      * @Route("/revision/automatica", name="reservaciones_revision_automatica")
      * @Template("FrontendBundle:Reservacion:revisionAutomatica.html.twig")
      */
-        public function cargosAutomaticosAction(Request $request) {
-            $em = $this->getDoctrine()->getManager();
-            if ($request->query->has('residencial') == true) {
-                $filtros['residencial'] = $request->query->get('residencial');
-                $this->setFilters($filtros);
-            }
-            $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
-            $edificios = $residencialActual->getEdificios();
-            $residenciales = $this->getResidenciales();
-            return array(
-                'residencial' => $residencialActual,
-                'conjuntos' => $residenciales,
-                'torres' => $edificios,
-            );
+    public function cargosAutomaticosAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        if ($request->query->has('residencial') == true) {
+            $filtros['residencial'] = $request->query->get('residencial');
+            $this->setFilters($filtros);
+        }
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificios = $residencialActual->getEdificios();
+        $residenciales = $this->getResidenciales();
+        return array(
+            'residencial' => $residencialActual,
+            'conjuntos' => $residenciales,
+            'torres' => $edificios,
+        );
     }
-	
+
     /**
      * Aplicar cargo normal a todos los inquilinos del edificio.
      *
@@ -681,33 +660,31 @@ class ReservacionController extends BaseController
         $response = new JsonResponse(array('revisiones' => "Reservaciones rechazadas " . $cont));
         return $response;
     }
-    
+
     /**
      * Recibo de estado de cuenta.
      *
      * @Route("/mostrar/recibo", name="reservaciones_recibo")
      * @Pdf()
      */
-   public function reciboAction(Request $request)
-   {
+    public function reciboAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $format = $this->get('request')->get('_format');
         if ($request->query->has('reservacion') == true) {
             $reservacionId = $request->query->get('reservacion');
-        }else{
+        } else {
             return new \Symfony\Component\HttpFoundation\Response("Sin contenido");
         }
-       
-       $reservacion = $em->find('FrontendBundle:Reservacion', $reservacionId);
-       if(!$reservacion){
-           throw $this->createNotFoundException('La reservacion solicitada no existe.');
-       }
-        
-        
-       return $this->render(sprintf('FrontendBundle:Reservacion:recibo.%s.twig',$format), array(
-           'reservacion' => $reservacion,
-       ));
-   }
-   
-   
+
+        $reservacion = $em->find('FrontendBundle:Reservacion', $reservacionId);
+        if (!$reservacion) {
+            throw $this->createNotFoundException('La reservacion solicitada no existe.');
+        }
+
+
+        return $this->render(sprintf('FrontendBundle:Reservacion:recibo.%s.twig', $format), array(
+                    'reservacion' => $reservacion,
+        ));
+    }
+
 }

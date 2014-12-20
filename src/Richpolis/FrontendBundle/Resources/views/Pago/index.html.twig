@@ -10,10 +10,8 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
-  <!-- modal -->
-  <link rel="stylesheet" href="{{asset('css/modal.css')}}">   
-  <!-- prettyPhoto -->
-  <link rel="stylesheet" href="{{asset('css/prettyPhoto.css')}}">   
+  <!-- fancybox -->
+  <link rel="stylesheet" href="{{asset('css/fancybox/jquery.fancybox.css')}}">   
 {% endblock %}
 
 {% block mainbar %}
@@ -111,7 +109,7 @@
   {{ parent() }}
 
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
+<script src="{{asset('js/fancybox/jquery.fancybox.js')}}"></script> <!-- fancybox -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -152,8 +150,21 @@ $(document).ready(function() {
         "sFirst":"Primero",
         "sPrevious": "Anterior",
     });
-     $("a[rel^='prettyPhoto']").prettyPhoto();
+    activarFancyBox();
 });
+function activarFancyBox(){
+    $(".vista-rapida-fancybox").fancybox({
+		maxWidth	: 800,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '70%',
+		autoSize	: false,
+		closeClick	: false,
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+}
 
 function mostrarPago(pago){
     var url = '{{path('pagos_show',{'id':0})}}'+pago;
@@ -172,8 +183,8 @@ function aprobarPago(pago){
             data: {'pago': pago},
             success: function(data){
                 debugger;
-               $("#registro-"+pago).html($(data).html());
-               $("a[rel^='prettyPhoto']").prettyPhoto();
+               $("#registro-"+pago).html($(data.html).html());
+               activarFancyBox();
             },
             error: function(data){
                 alert("Error");
@@ -197,8 +208,8 @@ function rechazarPago(pago){
             data: {'pago': pago},
             success: function(data){
                 debugger;
-               $("#registro-"+pago).html($(data).html());
-               $("a[rel^='prettyPhoto']").prettyPhoto();
+               $("#registro-"+pago).html($(data.html).html());
+               activarFancyBox();
             },
             error: function(data){
                 alert("Error");

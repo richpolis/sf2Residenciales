@@ -93,8 +93,6 @@
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
 <script src="{{asset('js/jquery-ui-timepicker-addon.js')}}"></script>
 <script src="{{asset('js/fullcalendar.min.js')}}"></script> <!-- Full Google Calendar - Calendar -->
-<!--script src="{{asset('js/lang/es.js')}}"></script--> <!-- Idioma español para caliendario -->
-<!--script src="{{asset('js/lang-all.js')}}"></script--> <!-- Idioma de calendar.js -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -106,6 +104,9 @@
 <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
 <script src="{{asset('js/bootbox.min.js')}}"></script> <!-- Filter for support page -->
 <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
+<script>
+    
+</script>
 <script>
     /* Calendar */
 	var lunes = {{(recurso.lunes)?"true":"false"}},
@@ -281,11 +282,11 @@
               activarDateTimePicker();
           }else if(data.respuesta == 'creado'){
               $("#modalFormulario").modal("hide");
-			  if(data.monto>0){
-			  	alert("Gracias, su reservación ha sido agendada, por favor cubra la cuota de uso en un lapso de 24 horas para ser respetada.");
-              }else{
-			  	alert("Gracias, su reservación ha sido agendada y aprobada.");
-			  }
+                if(data.costo>0){
+                    alert("Gracias, su reservación ha sido agendada, por favor cubra la cuota de uso en un lapso de 24 horas para ser respetada.");
+                }else{
+                    alert("Gracias, su reservación ha sido agendada y aprobada.");
+                }
               location.href='{{path('reservaciones')}}';
           }else if(data.respuesta == 'error'){
               alert(data.error);

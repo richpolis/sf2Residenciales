@@ -15,7 +15,7 @@
     <td>
         <button onclick="javascript:editarRegistro('{{ path('reservaciones_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
         <button onclick="javascript:editarRegistro('{{ path('reservaciones_show', { 'id': entity.id }) }}', '#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
-        <a rel="prettyPhoto[ajax]" href="{{path('reservaciones_show',{'id':entity.id})}}?ajax=true&width=90%&height=180px" class="btn btn-xs btn-warning vista-rapida"><i class="fa fa-eye"></i></a>
+        <a data-fancybox-type="ajax" href="{{path('reservaciones_show',{'id':entity.id})}}" class="btn btn-xs btn-warning vista-rapida-fancybox"><i class="fa fa-eye"></i></a>
         {% if entity.isAproved == false %}
             {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
             <button onclick="javascript:aprobarReservacion({{entity.id}});" class="btn btn-xs btn-success"><i class="fa fa-check"></i></button>

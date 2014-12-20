@@ -10,11 +10,8 @@
   <link rel="stylesheet" href="{{asset('css/widgets.css')}}">   
   <!-- Gritter Notifications stylesheet -->
   <link rel="stylesheet" href="{{asset('css/jquery.gritter.css')}}"> 
-  <!-- modal -->
-  <link rel="stylesheet" href="{{asset('css/modal.css')}}"> 
-  
-  <!-- prettyPhoto -->
-  <link rel="stylesheet" href="{{asset('css/prettyPhoto.css')}}"> 
+  <!-- fancybox -->
+  <link rel="stylesheet" href="{{asset('css/fancybox/jquery.fancybox.css')}}"> 
 {% endblock %}
 
 {% block mainbar %}
@@ -99,7 +96,7 @@
   {{ parent() }}
 
 <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
+<script src="{{asset('js/fancybox/jquery.fancybox.js')}}"></script> <!-- fancybox -->
 <!-- jQuery Notification - Noty -->
 <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
 <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -135,16 +132,32 @@ var eliminarRegistro = function(){
 
 
 $(document).ready(function() {
-    /*$('#datatable').dataTable({
+    $('#datatable').dataTable({
         "sPaginationType": "full_numbers",
         "sNext":"Siguiente",
         "sLast":"Ultimo",
         "sFirst":"Primero",
         "sPrevious": "Anterior",
-    });*/
-    $("a[rel^='prettyPhoto']").prettyPhoto();
+    });
+    activarFancyBox();
+    
+    $("#richpolis_frontendbundle_reservacion_desde").on('change',function(){
+        
+    });
 });
-
+function activarFancyBox(){
+    $(".vista-rapida-fancybox").fancybox({
+	maxWidth	: 800,
+	maxHeight	: 600,
+	fitToView	: false,
+	width		: '70%',
+	height		: '70%',
+	autoSize	: false,
+	closeClick	: false,
+	openEffect	: 'none',
+	closeEffect	: 'none'
+    });
+}
 
 function mostrarReservacion(reservacion){
    
@@ -160,8 +173,8 @@ function aprobarPago(reservacion){
             dataType: 'json',
             data: {'reservacion': reservacion },
             success: function(data){
-               $("#registro-"+reservacion).html($(data).html());
-               $("a[rel^='prettyPhoto']").prettyPhoto();
+               $("#registro-"+reservacion).html($(data.html).html());
+               activarFancyBox();
             },
             fail: function(data){
                 alert("Error");
@@ -182,8 +195,8 @@ function rechazarPago(reservacion){
             dataType: 'json',
             data: {'reservacion': reservacion},
             success: function(data){
-               $("#registro-"+reservacion).html($(data).html());
-               $("a[rel^='prettyPhoto']").prettyPhoto();
+               $("#registro-"+reservacion).html($(data.html).html());
+               activarFancyBox();
             },
             fail: function(data){
                 alert("Error");

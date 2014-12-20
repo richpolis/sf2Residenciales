@@ -373,9 +373,10 @@ class PagoController extends BaseController
         $em->flush();
         
         if($request->isXmlHttpRequest()){
-            return $this->render('FrontendBundle:Pago:item.html.twig', array(
+            $html = $this->renderView('FrontendBundle:Pago:item.html.twig', array(
                'entity'=>$pago, 
             ));
+            return new JsonResponse(array('html'=>$html));
         }
         
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
@@ -400,9 +401,10 @@ class PagoController extends BaseController
         $this->get('richpolis.aviso.controller')->rechazarPago($pago,$em);
         $em->flush();
         if($request->isXmlHttpRequest()){
-            return $this->render('FrontendBundle:Pago:item.html.twig', array(
+            $html = $this->renderView('FrontendBundle:Pago:item.html.twig', array(
                'entity'=>$pago, 
             ));
+            return new JsonResponse(array('html'=>$html));
         }
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
