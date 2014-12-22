@@ -85,6 +85,7 @@
                                <td>
                                     <button onclick="javascript:editarRegistro('{{ path('documentos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
                                     <button onclick="javascript:editarRegistro('{{ path('documentos_show', { 'id': entity.id }) }}','#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>
+                                    <a href="{{entity.webPath}}" class="btn btn-xs btn-success" target="_blank"><i class="fa fa-cloud-download"></i> </a>
                                 </td>
                            </tr>
                        {% endfor %}

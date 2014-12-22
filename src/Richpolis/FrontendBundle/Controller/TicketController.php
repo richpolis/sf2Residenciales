@@ -403,19 +403,28 @@ class TicketController extends BaseController
                 $foro->setContComentarios($foro->getContComentarios() + 1);
                 $foro->setComentario($this->getUser()->getNombre().": ". $comentario->getComentario());
                 $em->flush();
-                if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+                /*if($this->get('security.context')->isGranted('ROLE_ADMIN')){
                     return $this->redirect($this->generateUrl('tickets_show',array('id'=>$foro->getId())));
-                }
-                $comentario = new Comentario();
-                $comentario->setForo($foro);
-                $comentario->setUsuario($this->getUser());
-                $comentario->setNivel(0);
-                $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+                }*/
+                $comentarioNuevo = new Comentario();
+                $comentarioNuevo->setForo($foro);
+                $comentarioNuevo->setUsuario($this->getUser());
+                $comentarioNuevo->setNivel(0);
+                $form = $this->createForm(new ComentarioType(), $comentarioNuevo, array('em' => $em));
                 $foro = $em->getRepository('FrontendBundle:Foro')->find($id);
             }
         }
         if ($request->isXmlHttpRequest()) {
-            return $this->render('FrontendBundle:Comentario:form.html.twig', array('form' => $form->createView()));
+            $html = $this->renderView('FrontendBundle:Comentario:item.html.twig', array('comentario' => $comentario));
+            $response = new JsonResponse(json_encode(array(
+                        'form' => $this->renderView('FrontendBundle:Comentario:formComentario.html.twig', array(
+                            'rutaAction' => $this->generateUrl('tickets_ticket',array('id'=>$foro->getId())),
+                            'form' => $form->createView(),
+                        )),
+                        'respuesta' => 'creado',
+                        'html' => $html,
+            )));
+            return $response;
         }
         $comentarios = $em->getRepository('FrontendBundle:Comentario')
                           ->findBy(array('foro' => $foro), array('createdAt' => 'ASC'));

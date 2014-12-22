@@ -12,7 +12,6 @@ use Richpolis\FrontendBundle\Entity\Pago;
 use Richpolis\FrontendBundle\Form\PagoType;
 use Richpolis\FrontendBundle\Form\PagoFrontendType;
 use Richpolis\FrontendBundle\Entity\EstadoCuenta;
-
 use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
 
 /**
@@ -20,8 +19,7 @@ use Richpolis\BackendBundle\Utils\Richsys as RpsStms;
  *
  * @Route("/pagos")
  */
-class PagoController extends BaseController
-{
+class PagoController extends BaseController {
 
     /**
      * Lists all Pago entities.
@@ -30,67 +28,66 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function indexAction(Request $request)
-    {
-        if($this->get('security.context')->isGranted('ROLE_ADMIN')){
+    public function indexAction(Request $request) {
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             return $this->adminIndex($request);
-        }else{
+        } else {
             return $this->usuariosIndex($request);
         }
     }
-    
-    public function adminIndex(Request $request){
+
+    public function adminIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        
-        $buscar = $request->query->get('buscar','');
-        
-        if(strlen($buscar)>0){
-            $options = array('filterParam'=>'buscar','filterValue'=>$buscar);
-        }else{
+
+        $buscar = $request->query->get('buscar', '');
+
+        if (strlen($buscar) > 0) {
+            $options = array('filterParam' => 'buscar', 'filterValue' => $buscar);
+        } else {
             $options = array();
         }
         $query = $em->getRepository('FrontendBundle:Pago')
-                              ->queryFindPagos($buscar,$edificioActual->getId());
-        
+                ->queryFindPagos($buscar, $edificioActual->getId());
+
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $query, $this->get('request')->query->get('page', 1),10, $options 
+                $query, $this->get('request')->query->get('page', 1), 10, $options
         );
-        
+
         return $this->render("FrontendBundle:Pago:index.html.twig", array(
-            'pagination' => $pagination,
-            'residencial'=> $residencialActual,
-            'edificio' => $edificioActual,
+                    'pagination' => $pagination,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
         ));
     }
-    
-    public function usuariosIndex(Request $request){
+
+    public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificioActual = $this->getEdificioActual();
-        
-		$fecha = new \DateTime();
-		$year = $request->query->get('year', $fecha->format('Y'));
+
+        $fecha = new \DateTime();
+        $year = $request->query->get('year', $fecha->format('Y'));
         $month = $request->query->get('month', $fecha->format('m'));
-		$nombreMes = $this->getNombreMes($month);
-		
+        $nombreMes = $this->getNombreMes($month);
+
         $pagos = $em->getRepository('FrontendBundle:Pago')
-                    ->findPagosPorUsuarioPorFecha($this->getUser(),$month,$year);
-        
+                ->findPagosPorUsuarioPorFecha($this->getUser(), $month, $year);
+
         return $this->render("FrontendBundle:Pago:pagos.html.twig", array(
-            'entities' => $pagos,
-            'residencial'=> $residencialActual,
-            'edificio' => $edificioActual,
-			'month'=>$month,
-			'year'=>$year,
-			'nombreMes' => $nombreMes,
+                    'entities' => $pagos,
+                    'residencial' => $residencialActual,
+                    'edificio' => $edificioActual,
+                    'month' => $month,
+                    'year' => $year,
+                    'nombreMes' => $nombreMes,
         ));
     }
-    
+
     /**
      * Creates a new Pago entity.
      *
@@ -98,9 +95,8 @@ class PagoController extends BaseController
      * @Method("POST")
      * @Template("FrontendBundle:Pago:new.html.twig")
      */
-    public function createAction(Request $request)
-    {
-        
+    public function createAction(Request $request) {
+
         $entity = new Pago();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -124,7 +120,7 @@ class PagoController extends BaseController
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
             'errores' => RpsStms::getErrorMessages($form),
         );
     }
@@ -136,13 +132,11 @@ class PagoController extends BaseController
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(Pago $entity)
-    {
+    private function createCreateForm(Pago $entity) {
         $form = $this->createForm(new PagoType(), $entity, array(
             'action' => $this->generateUrl('pagos_create'),
             'method' => 'POST',
-            'em'=>$this->getDoctrine()->getManager(),
-			
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Create'));
@@ -170,15 +164,15 @@ class PagoController extends BaseController
         $entity = new Pago();
         $entity->setUsuario($usuario);
         $entity->setMonto($monto);
-                
+
         $form = $this->createCreateForm($entity);
 
         return array(
-            'entity'    => $entity,
-            'form'      => $form->createView(),
-            'errores'   => RpsStms::getErrorMessages($form),
-            'cargos'    => $cargos,
-            'monto'     => $monto,
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'errores' => RpsStms::getErrorMessages($form),
+            'cargos' => $cargos,
+            'monto' => $monto,
         );
     }
 
@@ -189,8 +183,7 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function showAction(Request $request, $id)
-    {
+    public function showAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Pago')->find($id);
@@ -198,17 +191,17 @@ class PagoController extends BaseController
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Pago entity.');
         }
-        
-        if($request->isXmlHttpRequest()){
+
+        if ($request->isXmlHttpRequest()) {
             return $this->render('FrontendBundle:Pago:comprobante.html.twig', array(
-               'entity'=>$entity, 
+                        'entity' => $entity,
             ));
         }
 
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'      => $entity,
+            'entity' => $entity,
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -220,8 +213,7 @@ class PagoController extends BaseController
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
-    {
+    public function editAction($id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Pago')->find($id);
@@ -234,32 +226,32 @@ class PagoController extends BaseController
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
 
     /**
-    * Creates a form to edit a Pago entity.
-    *
-    * @param Pago $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
-    private function createEditForm(Pago $entity)
-    {
+     * Creates a form to edit a Pago entity.
+     *
+     * @param Pago $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(Pago $entity) {
         $form = $this->createForm(new PagoType(), $entity, array(
             'action' => $this->generateUrl('pagos_update', array('id' => $entity->getId())),
             'method' => 'PUT',
-            'em'=>$this->getDoctrine()->getManager(),
+            'em' => $this->getDoctrine()->getManager(),
         ));
 
         //$form->add('submit', 'submit', array('label' => 'Update'));
 
         return $form;
     }
+
     /**
      * Edits an existing Pago entity.
      *
@@ -267,8 +259,7 @@ class PagoController extends BaseController
      * @Method("PUT")
      * @Template("FrontendBundle:Pago:edit.html.twig")
      */
-    public function updateAction(Request $request, $id)
-    {
+    public function updateAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FrontendBundle:Pago')->find($id);
@@ -288,21 +279,20 @@ class PagoController extends BaseController
         }
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'errores' => RpsStms::getErrorMessages($editForm),
         );
     }
-    
+
     /**
      * Deletes a Pago entity.
      *
      * @Route("/{id}", name="pagos_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
-    {
+    public function deleteAction(Request $request, $id) {
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 
@@ -328,16 +318,15 @@ class PagoController extends BaseController
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm($id)
-    {
+    private function createDeleteForm($id) {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('pagos_delete', array('id' => $id)))
-            ->setMethod('DELETE')
-            //->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
+                        ->setAction($this->generateUrl('pagos_delete', array('id' => $id)))
+                        ->setMethod('DELETE')
+                        //->add('submit', 'submit', array('label' => 'Delete'))
+                        ->getForm()
         ;
     }
-    
+
     /**
      * Aprobar pago.
      *
@@ -354,31 +343,31 @@ class PagoController extends BaseController
         foreach ($pago->getCargos() as $cargo) {
             $cargo->setIsPaid(true);
             $monto += $cargo->getMonto();
-            if($cargo->getTipoCargo()==EstadoCuenta::TIPO_CARGO_RESERVACION){
+            if ($cargo->getTipoCargo() == EstadoCuenta::TIPO_CARGO_RESERVACION) {
                 $reservacion = $em->getRepository('FrontendBundle:Reservacion')
-                                  ->findOneBy(array('pago'=>$pago));
-                if($reservacion){
-                    $avisoController->aprobarReservacion($reservacion,$em);
+                        ->findOneBy(array('pago' => $pago));
+                if ($reservacion) {
+                    $avisoController->aprobarReservacion($reservacion, $em);
                 }
             }
             $em->persist($cargo);
         }
         if ($monto > 0) {
             $usuario = $pago->getUsuario();
-            $cargo = $this->get('richpolis.cargo.controller')->generarPago($monto,$usuario,$em);
+            $cargo = $this->get('richpolis.cargo.controller')->generarPago($monto, $usuario, $em);
             $em->flush();
             $pago->addCargo($cargo);
         }
-        $avisoController->aprobarPago($pago,$em);
+        $avisoController->aprobarPago($pago, $em);
         $em->flush();
-        
-        if($request->isXmlHttpRequest()){
+
+        if ($request->isXmlHttpRequest()) {
             $html = $this->renderView('FrontendBundle:Pago:item.html.twig', array(
-               'entity'=>$pago, 
+                'entity' => $pago,
             ));
-            return new JsonResponse(array('html'=>$html));
+            return new JsonResponse(array('html' => $html));
         }
-        
+
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
 
@@ -398,13 +387,13 @@ class PagoController extends BaseController
         }
         $pago->setIsAproved(false);
         $pago->setStatus(Pago::STATUS_RECHAZADA);
-        $this->get('richpolis.aviso.controller')->rechazarPago($pago,$em);
+        $this->get('richpolis.aviso.controller')->rechazarPago($pago, $em);
         $em->flush();
-        if($request->isXmlHttpRequest()){
+        if ($request->isXmlHttpRequest()) {
             $html = $this->renderView('FrontendBundle:Pago:item.html.twig', array(
-               'entity'=>$pago, 
+                'entity' => $pago,
             ));
-            return new JsonResponse(array('html'=>$html));
+            return new JsonResponse(array('html' => $html));
         }
         return $this->redirect($this->generateUrl('pagos_show', array('id' => $pago->getId())));
     }
@@ -415,47 +404,44 @@ class PagoController extends BaseController
      * @Route("/seleccionar/usuario", name="pagos_select_usuario")
      * @Template("FrontendBundle:Reservacion:selectUsuario.html.twig")
      */
-    public function selectUsuarioAction(Request $request)
-    {
+    public function selectUsuarioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        
-        if($request->query->has('usuario')){
+
+        if ($request->query->has('usuario')) {
             $filtros = $this->getFilters();
             $filtros['usuario'] = $request->query->get('usuario');
             $this->setFilters($filtros);
             return $this->redirect($this->generateUrl('pagos_new'));
         }
-        
+
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                       ->findBy(array('edificio'=>$edificio));
-        
+                ->findBy(array('edificio' => $edificio));
+
         return array(
-            'entities'=>$usuarios,
-            'residencial'=>$residencialActual,
-            'edificio'=> $edificio,
+            'entities' => $usuarios,
+            'residencial' => $residencialActual,
+            'edificio' => $edificio,
             'ruta' => 'pagos_select_usuario',
             'campo' => 'usuario',
             'titulo' => 'Seleccionar usuario para pago',
             'return' => 'pagos'
         );
-        
     }
-    
+
     /**
      * Exportar los pagos.
      *
      * @Route("/exportar", name="pagos_exportar")
      */
-    public function exportarAction(Request $request)
-    {
+    public function exportarAction(Request $request) {
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-        
+
         $pagos = $this->getDoctrine()
                 ->getRepository('FrontendBundle:Pago')
-                ->findPagos("",$edificio->getId());
+                ->findPagos("", $edificio->getId());
 
         $response = $this->render(
                 'FrontendBundle:Pago:list.xls.twig', array('entities' => $pagos)
@@ -464,7 +450,7 @@ class PagoController extends BaseController
         $response->headers->set('Content-Disposition', 'attachment; filename="export-pagos.xls"');
         return $response;
     }
-	
+
     /**
      * Formulario para realizar pago.
      *
@@ -489,7 +475,7 @@ class PagoController extends BaseController
         $form = $this->createForm(new PagoFrontendType(), $entity, array(
             'action' => $this->generateUrl('pagos_realizar_pago'),
             'method' => 'POST',
-            'em'=>$this->getDoctrine()->getManager(),
+            'em' => $this->getDoctrine()->getManager(),
         ));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -504,8 +490,8 @@ class PagoController extends BaseController
                     $em->flush();
                 }
                 $response = new JsonResponse(json_encode(array(
-                    'html' => '',
-                    'respuesta' => 'creado',
+                            'html' => '',
+                            'respuesta' => 'creado',
                 )));
                 return $response;
             }
@@ -530,22 +516,22 @@ class PagoController extends BaseController
     public function actualizarPagoAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
-        $pago = $em->find("FrontendBundle:Pago",$request->query->get('pago'));
+        $pago = $em->find("FrontendBundle:Pago", $request->query->get('pago'));
         $form = $this->createForm(new PagoFrontendType(), $pago, array(
-            'action' => $this->generateUrl('pagos_realizar_pago',array('pago'=>$pago->getId())),
+            'action' => $this->generateUrl('pagos_actualizar_pago', array('pago' => $pago->getId())),
             'method' => 'POST',
-            'em'=>$this->getDoctrine()->getManager(),
+            'em' => $this->getDoctrine()->getManager(),
         ));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $entity = $form->getData();
-                $entity->setIsAproved(false);
-                $em->persist($entity);
+                $pago->setIsAproved(false);
+                $pago->setStatus(Pago::STATUS_SOLICITUD);
+                $em->persist($pago);
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
-                    'html' => '',
-                    'respuesta' => 'creado',
+                            'html' => '',
+                            'respuesta' => 'creado',
                 )));
                 return $response;
             }
@@ -553,14 +539,14 @@ class PagoController extends BaseController
 
         $response = new JsonResponse(json_encode(array(
                     'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('pagos_realizar_pago',array('pago'=>$pago->getId())),
+                        'rutaAction' => $this->generateUrl('pagos_actualizar_pago', array('pago' => $pago->getId())),
                         'form' => $form->createView(),
                     )),
                     'respuesta' => 'nuevo',
         )));
         return $response;
     }
-    
+
     /**
      * Formulario para realizar pago.
      *
@@ -580,7 +566,7 @@ class PagoController extends BaseController
         $form = $this->createForm(new PagoFrontendType(), $entity, array(
             'action' => $this->generateUrl('pagos_realizar_pago_reservacion'),
             'method' => 'POST',
-            'em'=>$this->getDoctrine()->getManager(),
+            'em' => $this->getDoctrine()->getManager(),
         ));
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -589,29 +575,29 @@ class PagoController extends BaseController
                 $pago->setIsAproved(false);
                 $em->persist($pago);
                 $cargo = $this->get('richpolis.cargo.controller')
-                     ->generarCargoReservacion($reservacion,$usuario,$pago,$em);
-                
+                        ->generarCargoReservacion($reservacion, $usuario, $pago, $em);
+
                 $reservacion->setPago($pago);
                 $reservacion->setIsAproved(true);
                 $em->persist($reservacion);
                 // se agrego el cargo en el pago.
                 //$pago->addCargo($cargo);
                 $em->persist($pago);
-                
+
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
-                    'html' => '',
-                    'respuesta' => 'creado',
+                            'html' => '',
+                            'respuesta' => 'creado',
                 )));
                 return $response;
             }
         }
         $response = new JsonResponse(json_encode(array(
-            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
-                'form' => $form->createView(),
-            )),
-            'respuesta' => 'nuevo',
+                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                        'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
+                        'form' => $form->createView(),
+                    )),
+                    'respuesta' => 'nuevo',
         )));
         return $response;
     }

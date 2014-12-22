@@ -53,5 +53,6 @@ class SecurityController extends Controller
     public function logoutAction()
     {
         // The security layer will intercept this request
+        
     }
 }

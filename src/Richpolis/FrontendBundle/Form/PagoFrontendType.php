@@ -19,10 +19,13 @@ class PagoFrontendType extends AbstractType
         $usuarioTransformer = new UsuarioToNumberTransformer($em);
         $builder
             ->add('isAproved','hidden')
-            ->add('referencia',null,array('label'=>'Referencia','attr'=>array('class'=>'form-control'))) 
+            ->add('referencia',null,array('read_only'=>true,'label'=>'Referencia','attr'=>array('class'=>'form-control'))) 
             ->add('archivo','hidden')
             ->add('status','hidden')
-            ->add('file','file',array('label'=>'Comprobante','attr'=>array('class'=>'form-control')))
+            ->add('file','file',array(
+                'label'=>'Comprobante',
+                'attr'=>array('class'=>'form-control')
+                ))
             ->add('monto','hidden')
             ->add($builder->create('usuario', 'hidden')->addModelTransformer($usuarioTransformer))
                 

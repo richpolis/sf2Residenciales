@@ -94,14 +94,19 @@
                                                     <td>{{ entity.descripcion | raw }}</td>
                                                 </tr>
                                                 {% if entity.isImagen %}
-                                                <tr>
-                                                    <th>Archivo adjunto</th>
-                                                    <td>
-                                                        {% if entity.archivo | length > 0 %}
-                                                            <img src="{{entity.webPath}}" style="max-width: 100%;" />
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>    
+                                                    <tr>
+                                                        <th>Archivo adjunto</th>
+                                                        <td>
+                                                            {% if entity.archivo | length > 0 %}
+                                                                <img src="{{entity.webPath}}" style="max-width: 100%;" />
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% else %}
+                                                    <tr>
+                                                        <th>Descargar archivo:</th>
+                                                        <td><a href="{{entity.webPath}}" class="btn btn-xs btn-success" target="_blank"><i class="fa fa-cloud-download"></i> </a></td>
+                                                    </tr>
                                                 {% endif %}    
                                             </tbody>
                                         </table>

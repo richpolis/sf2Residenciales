@@ -31,12 +31,16 @@
                 {% endif %}    
                 {% if edificio is defined %}
                 <!--Divider-->
-                <span class="divider">/</span> 
-                <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
+                    {% if is_granted('SUPER_ADMIN') %}
+                    <span class="divider">/</span> 
+                    <a href="{{path('edificios')}}" class="bread-current">{{edificio}}</a>
+                    {% else %}
+                    <span class="divider">/</span> 
+                    <a href="#" class="bread-current">{{app.user.edificio}}</a>    
+                    {% endif %}
                 {% endif %}
                 <span class="divider">/</span> 
                 <a href="{{path(ruta)}}" class="bread-current">{{titulo}}</a>
-                
             </div>
 
             <div class="clearfix"></div>

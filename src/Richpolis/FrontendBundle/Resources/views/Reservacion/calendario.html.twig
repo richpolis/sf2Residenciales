@@ -159,6 +159,13 @@
           end: '{{ (reservacion.fechaEvento|date('Y-m-d')) ~ 'T' ~ (reservacion.hasta|date('H:i:00')) }}',
           allDay: false,
         },
+        {
+          title: 'Limpieza',
+          color: 'blue',        
+          start: '{{ reservacion.horarioLimpiezaDesde }}',
+          end: '{{ reservacion.horarioLimpiezaHasta }}',
+          allDay: false,
+        },
         {% endfor %}
       ],
       dayClick: function(date, allDay, jsEvent, view) {

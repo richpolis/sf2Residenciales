@@ -1,0 +1,21 @@
+{% if comentario.usuario.id == app.user.id %}
+    {% set tipoUser = 'by-other' %}
+    {% set tipoPull = 'pull-right' %}
+{% else %}
+    {% set tipoUser = 'by-me' %}
+    {% set tipoPull = 'pull-left' %}
+{% endif %}    
+<!-- Chat by us. Use the class "by-me". -->
+<li class="{{tipoUser}}">
+    <!-- Use the class "{{tipoPull}}" in avatar -->
+    <div class="avatar {{tipoPull}}">
+        <img src="/images/logo.png" style="height: 40px;" alt="">
+    </div>
+    <div class="chat-content">
+        <!-- In meta area, first include "name" and then "time" -->
+        <!-- In meta area, first include "name" and then "time" -->
+        <div class="chat-meta"> {{comentario.usuario.nombre}} <span class="pull-right">{{comentario.fechaTwitter}}</span></div>
+            {{comentario.comentario | raw }}
+        <div class="clearfix"></div>
+    </div>
+</li> 

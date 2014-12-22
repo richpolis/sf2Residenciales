@@ -1,6 +1,6 @@
 <ul class="lista lista-foros">
     {% for registro in tickets %}
-        <li class="item item-foro">
+        <li class="item item-foro item-actividad">
             <div class="item-aviso-fecha">
                 {{ registro.createdAt | date('d-M-Y') }} - Comentarios: <span class="badge">{{registro.contComentarios}}</span> 
                 {% if registro.isCerrado == false %}
@@ -11,9 +11,12 @@
             </div>
             <div class="item-foro-contenido">
                 <div class="item-titulo item-foro-titulo"> 
-                    <a href="{{path('tickets_ticket',{'id': registro.id})}}">{{ registro.titulo }}</a> 
+                    <a href="{{path('tickets_ticket',{'id': registro.id})}}">
+                        {# registro.titulo #}
+                        <div class="item-descripcion item-foro-descripcion"> {{ registro.comentario|raw }}</div>
+                    </a> 
                 </div>
-                <div class="item-descripcion item-foro-descripcion"> {{ registro.comentario|raw }}</div>
+                <!--div class="item-descripcion item-foro-descripcion"> {{ registro.comentario|raw }}</div-->
             </div>    
         </li>
     {% endfor%}    

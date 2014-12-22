@@ -497,5 +497,16 @@ class Recurso
         return $this->domingo;
     }
     
+    public function getArregloHorasDisponible(){
+        $arreglo = array();
+        $horaIni = $this->desde->format('g');
+        $horaFin = $this->hasta->format('g');
+        
+        for($cont=$horaIni; $horaIni<$horaFin;$cont++){
+            $arreglo[$cont] = cont;
+        }
+        return $arreglo;
+    }
+    
     
 }

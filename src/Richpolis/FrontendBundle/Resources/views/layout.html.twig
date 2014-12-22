@@ -90,9 +90,9 @@
         <div class="container">
             <!-- Menu button for smallar screens -->
             <div class="navbar-header">
-                <button class="navbar-toggle btn-navbar" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <!--button class="navbar-toggle btn-navbar" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
                     <span>Menu</span>
-                </button>
+                </button-->
                 <a href="#" class="pull-left menubutton hidden-xs">
                     <i class="fa fa-bars"></i>
                 </a>
@@ -103,11 +103,13 @@
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">         
                 <!-- Links -->
                 <ul class="nav navbar-nav pull-right">
+                    {% if is_granted('ROLE_ADMIN') %}
                     <li class="dropdown pull-right user-data">            
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <img src="/images/logo.png" width="25" height="25"/>
                             {{app.user.nombre|default('anonimo')}} <b class="caret"></b>
                         </a>
+                        
                         <!-- Dropdown menu -->
                         <ul class="dropdown-menu">
                             <li>
@@ -122,6 +124,14 @@
                             </li>
                         </ul>
                     </li>
+                    {% else %}
+                    <li class=" pull-right user-data">            
+                        <a  href="#">
+                            <img src="/images/logo.png" width="25" height="25"/>
+                            {{app.user.nombre|default('anonimo')}} <b class="caret"></b>
+                        </a>
+                    </li>    
+                    {% endif %} 
                 </ul>
             </nav>
         </div>
@@ -223,6 +233,11 @@
             <li>
                 <a {{perfil}} href="{{path('perfil_usuario')}}">
                     <i class="fa fa-user-md"></i> <span>Perfil</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('logout')}}">
+                    <i class="fa fa-key"></i> <span>Salir</span>
                 </a>
             </li>
             {% endif %}

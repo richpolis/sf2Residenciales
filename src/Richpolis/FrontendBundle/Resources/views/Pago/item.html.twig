@@ -3,7 +3,7 @@
     <td>{{entity.referencia}}<br/>{{ entity.usuario }}</td>
     <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
     <td>{{ entity.createdAt | date('d-m-Y') }}</td>
-    <td>{{ entity.status | reservacionStatus | raw }}</td>
+    <td>{{ entity.status | pagoStatus | raw }}</td>
     <td>
         <button onclick="javascript:editarRegistro('{{ path('pagos_edit', { 'id': entity.id }) }}')" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> </button>
         <button onclick="javascript:editarRegistro('{{ path('pagos_show', { 'id': entity.id }) }}', '#registro-{{entity.id}}')" class="btn btn-xs btn-info"><i class="fa fa-folder-open"></i> </button>

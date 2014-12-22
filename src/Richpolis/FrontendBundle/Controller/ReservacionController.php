@@ -370,6 +370,39 @@ class ReservacionController extends BaseController {
             'return' => 'reservaciones',
         );
     }
+    
+    /**
+     * Seleccionar recurso para reservacion.
+     *
+     * @Route("/calendario/seleccionar/recurso", name="reservaciones_calendario_select_recurso")
+     * @Template("FrontendBundle:Reservacion:select.html.twig")
+     */
+    public function calendarioSelectRecursoAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
+        if ($request->query->has('recurso')) {
+            $filtros = $this->getFilters();
+            $filtros['recurso'] = $request->query->get('recurso');
+            $this->setFilters($filtros);
+            return $this->redirect($this->generateUrl('reservaciones_calendario'));
+        }
+
+        //$entities = $em->getRepository('FrontendBundle:EstadoCuenta')->findAll();
+        $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
+        $edificio = $this->getEdificioActual();
+        $recursos = $em->getRepository('BackendBundle:Recurso')
+                        ->getRecursosPorEdificio($edificio->getId(), $residencialActual->getId());
+
+        return array(
+            'entities'      => $recursos,
+            'residencial'   => $residencialActual,
+            'edificio'      => $edificio,
+            'ruta'          => 'reservaciones_calendario_select_recurso',
+            'campo'         => 'recurso',
+            'titulo'        => 'Seleccionar amenidad',
+            'return'        => 'reservaciones',
+        );
+    }
 
     /**
      * Seleccionar usuario para reservacion.
@@ -568,10 +601,11 @@ class ReservacionController extends BaseController {
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                 ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(), $reservacion->getRecurso()->getId());
         $horarios = array();
-        foreach ($reservaciones as $reser) {
+        foreach ($reservaciones as $registro) {
             //$horarios[]= 
-            $reser->getHasta()->modify('+2 hours');
-            $horarios[] = $reser;
+            $registro->getHasta()->modify('+2 hours');
+            
+            $horarios[] = $registro;
         }
         $resp = true;
         foreach ($horarios as $horario) {

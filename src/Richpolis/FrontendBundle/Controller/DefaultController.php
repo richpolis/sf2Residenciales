@@ -12,7 +12,6 @@ use Richpolis\FrontendBundle\Entity\Contacto;
 use Richpolis\FrontendBundle\Form\ContactoType;
 use Richpolis\BackendBundle\Form\UsuarioFrontendType;
 
-
 class DefaultController extends BaseController {
 
     /**
@@ -20,18 +19,17 @@ class DefaultController extends BaseController {
      * @Template()
      */
     public function indexAction(Request $request) {
-        
+
         $context = $this->get('security.context');
-        if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
+        if (true === $context->isGranted('ROLE_SUPER_ADMIN')) {
             return $this->redirect($this->generateUrl('residenciales'));
-        }else if(true === $context->isGranted('ROLE_ADMIN')){
-           return $this->redirect($this->generateUrl('residenciales'));
-        }else{
-           return $this->usuariosIndex($request);
+        } else if (true === $context->isGranted('ROLE_ADMIN')) {
+            return $this->redirect($this->generateUrl('residenciales'));
+        } else {
+            return $this->usuariosIndex($request);
         }
-        
     }
-	
+
     public function adminIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
@@ -39,25 +37,25 @@ class DefaultController extends BaseController {
         $edificio = $this->getEdificioActual();
 
         $queryForos = $em->getRepository('FrontendBundle:Foro')
-                               ->queryFindForosPorEdificio($edificio);
-        
+                ->queryFindForosPorEdificio($edificio);
+
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                     ->getCargosAdeudoPorEdificio($edificio->getId());
-        
+                ->getCargosAdeudoPorEdificio($edificio->getId());
+
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->findReservacionesPorEdificio($edificio);
-        
+                ->findReservacionesPorEdificio($edificio);
+
         $queryAvisos = $em->getRepository('FrontendBundle:Aviso')
-                          ->queryFindAvisosPorEdificio($edificio);
-        
+                ->queryFindAvisosPorEdificio($edificio);
+
         return $this->render('FrontendBundle:Default:index.html.twig', array(
-            'foros'   =>  $queryForos->setMaxResults(10)->getResult(),
-            'avisos' => $queryAvisos->setMaxResults(10)->getResult(),
-            'cargos'        =>  $cargos,
-            'reservaciones' =>  $reservaciones,
+                    'foros' => $queryForos->setMaxResults(10)->getResult(),
+                    'avisos' => $queryAvisos->setMaxResults(10)->getResult(),
+                    'cargos' => $cargos,
+                    'reservaciones' => $reservaciones,
         ));
     }
-    
+
     public function usuariosIndex(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //agregando funciones especiales de fecha para MySQL
@@ -68,44 +66,44 @@ class DefaultController extends BaseController {
 
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
-		$usuario = $this->getUsuarioActual();
-        
-		$fecha = new \DateTime();
+        $usuario = $this->getUsuarioActual();
+
+        $fecha = new \DateTime();
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
         $registros = $em->getRepository('FrontendBundle:EstadoCuenta')
-                         ->getCargosEnMes($mes,$year,$usuario);
+                        ->getCargosEnMes($mes, $year, $usuario);
         return $this->render('FrontendBundle:Default:index.html.twig', array(
-            'cargos'=>$registros,
+                    'cargos' => $registros,
         ));
     }
-    
+
     public function forosIndexAction() {
         $em = $this->getDoctrine()->getManager();
         $edificio = $this->getEdificioActual();
-        $foros = $em->getRepository('FrontendBundle:Foro')
-                    ->findForosPorEdificio($edificio);
-        return $this->render('FrontendBundle:Foro:lista.html.twig', array(
-            'foros'=>$foros,
+        $query = $em->getRepository('FrontendBundle:Foro')
+                    ->queryFindForosPorEdificio($edificio);
+        return $this->render('FrontendBundle:Foro:dashboard.html.twig', array(
+                    'foros' => $query->setMaxResults(5)->getResult(),
         ));
     }
-    
+
     public function avisosIndexAction() {
         $em = $this->getDoctrine()->getManager();
-        $avisos = $em->getRepository('FrontendBundle:Aviso')
-                     ->findAvisosPorUsuario($this->getUser());
+        $query = $em->getRepository('FrontendBundle:Aviso')
+                     ->queryFindAvisosPorUsuario($this->getUser());
         return $this->render('FrontendBundle:Aviso:lista.html.twig', array(
-            'avisos'=>$avisos,
+                    'avisos' => $query->setMaxResults(5)->getResult(),
         ));
     }
-    
+
     public function reservacionesIndexAction() {
         $em = $this->getDoctrine()->getManager();
 
-        $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
-                            ->findReservacionesPorUsuario($this->getUser());
-        return $this->render('FrontendBundle:Reservacion:lista.html.twig', array(
-            'reservaciones' =>  $reservaciones,
+        $query = $em->getRepository('FrontendBundle:Reservacion')
+                            ->queryFindReservacionesPorUsuario($this->getUser());
+        return $this->render('FrontendBundle:Reservacion:dashboard.html.twig', array(
+                    'reservaciones' => $query->setMaxResults(5)->getResult(),
         ));
     }
 
@@ -168,150 +166,143 @@ class DefaultController extends BaseController {
                     'pagina' => $pagina,
         ));
     }
-    
-    public function residencialNameAction(){
+
+    public function residencialNameAction() {
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        
+
         $context = $this->get('security.context');
-        if(true === $context->isGranted('ROLE_SUPER_ADMIN')){
+        if (true === $context->isGranted('ROLE_SUPER_ADMIN')) {
             $entities = $this->getDoctrine()->getRepository('BackendBundle:Residencial')->findAll();
-        }else if(true === $context->isGranted('ROLE_ADMIN')){
-           $entities = $this->getUser()->getResidenciales();
-        }else{
+        } else if (true === $context->isGranted('ROLE_ADMIN')) {
+            $entities = $this->getUser()->getResidenciales();
+        } else {
             $entities = array();
         }
-        
+
         return $this->render('FrontendBundle:Default:residencialName.html.twig', array(
-            'objeto'=>$residencial,
-            'residenciales'=>$entities,
+                    'objeto' => $residencial,
+                    'residenciales' => $entities,
         ));
     }
-    
-    public function edificiosResidencialAction(){
+
+    public function edificiosResidencialAction() {
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $edificios = $em->getRepository('BackendBundle:Edificio')->findBy(array(
-                        'residencial'=>$residencial,
-                     ));
+            'residencial' => $residencial,
+        ));
         return $this->render('FrontendBundle:Default:edificiosResidencial.html.twig', array(
-            'edificios' => $edificios,
-            'edificioActual' => $edificio,
+                    'edificios' => $edificios,
+                    'edificioActual' => $edificio,
         ));
     }
-	
+
     /**
      * @Route("/cambiar/residencial", name="cambiar_residencial")
      */
     public function cambiarResidencialAction(Request $request) {
         $filtros = $this->getFilters();
-        if($request->query->has('residencial') == true){
+        if ($request->query->has('residencial') == true) {
             $filtros['residencial'] = $request->query->get('residencial');
             unset($filtros['edificio']);
-            $pagina = $request->query->get('pagina','homepage');
+            $pagina = $request->query->get('pagina', 'homepage');
             $this->setFilters($filtros);
         }
         return $this->redirect($this->generateUrl($pagina));
-        
     }
-    
+
     /**
      * @Route("/cambiar/edificio", name="cambiar_edificio")
      */
     public function cambiarEdificioAction(Request $request) {
         $filtros = $this->getFilters();
-        if($request->query->has('edificio') == true){
+        if ($request->query->has('edificio') == true) {
             $filtros['edificio'] = $request->query->get('edificio');
-            $pagina = $request->query->get('pagina','homepage');
+            $pagina = $request->query->get('pagina', 'homepage');
             $this->setFilters($filtros);
         }
         return $this->redirect($this->generateUrl($pagina));
-        
     }
-    
+
     /**
      * @Route("/recuperar",name="recuperar")
      * @Template()
      * @Method({"GET","POST"})
      */
-    public function recuperarAction(Request $request)
-    {   
+    public function recuperarAction(Request $request) {
         $sPassword = "";
         $sUsuario = "";
         $msg = "";
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             $email = $request->get('email');
             $usuario = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
-                            ->findOneBy(array('email'=>$email));
-            if(!$usuario){
+                    ->findOneBy(array('email' => $email));
+            if (!$usuario) {
                 $this->get('session')->getFlashBag()->add(
-                    'error',
-                    'El email no esta registrado.'
+                        'error', 'El email no esta registrado.'
                 );
                 return $this->redirect($this->generateUrl('recuperar'));
-            }else{
+            } else {
                 $sPassword = substr(md5(time()), 0, 7);
                 $sUsuario = $usuario->getUsername();
                 $encoder = $this->get('security.encoder_factory')
-                            ->getEncoder($usuario);
+                        ->getEncoder($usuario);
                 $passwordCodificado = $encoder->encodePassword(
-                            $sPassword, $usuario->getSalt()
+                        $sPassword, $usuario->getSalt()
                 );
                 $usuario->setPassword($passwordCodificado);
                 $this->getDoctrine()->getManager()->flush();
-                
+
                 $this->get('session')->getFlashBag()->add(
-                    'notice',
-                    'Se ha enviado un correo con la nueva contraseña.'
+                        'notice', 'Se ha enviado un correo con la nueva contraseña.'
                 );
-                
+
                 $this->enviarRecuperar($sUsuario, $sPassword, $usuario);
-                $msg = "Te llegara un mail con detalle de tu cuenta";   
+                $msg = "Te llegara un mail con detalle de tu cuenta";
             }
         }
-        return array('msg'=>$msg);
+        return array('msg' => $msg);
     }
-    
+
     /**
      * @Route("/registro",name="registro")
      * @Template()
      * @Method({"GET","POST"})
      */
-    public function registroAction(Request $request)
-    {
+    public function registroAction(Request $request) {
         $usuario = new Usuario();
-        $form = $this->createForm( new UsuarioFrontendType(), $usuario);
+        $form = $this->createForm(new UsuarioFrontendType(), $usuario);
         $isNew = true;
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             $parametros = $request->request->all();
             $form->handleRequest($request);
-            if($form->isValid()){
+            if ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
                 $this->setSecurePassword($usuario);
                 $rolUsuario = $em->getRepository('UsuariosBundle:Roles')
-                                 ->findOneBy(array('nombre'=>'ROLE_USUARIO'));
+                        ->findOneBy(array('nombre' => 'ROLE_USUARIO'));
                 $usuario->addRol($rolUsuario);
                 $em->persist($usuario);
                 $em->flush();
                 return $this->redirect($this->generateUrl('login'));
             }
         }
-        
+
         return array(
-            'form'      =>  $form->createView(),
-            'titulo'    => 'Registro',
-            'usuario'   => $usuario,
-            'isNew'     =>  true,
+            'form' => $form->createView(),
+            'titulo' => 'Registro',
+            'usuario' => $usuario,
+            'isNew' => true,
         );
     }
-    
+
     /**
      * @Route("/perfil",name="perfil_usuario")
      * @Template("FrontendBundle:Default:registro.html.twig")
      * @Method({"GET","POST"})
      */
-    public function perfilUsuarioAction(Request $request)
-    {
+    public function perfilUsuarioAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUser();
         if (!$usuario) {
@@ -321,11 +312,11 @@ class DefaultController extends BaseController {
             'em' => $this->getDoctrine()->getManager())
         );
         $isNew = false;
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             //obtiene la contraseña
             $current_pass = $usuario->getPassword();
             $form->handleRequest($request);
-            if($form->isValid()){
+            if ($form->isValid()) {
                 if (null == $usuario->getPassword()) {
                     // usuario no cambio contraseña
                     $usuario->setPassword($current_pass);
@@ -336,20 +327,19 @@ class DefaultController extends BaseController {
                 $em->flush();
                 $this->enviarUsuarioUpdate($usuario->getEmail(), $current_pass, $usuario);
                 $this->get('session')->getFlashBag()->add(
-                    'notice',
-                    'Se han realizado los cambios solicitados.'
+                        'notice', 'Se han realizado los cambios solicitados.'
                 );
             }
         }
-        
+
         return array(
-            'form'      =>  $form->createView(),
-            'usuario'   =>  $usuario,
-            'titulo'    => 'Editar perfil',
-            'isNew'     =>  $isNew,
+            'form' => $form->createView(),
+            'usuario' => $usuario,
+            'titulo' => 'Editar perfil',
+            'isNew' => $isNew,
         );
     }
-    
+
     private function enviarRecuperar($sUsuario, $sPassword, Usuario $usuario, $isNew = false) {
         $asunto = 'Se ha reestablecido su contraseña';
         $message = \Swift_Message::newInstance()
@@ -357,9 +347,7 @@ class DefaultController extends BaseController {
                 ->setFrom('noreply@mosaicors.com')
                 ->setTo($usuario->getEmail())
                 ->setBody(
-                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
-                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
-                'text/html'
+                $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 'text/html'
         );
         $this->get('mailer')->send($message);
     }

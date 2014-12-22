@@ -69,12 +69,10 @@
                                 <div class="widget-foot">
                                     <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('pagos')}}')">Regresar</button>
                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('pagos_edit',{id: entity.id})}}')">Editar</button>
-                                    {% if entity.isAproved == false %}
-                                        {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Pago::STATUS_SOLICITUD') %}
-                                        <button id="botonAprobar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('pagos_aprobar',{id: entity.id})}}')">Aprobar pago</button>
-                                        <button id="botonRechazar" class="btn btn-danger" onclick="javascript:editarRegistro('{{path('pagos_rechazar',{id: entity.id})}}')">Rechazar pago</button>
-                                        {% endif %}
-                                    {% endif %}    
+                                    {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Pago::STATUS_SOLICITUD') %}
+                                    <button id="botonAprobar" class="btn btn-success" onclick="aprobarPago({{entity.id}})">Aprobar pago</button>
+                                    <button id="botonRechazar" class="btn btn-danger" onclick="rechazarPago({{entity.id}})">Rechazar pago</button>
+                                    {% endif %}
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('pagos_delete', { 'id': entity.id }) }}" method="post">
                                             <input name="_method" value="DELETE" type="hidden"/>
@@ -139,6 +137,51 @@ var eliminarRegistro = function(){
   {% endif %}      
 };
 
+function aprobarPago(pago){
+    debugger;
+    var url = '{{path('pagos_aprobar')}}';
+    bootbox.confirm("Confirma aprobar el pago?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'pago': pago},
+            success: function(data){
+                location.href = '{{path('pagos_show',{'id':entity.id})}}';
+            },
+            error: function(data){
+                alert("Error");
+                debugger;
+                console.log(data);
+            }
+         });
+      }
+    });
+}
+
+function rechazarPago(pago){
+    debugger;
+    var url = '{{path('pagos_rechazar')}}';
+    bootbox.confirm("Confirma rechazar el pago?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'pago': pago},
+            success: function(data){
+                location.href = '{{path('pagos_show',{'id':entity.id})}}';
+            },
+            error: function(data){
+                alert("Error");
+                debugger;
+                console.log(data);
+            }
+         });
+      }
+    });
+}
 </script>
 
     

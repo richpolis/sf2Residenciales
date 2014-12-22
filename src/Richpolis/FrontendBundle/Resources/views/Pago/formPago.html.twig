@@ -1,4 +1,7 @@
 <form action="{{ rutaAction }}" method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.referencia) }}
+    {{ form_row(form.file) }}
+    <span class="help">Por favor suba el comprobante referente a esta operación.<br/> Comprobantes no referentes causaran la cancelación de su reservación.</span>
+    {{ form_rest(form) }}
 </form>

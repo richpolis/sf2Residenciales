@@ -441,4 +441,17 @@ class Reservacion
         }
         return ($desde && $hasta);
     }
+    
+    public function getHorarioLimpiezaDesde(){
+        $cadena = $this->fechaEvento->format('Y-m-d') . 'T' . $this->hasta->format('H:i:00');
+        return $cadena;
+    }
+    
+    public function getHorarioLimpiezaHasta(){
+        $cadena = $this->fechaEvento->format('Y-m-d') . ' ' . $this->hasta->format('H:i:s');
+        $date = new \DateTime($cadena);
+        $date->modify('+2 hours');
+        $cadena2 = $date->format('Y-m-d') . 'T' . $date->format('H:i:s');
+        return $cadena2;
+    }
 }

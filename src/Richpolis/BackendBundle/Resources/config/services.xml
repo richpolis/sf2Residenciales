@@ -11,6 +11,7 @@
         <parameter key="richpolis.twitterTime.extension.class">Richpolis\BackendBundle\Twig\TwitterTimeExtension</parameter>
         <parameter key="richpolis.translate_date.extension.class">Richpolis\BackendBundle\Twig\TranslateDateExtension</parameter>
         <parameter key="richpolis.reservacion_status.extension.class">Richpolis\BackendBundle\Twig\ReservacionStatusExtension</parameter>
+        <parameter key="richpolis.pago_status.extension.class">Richpolis\BackendBundle\Twig\PagoStatusExtension</parameter>
     </parameters>
 
     <services>
@@ -38,6 +39,11 @@
         
         <!-- "reservacionStatus" twig.extension -->
         <service id="richpolis.twig.reservacion_status_extension" class="%richpolis.reservacion_status.extension.class%">
+            <tag name="twig.extension" />
+        </service>
+        
+        <!-- "pagoStatus" twig.extension -->
+        <service id="richpolis.twig.pago_status_extension" class="%richpolis.pago_status.extension.class%">
             <tag name="twig.extension" />
         </service>
     </services>

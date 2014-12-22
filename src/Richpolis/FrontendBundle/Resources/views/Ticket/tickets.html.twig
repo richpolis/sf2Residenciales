@@ -22,7 +22,7 @@
                     <div class="col-md-12">
                         <div class="widget">
                             <div class="widget-head">
-                                <h2>Tickets</h2>
+                                <h2>Contactar al administrador</h2>
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
@@ -43,6 +43,7 @@
                                         <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('tickets')}}?month={{monthNext}}&year={{yearNext}}'">></span>
                                     </div>
                                     {% include 'FrontendBundle:Ticket:lista.html.twig' with {'tickets':entities} %}
+                                    <br/>
                                     <button class="btn btn-success" onclick="addForo();">Crear ticket</button>
                                 </div>
                             </div>

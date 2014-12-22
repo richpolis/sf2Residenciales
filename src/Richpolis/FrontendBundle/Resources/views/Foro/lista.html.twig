@@ -1,6 +1,6 @@
 <ul class="lista lista-foros">
     {% for registro in foros %}
-        <li class="item item-foro">
+        <li class="item item-foro item-actividad">
             <div class="item-aviso-fecha">
                 {{ registro.createdAt | date('d-M-Y') }} - Comentarios: <span class="badge">{{registro.contComentarios}}</span> 
                 {% if registro.isCerrado == false %}

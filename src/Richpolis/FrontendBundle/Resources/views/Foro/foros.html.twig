@@ -43,6 +43,7 @@
                                         <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('foros')}}?month={{monthNext}}&year={{yearNext}}'">></span>
                                     </div>
                                     {% include 'FrontendBundle:Foro:lista.html.twig' with {'foros': entities } %}
+                                    <br/>
                                     <button class="btn btn-success" onclick="addForo();">Crear foro</button>
                                 </div>
                             </div>
