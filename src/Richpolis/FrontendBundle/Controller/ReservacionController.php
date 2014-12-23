@@ -574,7 +574,7 @@ class ReservacionController extends BaseController {
                     return $response;
                 } else {
                     $response = new JsonResponse(json_encode(array(
-                                'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                                'form' => $this->renderView('FrontendBundle:Reservacion:formReservacion.html.twig', array(
                                     'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
                                     'form' => $form->createView(),
                                 )),
@@ -587,7 +587,7 @@ class ReservacionController extends BaseController {
         }
 
         $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                    'form' => $this->renderView('FrontendBundle:Reservacion:formReservacion.html.twig', array(
                         'rutaAction' => $this->generateUrl('reservaciones_realizar_reservacion'),
                         'form' => $form->createView(),
                     )),
@@ -600,21 +600,30 @@ class ReservacionController extends BaseController {
         $em = $this->getDoctrine()->getManager();
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                 ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(), $reservacion->getRecurso()->getId());
-        $horarios = array();
-        foreach ($reservaciones as $registro) {
-            //$horarios[]= 
-            $registro->getHasta()->modify('+2 hours');
-            
-            $horarios[] = $registro;
-        }
         $resp = true;
-        foreach ($horarios as $horario) {
-            if ($horario > $reservacion->getDesde()) {
-                $resp = false;
-                break;
-            }
+        foreach ($reservaciones as $registro) {
+            if($reservacion->getDesde()>$registro->getDesde()){
+				//quiere decir que la nueva reservacion es despues del horario
+				//comparamos la hora final del registro ya reservado sea menor al inicio del proxima reservacion.
+				$hasta = $registro->getHasta();
+				$hasta->modify('+2 hours');
+				if($hasta>$reservacion->getDesde()){
+					$resp = false;
+					break;
+				}
+			}else{
+				//quiere decir que la nueva reservacion es antes del horario.
+				//comparamos la hora final de la reservacion, que sea menor al horario de inicio de la reservacion guardada.
+				$hasta = $reservacion->getHasta();
+				$hasta->modify('+2 hours');
+				if($hasta>$registro->getDesde()){
+					$resp = false;
+					break;
+				}
+			}
+				
         }
-        return $resp;
+		return $resp;
     }
 
     /**
