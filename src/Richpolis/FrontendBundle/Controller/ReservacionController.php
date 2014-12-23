@@ -601,29 +601,38 @@ class ReservacionController extends BaseController {
         $reservaciones = $em->getRepository('FrontendBundle:Reservacion')
                 ->getReservacionesPorFechaEvento($reservacion->getFechaEvento(), $reservacion->getRecurso()->getId());
         $resp = true;
-        foreach ($reservaciones as $registro) {
-            if($reservacion->getDesde()>$registro->getDesde()){
-				//quiere decir que la nueva reservacion es despues del horario
-				//comparamos la hora final del registro ya reservado sea menor al inicio del proxima reservacion.
-				$hasta = $registro->getHasta();
-				$hasta->modify('+2 hours');
-				if($hasta>$reservacion->getDesde()){
-					$resp = false;
-					break;
-				}
-			}else{
-				//quiere decir que la nueva reservacion es antes del horario.
-				//comparamos la hora final de la reservacion, que sea menor al horario de inicio de la reservacion guardada.
-				$hasta = $reservacion->getHasta();
-				$hasta->modify('+2 hours');
-				if($hasta>$registro->getDesde()){
-					$resp = false;
-					break;
-				}
-			}
-				
+        $horaInicio1 = $reservacion->getDesde()->format('G');
+        $horaFinal1 = $reservacion->getHasta()->format('G');
+        if($horaFinal1==23){
+            $horaFinal1++;
+        }else{
+            $horaFinal1+=2;
         }
-		return $resp;
+        foreach ($reservaciones as $registro) {
+            $horaInicio2 = $registro->getDesde()->format('G');
+            $horaFinal2 = $registro->getHasta()->format('G');
+            if($horaFinal2==23){
+                $horaFinal2++;
+            }else{
+                $horaFinal2+=2;
+            }
+            if ($horaInicio1 > $horaInicio2) {
+                //quiere decir que la nueva reservacion es despues del horario
+                //comparamos la hora final del registro ya reservado sea menor al inicio del proxima reservacion.
+                if ($horaFinal2 > $horaInicio1) {
+                    $resp = false;
+                    break;
+                }
+            } else {
+                //quiere decir que la nueva reservacion es antes del horario.
+                //comparamos la hora final de la reservacion, que sea menor al horario de inicio de la reservacion guardada.
+                if ($horaFinal1 > $horaInicio2) {
+                    $resp = false;
+                    break;
+                }
+            }
+        }
+        return $resp;
     }
 
     /**

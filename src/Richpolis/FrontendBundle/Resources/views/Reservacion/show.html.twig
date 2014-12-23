@@ -112,8 +112,8 @@
                                     <button id="botonRegresar" class="btn btn-default" onclick="javascript:regresar('{{path('reservaciones')}}')">Regresar</button>
                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('reservaciones_edit',{id: entity.id})}}')">Editar</button>
                                     {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
-                                    <button id="botonAprobar" class="btn btn-success" onclick="javascript:editarRegistro('{{path('reservaciones_aprobar',{id: entity.id})}}')">Aprobar reservacion</button>
-                                    <button id="botonRechazar" class="btn btn-danger" onclick="javascript:editarRegistro('{{path('reservaciones_rechazar',{id: entity.id})}}')">Rechazar reservacion</button>
+                                    <button id="botonAprobar" class="btn btn-success" onclick="javascript:aprobarReservacion({{entity.id}})">Aprobar reservacion</button>
+                                    <button id="botonRechazar" class="btn btn-danger" onclick="javascript:rechazarReservacion({{entity.id}})">Rechazar reservacion</button>
                                     {% endif %}
                                     <div style="float: left; margin-right: 3px;">
                                         <form id="formEliminar" action="{{ path('reservaciones_delete', { 'id': entity.id }) }}" method="post">
@@ -179,6 +179,47 @@ var eliminarRegistro = function(){
   {% endif %}      
 };
 
+function aprobarReservacion(reservacion){
+    var url = '{{path('reservaciones_aprobar')}}';
+    bootbox.confirm("Confirma aprobar la reservacion?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'reservacion': reservacion },
+            success: function(data){
+               location.href = '{{path('reservaciones_show',{'id':entity.id})}}';
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
+
+function rechazarReservacion(reservacion){
+    var url = '{{path('reservaciones_rechazar')}}';
+    bootbox.confirm("Confirma rechazarla la reservación?", function(result) {
+      if(result){
+         $.ajax({
+            url: url, 
+            type: 'POST',
+            dataType: 'json',
+            data: {'reservacion': reservacion},
+            success: function(data){
+               location.href = '{{path('reservaciones_show',{'id':entity.id})}}';
+            },
+            fail: function(data){
+                alert("Error");
+                console.log(data);
+            }
+         });
+      }
+    });
+}
 </script>
 
     

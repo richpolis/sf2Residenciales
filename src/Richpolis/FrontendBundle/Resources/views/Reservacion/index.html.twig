@@ -163,7 +163,7 @@ function mostrarReservacion(reservacion){
    
 }
 
-function aprobarPago(reservacion){
+function aprobarReservacion(reservacion){
     var url = '{{path('reservaciones_aprobar')}}';
     bootbox.confirm("Confirma aprobar la reservacion?", function(result) {
       if(result){
@@ -185,7 +185,7 @@ function aprobarPago(reservacion){
     });
 }
 
-function rechazarPago(reservacion){
+function rechazarReservacion(reservacion){
     var url = '{{path('reservaciones_rechazar')}}';
     bootbox.confirm("Confirma rechazarla la reservación?", function(result) {
       if(result){
