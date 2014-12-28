@@ -19,7 +19,7 @@
         {% if entity.isAproved == false %}
             {% if entity.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
             <button onclick="javascript:aprobarReservacion({{entity.id}});" class="btn btn-xs btn-success"><i class="fa fa-check"></i></button>
-            <button onclick="javascript:rezacharReservacion({{entity.id}});" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></button>
+            <button onclick="javascript:rechazarReservacion({{entity.id}});" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></button>
             {% endif %}
         {% endif %}
     </td>

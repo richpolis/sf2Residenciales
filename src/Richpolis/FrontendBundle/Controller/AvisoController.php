@@ -278,7 +278,7 @@ class AvisoController extends BaseController
         
         if ($editForm->isValid()) {
             $em->flush();
-
+			$this->enviarCorreos($entity);
             return $this->redirect($this->generateUrl('avisos_edit', array('id' => $id)));
         }
 
@@ -421,7 +421,7 @@ class AvisoController extends BaseController
                     $usuarios = array($entity->getUsuario());
                     break;
             }
-            
+            $this->enviarAvisosPorCorreo($entity,$usuarios);
         }
     }
     
@@ -433,7 +433,7 @@ class AvisoController extends BaseController
                 ->setTo($this->getArregloUsuarios($usuarios))
                 ->setBody(
                 $this->renderView('FrontendBundle:Default:enviarAviso.html.twig', 
-                        compact('entity')), 
+                        array('aviso'=>$entity)), 
                 'text/html'
         );
         $this->get('mailer')->send($message);

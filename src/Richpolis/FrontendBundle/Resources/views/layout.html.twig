@@ -126,9 +126,9 @@
                     </li>
                     {% else %}
                     <li class=" pull-right user-data">            
-                        <a  href="#">
+                        <a  href="#" style="cursor: default;">
                             <img src="/images/logo.png" width="25" height="25"/>
-                            {{app.user.nombre|default('anonimo')}} <b class="caret"></b>
+                            {{app.user.nombre|default('anonimo')}} <!--b class="caret"></b-->
                         </a>
                     </li>    
                     {% endif %} 
@@ -191,7 +191,7 @@
             {% endif %}
             <li>
                 <a {{estadodecuentas}} href="{{path('estadodecuentas')}}">
-                    <i class="fa fa-money"></i> <span>Estado de cuentas</span>
+                    <i class="fa fa-money"></i> <span>Estado de cuenta</span>
                 </a>
             </li>
             <li>
