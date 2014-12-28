@@ -111,7 +111,7 @@ class ResidencialController extends Controller
     /**
      * Finds and displays a Residencial entity.
      *
-     * @Route("/{id}", name="residenciales_show")
+     * @Route("/{id}", name="residenciales_show", requirements={"id": "\d+"})
      * @Method("GET")
      * @Template()
      */
@@ -136,7 +136,7 @@ class ResidencialController extends Controller
     /**
      * Displays a form to edit an existing Residencial entity.
      *
-     * @Route("/{id}/edit", name="residenciales_edit")
+     * @Route("/{id}/edit", name="residenciales_edit", requirements={"id": "\d+"})
      * @Method("GET")
      * @Template()
      */
@@ -182,7 +182,7 @@ class ResidencialController extends Controller
     /**
      * Edits an existing Residencial entity.
      *
-     * @Route("/{id}", name="residenciales_update")
+     * @Route("/{id}", name="residenciales_update", requirements={"id": "\d+"})
      * @Method("PUT")
      * @Template("BackendBundle:Residencial:edit.html.twig")
      */
@@ -216,7 +216,7 @@ class ResidencialController extends Controller
     /**
      * Deletes a Residencial entity.
      *
-     * @Route("/{id}", name="residenciales_delete")
+     * @Route("/{id}", name="residenciales_delete", requirements={"id": "\d+"})
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
@@ -254,5 +254,25 @@ class ResidencialController extends Controller
             //->add('submit', 'submit', array('label' => 'Delete','attr'=>array('class'=>'btn btn-danger')))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Seleccionar alguna residencial.
+     *
+     * @Route("/seleccionar", name="residenciales_seleccionar")
+     * @Method("GET")
+     */
+    public function seleccionarAction() {
+        $context = $this->get('security.context');
+        if (true === $context->isGranted('ROLE_SUPER_ADMIN')) {
+            $entities = $this->getDoctrine()->getRepository('BackendBundle:Residencial')->findAll();
+        } else if (true === $context->isGranted('ROLE_ADMIN')) {
+            $entities = $this->getUser()->getResidenciales();
+        } else {
+            $entities = array();
+        }
+        return $this->render('BackendBundle:Residencial:seleccionar.html.twig', array(
+            'entities' => $entities,
+        ));
     }
 }

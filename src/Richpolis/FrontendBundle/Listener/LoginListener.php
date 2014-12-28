@@ -32,12 +32,12 @@ class LoginListener
             if($this->usuario->getIsActive()) {
                 $session = $this->container->get('session');
                 if($this->contexto->isGranted('ROLE_SUPER_ADMIN')){
-                    $irA = $this->router->generate('residenciales');
+                    $irA = $this->router->generate('residenciales_seleccionar');
                     $session->set('filters',array(
                         'pagados'=>false,
                     ));
                 }else if($this->contexto->isGranted('ROLE_ADMIN')){
-                    $irA = $this->router->generate('homepage');
+                    $irA = $this->router->generate('residenciales_seleccionar');
                     $edificio = $this->usuario->getEdificio();
                     $session->set('filters',array(
                        'pagados'=>false,

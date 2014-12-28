@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Richpolis\FrontendBundle\Entity\Contacto;
 use Richpolis\FrontendBundle\Form\ContactoType;
 use Richpolis\BackendBundle\Form\UsuarioFrontendType;
+use Richpolis\BackendBundle\Entity\Usuario;
 
 class DefaultController extends BaseController {
 
@@ -21,9 +22,20 @@ class DefaultController extends BaseController {
     public function indexAction(Request $request) {
 
         $context = $this->get('security.context');
+        $filtros = $this->getFilters();
         if (true === $context->isGranted('ROLE_SUPER_ADMIN')) {
+            if ($request->query->has('residencial') == true) {
+                $filtros['residencial'] = $request->query->get('residencial');
+                unset($filtros['edificio']);
+                $this->setFilters($filtros);
+            }
             return $this->redirect($this->generateUrl('residenciales'));
-        } else if (true === $context->isGranted('ROLE_ADMIN')) {
+        } elseif (true === $context->isGranted('ROLE_ADMIN')) {
+            if ($request->query->has('residencial') == true) {
+                $filtros['residencial'] = $request->query->get('residencial');
+                unset($filtros['edificio']);
+                $this->setFilters($filtros);
+            }
             return $this->redirect($this->generateUrl('residenciales'));
         } else {
             return $this->usuariosIndex($request);
@@ -237,7 +249,7 @@ class DefaultController extends BaseController {
         if ($request->isMethod('POST')) {
             $email = $request->get('email');
             $usuario = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
-                    ->findOneBy(array('email' => $email));
+                        ->findOneBy(array('email' => $email));
             if (!$usuario) {
                 $this->get('session')->getFlashBag()->add(
                         'error', 'El email no esta registrado.'
@@ -259,7 +271,7 @@ class DefaultController extends BaseController {
                 );
 
                 $this->enviarRecuperar($sUsuario, $sPassword, $usuario);
-                $msg = "Te llegara un mail con detalle de tu cuenta";
+                return $this->redirect($this->generateUrl('login'));
             }
         }
         return array('msg' => $msg);

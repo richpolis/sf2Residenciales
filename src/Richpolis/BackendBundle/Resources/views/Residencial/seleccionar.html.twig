@@ -1,10 +1,6 @@
 {% extends 'FrontendBundle::layout.html.twig' %}
 
-{% block title %}Recuperar contraseña{% endblock %}
-
-{% if error is not defined %}
-    {% set error = false %}
-{% endif %} 
+{% block title %}Seleccionar residencial{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -29,33 +25,24 @@
                             <i class="icon-lock"></i> Seleccionar Residencial
                         </div>
                         <div class="widget-content">
-                            <div class="padd contenido-formulario">
-                                <!-- Login form -->
-                                <form class="form-horizontal" action='{{ path('recuperar') }}'  method="post">
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3" for="email">Email</label>
-                                        <div class="col-lg-9">
-                                            <input type="email" id="email" name="email" value="" placeholder="Email">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9 col-lg-offset-3">
-                                        <button type="button" class="btn btn-primary" onclick="history.back(1);">Regresar</button>
-                                        <button type="submit" class="btn btn-danger">Recuperar contraseña</button>
-                                    </div>
-                                    <br />
-                                </form>
-
-                            </div>
-                        </div>
-
-                        <div class="widget-foot">
-                            <!--Not Registred? <a href="#">Register here</a>-->
-                            {% if error %}
-                                <div>{{ error.message }}</div>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <ul>
+                                    {% for residencial in entities %}
+                                        <li>
+                                            <a href="{{path('homepage',{'residencial':residencial.id})}}">
+                                                <span class="bold">{{ residencial.nombre }}</span>
+                                            </a>
+                                        </li>
+                                    {% endfor %}    
+                                </ul>
                             {% else %}
-                                <br/>
+                                <a href="{{path('homepage')}}" class="navbar-brand">
+                                    Dashboard | <span class="bold">{{ app.user.edificio.residencial }}</span>
+                                </a>   
                             {% endif %}
+                        </div>
+                        <div class="widget-foot">
+                            <br/>
                         </div>
                     </div>  
                 </div>
