@@ -652,7 +652,9 @@
 
 <p>
     Usuario: {{sUsuario}}<br/>
+    {% if sPassword | length < 32%}
     Password: {{sPassword}}<br/>
+    {% endif %}
 </p>
 
 <p>&nbsp;</p>

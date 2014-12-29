@@ -72,6 +72,11 @@
                             {% else %}
                                 <br/>
                             {% endif %}
+                            {% for flashMessage in app.session.flashbag.get('notice') %}
+                                <div class="flash-notice" style="color: #006699;">
+                                    {{ flashMessage }}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>  
                 </div>

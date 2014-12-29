@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Richpolis\FrontendBundle\Entity\Contacto;
 use Richpolis\FrontendBundle\Form\ContactoType;
 use Richpolis\BackendBundle\Form\UsuarioFrontendType;
+use Richpolis\BackendBundle\Form\UsuarioContrasenaFrontendType;
 use Richpolis\BackendBundle\Entity\Usuario;
 
 class DefaultController extends BaseController {
@@ -348,6 +349,49 @@ class DefaultController extends BaseController {
             'form' => $form->createView(),
             'usuario' => $usuario,
             'titulo' => 'Editar perfil',
+            'isNew' => $isNew,
+        );
+    }
+    
+    /**
+     * @Route("/contrasena",name="contrasena_usuario")
+     * @Template("FrontendBundle:Default:registro.html.twig")
+     * @Method({"GET","POST"})
+     */
+    public function contrasenaUsuarioAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUser();
+        if (!$usuario) {
+            return $this->redirect($this->generateUrl('login'));
+        }
+        $form = $this->createForm(new UsuarioContrasenaFrontendType(), $usuario, array(
+            'em' => $this->getDoctrine()->getManager())
+        );
+        $isNew = false;
+        if ($request->isMethod('POST')) {
+            //obtiene la contraseña
+            $current_pass = $usuario->getPassword();
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                if (null == $usuario->getPassword()) {
+                    // usuario no cambio contraseña
+                    $usuario->setPassword($current_pass);
+                } else {
+                    // se actualiza la contraseña
+                    $this->setSecurePassword($usuario);
+                }
+                $em->flush();
+                $this->enviarUsuarioUpdate($usuario->getEmail(), $current_pass, $usuario);
+                $this->get('session')->getFlashBag()->add(
+                        'notice', 'Se ha cambiado la contraseña del usuario.'
+                );
+            }
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'usuario' => $usuario,
+            'titulo' => 'Cambiar contraseña de usuario',
             'isNew' => $isNew,
         );
     }

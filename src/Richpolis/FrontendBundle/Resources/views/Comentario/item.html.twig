@@ -9,7 +9,11 @@
 <li class="{{tipoUser}}">
     <!-- Use the class "{{tipoPull}}" in avatar -->
     <div class="avatar {{tipoPull}}">
-        <img src="/images/logo.png" style="height: 40px;" alt="">
+        {% if comentario.usuario.grupo == constant('Richpolis\\BackendBundle\\Entity\\Usuario::GRUPO_USUARIOS')%}
+        <i class="fa fa-user fa-4x"></i>
+        {% else %}
+        <img src="/images/logo.png" style="height: 40px;" alt="">    
+        {% endif %}    
     </div>
     <div class="chat-content">
         <!-- In meta area, first include "name" and then "time" -->

@@ -481,16 +481,16 @@ class ReservacionController extends BaseController {
      * @Route("/aprobar/reservacion", name="reservaciones_aprobar")
      * @Method({"POST"})
      */
-    public function aprobarAction(Request $request, $id) {
+    public function aprobarAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $reservacion = $em->find('FrontendBundle:Reservacion', $id);
+        $reservacion = $em->find('FrontendBundle:Reservacion', $request->request->get('reservacion'));
 
         if ($reservacion) {
             $reservacion->setIsAproved(true);
             $reservacion->setStatus(Reservacion::STATUS_APROBADA);
             $em->persist($reservacion);
-            $this->get('richpolis.controller.aviso')->aprobarReservacion($reservacion, $em);
+            $this->get('richpolis.aviso.controller')->aprobarReservacion($reservacion, $em);
         }
         $em->flush();
 
@@ -510,16 +510,16 @@ class ReservacionController extends BaseController {
      * @Route("/rechazar/reservacion", name="reservaciones_rechazar")
      * @Method({"POST"})
      */
-    public function rechazarAction(Request $request, $id) {
+    public function rechazarAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $reservacion = $em->find('FrontendBundle:Reservacion', $id);
+        $reservacion = $em->find('FrontendBundle:Reservacion', $request->request->get('reservacion'));
 
         if ($reservacion) {
             $reservacion->setIsAproved(false);
             $reservacion->setStatus(Reservacion::STATUS_RECHAZADA);
             $em->persist($reservacion);
-            $this->get('richpolis.controller.aviso')->rechazarReservacion($reservacion, $em);
+            $this->get('richpolis.aviso.controller')->rechazarReservacion($reservacion, $em);
         }
         $em->flush();
 

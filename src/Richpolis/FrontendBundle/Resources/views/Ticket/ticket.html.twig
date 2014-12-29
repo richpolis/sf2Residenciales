@@ -25,7 +25,7 @@
                                 <h2>Contactar al administrador</h2>
                             </div>
                             <div class="widget-content">
-                                <div style="overflow: scroll; padding: 10px; width: auto; height: 350px;">
+                                <div style="padding: 10px;">
                                     <ul class="chats">
                                         {% for comentario in comentarios %}
                                             {% include 'FrontendBundle:Comentario:item.html.twig' with {'comentario': comentario} %} 
@@ -35,7 +35,7 @@
                             </div>
                             <div class="widget-foot">
                                 {% if ticket.isCerrado == false %}
-                                    <form action="{{ path('tickets_ticket',{'id': ticket.id}) }}" class="validate form-inline" id="formComentarios" method="post" {{ form_enctype(form)}}  role="form">
+                                    <form onsubmit="return false;" action="{{ path('tickets_ticket',{'id': ticket.id}) }}" class="validate form-inline" id="formComentarios" method="post" {{ form_enctype(form)}}  role="form">
                                         {{form_errors(form)}}
                                         <div class="form-group col-lg-10">
                                             {{form_widget(form.comentario)}}

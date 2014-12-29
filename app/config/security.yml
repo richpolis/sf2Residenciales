@@ -28,6 +28,8 @@ security:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/recuperar, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/registro, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/reservaciones/revision/automatica, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/cargos/cargos/automaticos, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/*, roles: ROLE_USER }
 
     encoders:
