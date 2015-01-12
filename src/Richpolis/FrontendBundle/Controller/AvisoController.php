@@ -161,7 +161,7 @@ class AvisoController extends BaseController
         $entity = new Aviso();
         $filtros = $this->getFilters();
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
-        $usuario = null;
+        $usuario = $this->getUsuarioActual();
         if($filtros['nivel_aviso']==Aviso::TIPO_ACCESO_PRIVADO){
             $usuario = $em->find('BackendBundle:Usuario', $filtros['usuario']);
         }

@@ -129,6 +129,8 @@ class EstadoCuentaController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $entity->setAvisoEnviado(false);
+            $entity->setIsPaid(false);
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -538,10 +540,10 @@ class EstadoCuentaController extends BaseController
         $residencialActual = $this->getResidencialActual($this->getResidencialDefault());
 
         $arreglo = array(
-            array('id' => 1, 'nombre' => 'Cargos automaticos'),
-            array('id' => 2, 'nombre' => 'Cargo general a residencial'),
-            array('id' => 3, 'nombre' => 'Cuotas extraordinarias'),
-            array('id' => 4, 'nombre' => 'Cargo a inquilino'),
+            array('id' => 1, 'nombre' => 'Cargos automaticos (todas las residenciales).'),
+            array('id' => 2, 'nombre' => 'Cargo general a residencial.'),
+            array('id' => 3, 'nombre' => 'Cargo por torre(s).'),
+            array('id' => 4, 'nombre' => 'Cuotas extraordinarias (por inquilino)'),
         );
 
         return array(

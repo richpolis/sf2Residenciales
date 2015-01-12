@@ -119,7 +119,11 @@ function ejecutarCargosPorEdificio(){
 					break;
 				}else{
 					alert('Cargos automaticos terminados');
+                                        {%if app.user == null %}
+                                        location.href="{{path('estadodecuentas')}}";
+                                        {% else %}
                                         location.href="{{path('login')}}";
+                                        {% endif %}
 				}
 			}
 		}

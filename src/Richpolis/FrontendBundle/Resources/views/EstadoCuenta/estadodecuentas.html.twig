@@ -43,7 +43,7 @@
                                             {% set yearNext = year + 1 %}
                                         {% endif %}
                                         <span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('estadodecuentas')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
-                                        <span class="navegador-fechas-mes">{{nombreMes}}</span>
+                                        <span class="navegador-fechas-mes">{{nombreMes ~ ' ' ~ year}}</span>
                                         <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('estadodecuentas')}}?month={{monthNext}}&year={{yearNext}}'">></span>
                                     </div>
                                     <table id="datatable" class="table table-striped table-bordered table-hover">

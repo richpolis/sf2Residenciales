@@ -86,7 +86,7 @@ class EstadoCuenta
      */
     private $isAcumulable = true;
 	
-	/**
+    /**
      * @var boolean
      *
      * @ORM\Column(name="aviso_enviado", type="boolean", nullable=true)
@@ -151,16 +151,18 @@ class EstadoCuenta
     public function __construct() {
         $this->isPaid       = false;
         $this->isAcumulable = true;
-		$this->avisoEnviado = false;
+	$this->avisoEnviado = false;
     }
 	
-	private $edificios = array();
- 	public function getEdificios(){
-		return $this->edificios;
- 	}
-	public function setEdificios($edificios){
-		$this->edificios = $edificios;
-	}
+    private $edificios = array();
+    
+    public function getEdificios(){
+	return $this->edificios;
+    }
+    
+    public function setEdificios($edificios){
+	$this->edificios = $edificios;
+    }
 
     /**
      * Get id

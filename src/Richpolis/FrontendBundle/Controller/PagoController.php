@@ -538,11 +538,11 @@ class PagoController extends BaseController {
         }
 
         $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('pagos_actualizar_pago', array('pago' => $pago->getId())),
-                        'form' => $form->createView(),
-                    )),
-                    'respuesta' => 'nuevo',
+            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                'rutaAction' => $this->generateUrl('pagos_actualizar_pago', array('pago' => $pago->getId())),
+                'form' => $form->createView(),
+            )),
+            'respuesta' => 'nuevo',
         )));
         return $response;
     }
@@ -586,18 +586,20 @@ class PagoController extends BaseController {
 
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
-                            'html' => '',
-                            'respuesta' => 'creado',
+                    'html' => $this->renderView('FrontendBundle:Reservacion:item_dashboard.html.twig',array(
+                        'registro'=>$reservacion
+                    )),
+                    'respuesta' => 'creado',
                 )));
                 return $response;
             }
         }
         $response = new JsonResponse(json_encode(array(
-                    'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
-                        'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
-                        'form' => $form->createView(),
-                    )),
-                    'respuesta' => 'nuevo',
+            'form' => $this->renderView('FrontendBundle:Pago:formPago.html.twig', array(
+                'rutaAction' => $this->generateUrl('pagos_realizar_pago_reservacion'),
+                'form' => $form->createView(),
+            )),
+            'respuesta' => 'nuevo',
         )));
         return $response;
     }

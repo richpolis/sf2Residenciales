@@ -49,7 +49,7 @@ class Recurso
     private $tipoAcceso; 
 
     /**
-     * @var string
+     * @var decimal
      *
      * @ORM\Column(name="precio", type="decimal", nullable=true)
      */
@@ -175,7 +175,11 @@ class Recurso
     }
     
     public function getStringRecurso(){
-        return sprintf('%s %s %s', $this->nombre,$this->getDiasDisponibles(),$this->getHorariosDisponibles());
+        $texto = sprintf('%s %s %s', $this->nombre,$this->getDiasDisponibles(),$this->getHorariosDisponibles());
+        if($this->precio>0){
+            $texto .="<br/> Cuota:$ ".number_format($this->precio, 2, '.', ',');
+        }
+        return $texto;
     }
 
     /**

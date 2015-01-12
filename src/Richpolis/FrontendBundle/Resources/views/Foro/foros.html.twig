@@ -39,7 +39,7 @@
                                             {% set yearNext = year + 1 %}
                                         {% endif %}
                                         <span class="navegador-fechas-control navegador-fechas-atras btn btn-lg" onclick="location.href='{{path('foros')}}?month={{monthPrevious}}&year={{yearPrevious}}'"><</span>
-                                        <span class="navegador-fechas-mes">{{nombreMes}}</span>
+                                        <span class="navegador-fechas-mes">{{nombreMes ~ ' ' ~ year}}</span>
                                         <span class="navegador-fechas-control navegador-fechas-siguiente btn btn-lg" onclick="location.href='{{path('foros')}}?month={{monthNext}}&year={{yearNext}}'">></span>
                                     </div>
                                     {% include 'FrontendBundle:Foro:lista.html.twig' with {'foros': entities } %}

@@ -1,12 +1,5 @@
 <ul class="lista lista-avisos">
     {% for registro in reservaciones %}
-        <li class="item item-aviso">
-            <div class="item-aviso-fecha">
-                {{ registro.fechaEvento | date('d-M-Y') }} - {{ registro.desde | date('g:ia')}} - {{ registro.hasta | date('g:ia')}}
-            </div>
-            <div class="item-titulo item-aviso-titulo"> {{ registro.stringStatus }} - {{registro.recurso}} - $ {{ registro.monto|number_format(2,".",",") }} </div>
-            <div class="item-descripcion item-aviso-descripcion"></div>
-            
-        </li>
+        {% include 'FrontendBundle:Reservacion:item_dashboard.html.twig' with { 'registro': registro } %}
     {% endfor%}    
 </ul>    

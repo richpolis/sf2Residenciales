@@ -4,8 +4,6 @@
     {{ parent() }}
     <!-- Uniform -->
     <link rel="stylesheet" href="{{asset('css/uniform.default.html')}}"> 
-    <!-- Uniform -->
-    <link rel="stylesheet" href="{{asset('css/daterangepicker-bs3.css')}}" />
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <!-- Widgets stylesheet -->
@@ -106,6 +104,24 @@
     </div>
     <!-- Mainbar ends -->        
     <div class="clearfix"></div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="labelFormulario" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="labelFormulario"></h4>
+          </div>
+          <div class="modal-body" id="modalBodyFormulario">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="guardar();">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div> 
 {% endblock %}
 
 {% block javascripts %}
@@ -142,4 +158,74 @@
     <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
     <script src="{{asset('js/sfrichpolis.js')}}"></script>
+    <script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
+    <script>
+    var reservacionActual = 0;
+    $(document).ready(function(){
+       $("#crearReservacion").on("click",function(){
+           location.href = '{{path('reservaciones_calendario_select_recurso')}}';
+       }); 
+    });
+    function addPago(reservacion){
+        mostrarFormulario("Realizar pago");
+        reservacionActual = reservacion;
+        getFormulario();
+    }
+    
+    function mostrarFormulario(titulo){
+        $("#modalFormulario").modal("show");
+        $("#labelFormulario").html(titulo);
+        $loader = $("<img>");
+        $loader.attr({'src': '{{asset('images/bx_loader.gif')}}','id': 'loader'});
+        $loader.css({'maxWidth': '80px'});
+        $("#modalBodyFormulario").html($loader);
+    }
+    
+    function guardar(){
+        debugger;
+        var $form = $("#modalBodyFormulario form");
+        var data = $form.serializefiles();
+        $.ajax({
+            url: $form.attr('action')+"?reservacion="+reservacionActual,
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            cache: false,
+		contentType: false,
+		processData: false,
+        }).done(function(data, textStatus,jqXHR){
+            debugger;
+            data = JSON.parse(data);
+            if(data.respuesta == 'nuevo'){
+                $("#modalBodyFormulario").html(data.form);
+                $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+            }else if(data.respuesta == 'creado'){
+                $("#modalFormulario").modal("hide");
+                $("#reservacion-"+reservacionActual).html($(data.html).find('li').html());
+            }
+        }).fail(function(data){
+            alert("Error");
+            console.log(data);
+        });
+    }
+    
+    function getFormulario(){
+        debugger;
+        $.ajax({
+            url: '{{path('pagos_realizar_pago_reservacion')}}',
+            type: 'GET',
+            data: {'reservacion': reservacionActual },
+            dataType: 'json',
+        }).done(function(data, textStatus,jqXHR){
+            data = JSON.parse(data);
+            if(data.respuesta == 'nuevo'){
+                $("#modalBodyFormulario").html(data.form);
+                $("#modalBodyFormulario form").attr({'action': data.rutaAction});
+            }
+        }).fail(function(data){
+            alert("Error");
+            console.log(data);
+        });;
+    }
+</script>
 {% endblock %}

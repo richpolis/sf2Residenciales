@@ -118,7 +118,11 @@
 			break;
                     }else{
                         alert('Cargos automaticos terminados');
+                        {%if app.user == null %}
+                        location.href="{{path('reservaciones')}}";
+                        {% else %}
                         location.href="{{path('login')}}";
+                        {% endif %}
                     }
 		}
             }
