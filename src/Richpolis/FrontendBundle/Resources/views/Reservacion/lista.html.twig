@@ -1,5 +1,7 @@
 <ul class="lista lista-avisos">
     {% for registro in reservaciones %}
+        {% if registro.status != constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_RECHAZADA') %}
         {% include 'FrontendBundle:Reservacion:item_dashboard.html.twig' with { 'registro': registro } %}
+        {% endif %}
     {% endfor%}    
 </ul>    

@@ -462,7 +462,7 @@ class PagoController extends BaseController {
         $usuario = $this->getUsuarioActual();
         //solo cargos por pagar
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+                     ->getCargosAdeudoPorUsuario($usuario->getId(), false);
         $monto = 0;
         foreach ($cargos as $cargo) {
             $monto += $cargo->getMonto();
@@ -583,7 +583,7 @@ class PagoController extends BaseController {
                 // se agrego el cargo en el pago.
                 //$pago->addCargo($cargo);
                 $em->persist($pago);
-
+                $cargo->setPago($pago);
                 $em->flush();
                 $response = new JsonResponse(json_encode(array(
                     'html' => $this->renderView('FrontendBundle:Reservacion:item_dashboard.html.twig',array(

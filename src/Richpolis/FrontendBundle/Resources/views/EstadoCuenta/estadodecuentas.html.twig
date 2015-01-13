@@ -180,9 +180,9 @@ var eliminarRegistro = function(){
                 type: 'POST',
                 data: data,
                 dataType: 'json',
-				cache: false,
-    			contentType: false,
-    			processData: false,
+		cache: false,
+    		contentType: false,
+    		processData: false,
             }).done(function(data, textStatus,jqXHR){
                 debugger;
                 data = JSON.parse(data);
@@ -191,7 +191,7 @@ var eliminarRegistro = function(){
                     $("#modalBodyFormulario form").attr({'action': data.rutaAction});
                 }else if(data.respuesta == 'creado'){
                     $("#modalFormulario").modal("hide");
-					location.href='{{path('pagos')}}';
+                    location.href='{{path('pagos')}}';
                 }
             }).fail(function(data){
                 console.log(data);

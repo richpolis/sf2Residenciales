@@ -58,14 +58,14 @@
                                                     </td>
                                                     <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 </tr>
-
                                                 {% set monto = monto + entity.monto %}
+                                                <!-- {{monto}} -->
                                             {% endfor %}
                                         <tfoot>
                                             <tr>
                                                 <th colspan="6">
                                                     {% if monto > 0 %}
-                                                        Total al pagar $ {{monto|number_format(2,".",",")}}
+                                                        <button class="btn btn-success" onclick="addPago();">Realizar pago $ {{monto|number_format(2,".",",")}}</button>
                                                     {% else %}
                                                         Sin saldo pendiente
                                                     {% endif %}
@@ -160,18 +160,41 @@
     <script src="{{asset('js/sfrichpolis.js')}}"></script>
     <script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
     <script>
-    var reservacionActual = 0;
+    var objPago = {
+        valor: 0,
+        string: "",
+        ruta: "",
+        getData: function(){
+            val = this.valor;
+            var data = {
+                'reservacion': val,
+            };
+            return data;
+        },
+        getQueryString: function(){
+            return this.string + "="+this.valor; 
+        },
+        getIdConsulta: function(){
+            return "#" + this.string + "-" + this.valor;
+        },
+    };
     $(document).ready(function(){
-       $("#crearReservacion").on("click",function(){
-           location.href = '{{path('reservaciones_calendario_select_recurso')}}';
-       }); 
+       
     });
-    function addPago(reservacion){
-        mostrarFormulario("Realizar pago");
-        reservacionActual = reservacion;
+    function addPagoReservacion(reservacion){
+        mostrarFormulario("Realizar pago de reservacion");
+        objPago.valor = reservacion;
+        objPago.string = "reservacion";
+        objPago.ruta  =  '{{path('pagos_realizar_pago_reservacion')}}';
         getFormulario();
     }
-    
+    function addPago(){
+        mostrarFormulario("Realizar pago");
+        objPago.valor = 0;
+        objPago.string = "pago";
+        objPago.ruta  =  '{{path('pagos_realizar_pago')}}';
+        getFormulario();
+    }
     function mostrarFormulario(titulo){
         $("#modalFormulario").modal("show");
         $("#labelFormulario").html(titulo);
@@ -186,13 +209,13 @@
         var $form = $("#modalBodyFormulario form");
         var data = $form.serializefiles();
         $.ajax({
-            url: $form.attr('action')+"?reservacion="+reservacionActual,
+            url: $form.attr('action')+"?"+objPago.getQueryString(),
             type: 'POST',
             data: data,
             dataType: 'json',
             cache: false,
-		contentType: false,
-		processData: false,
+            contentType: false,
+            processData: false,
         }).done(function(data, textStatus,jqXHR){
             debugger;
             data = JSON.parse(data);
@@ -201,7 +224,12 @@
                 $("#modalBodyFormulario form").attr({'action': data.rutaAction});
             }else if(data.respuesta == 'creado'){
                 $("#modalFormulario").modal("hide");
-                $("#reservacion-"+reservacionActual).html($(data.html).find('li').html());
+                debugger;
+                if(objPago.string == "reservacion"){
+                    $(objPago.getIdConsulta()).html($(data.html).find('li').html());
+                }else{
+                    location.href = '{{path('homepage')}}';
+                }
             }
         }).fail(function(data){
             alert("Error");
@@ -212,9 +240,9 @@
     function getFormulario(){
         debugger;
         $.ajax({
-            url: '{{path('pagos_realizar_pago_reservacion')}}',
+            url: objPago.ruta,
             type: 'GET',
-            data: {'reservacion': reservacionActual },
+            data: objPago.getData(),
             dataType: 'json',
         }).done(function(data, textStatus,jqXHR){
             data = JSON.parse(data);
