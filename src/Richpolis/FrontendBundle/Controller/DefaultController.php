@@ -400,7 +400,7 @@ class DefaultController extends BaseController {
         $asunto = 'Se ha reestablecido su contraseña';
         $message = \Swift_Message::newInstance()
                 ->setSubject($asunto)
-                ->setFrom('noreply@mosaicors.com')
+                ->setFrom($this->container->getParameter('richpolis.emails.to_email'))
                 ->setTo($usuario->getEmail())
                 ->setBody(
                 $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 'text/html'
