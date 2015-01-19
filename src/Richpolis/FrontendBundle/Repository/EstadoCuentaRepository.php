@@ -124,7 +124,7 @@ class EstadoCuentaRepository extends EntityRepository
        }
     }
 	
-	public function getCargosEnMes($mes, $year, Usuario $usuario)
+    public function getCargosEnMes($mes, $year, Usuario $usuario)
     {
         $em = $this->getEntityManager();
             $consulta = $em->createQuery(

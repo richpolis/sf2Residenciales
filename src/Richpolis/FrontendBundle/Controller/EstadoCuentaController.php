@@ -543,7 +543,7 @@ class EstadoCuentaController extends BaseController
             array('id' => 1, 'nombre' => 'Cargos automaticos (todas las residenciales).'),
             array('id' => 2, 'nombre' => 'Cargo general a residencial.'),
             array('id' => 3, 'nombre' => 'Cargo por torre(s).'),
-            array('id' => 4, 'nombre' => 'Cuotas extraordinarias (por inquilino)'),
+            array('id' => 4, 'nombre' => 'Cargo individual (multas por inquilino)'),
         );
 
         return array(

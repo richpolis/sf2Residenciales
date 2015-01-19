@@ -11,15 +11,19 @@
     <div class="avatar {{tipoPull}}">
         {% if comentario.usuario.grupo == constant('Richpolis\\BackendBundle\\Entity\\Usuario::GRUPO_USUARIOS')%}
         <i class="fa fa-user fa-4x"></i>
+        {% set color = '' %}
         {% else %}
-        <img src="/images/logo.png" style="height: 40px;" alt="">    
+        <img src="/images/logo.png" style="height: 40px;" alt="">
+        {% set color = 'style="color: #1392e9;"'%}
         {% endif %}    
     </div>
     <div class="chat-content">
         <!-- In meta area, first include "name" and then "time" -->
         <!-- In meta area, first include "name" and then "time" -->
         <div class="chat-meta"> {{comentario.usuario.nombre}} <span class="pull-right">{{comentario.fechaTwitter}}</span></div>
-            {{comentario.comentario | raw }}
+        <div {{color}}>    
+        {{comentario.comentario | raw }}
+        </div>
         <div class="clearfix"></div>
     </div>
 </li> 

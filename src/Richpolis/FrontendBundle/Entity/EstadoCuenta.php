@@ -122,6 +122,8 @@ class EstadoCuenta
     const TIPO_CARGO_MULTA = 4;
     const TIPO_CARGO_MTTO = 5;
     const TIPO_CARGO_PAGO = 6;
+    const TIPO_CARGO_PAGO_RESERVACION=7;
+    const TIPO_CARGO_EXTRAORDINARIO=8;
 
     static public $sTipoCargo = array(
         self::TIPO_CARGO_ANTERIOR => 'Anterior',
@@ -130,15 +132,29 @@ class EstadoCuenta
         self::TIPO_CARGO_RESERVACION => 'Reservación',
         self::TIPO_CARGO_MULTA => 'Multa',
         self::TIPO_CARGO_MTTO => 'Mantenimiento',
+        self::TIPO_CARGO_EXTRAORDINARIO => 'Extraordinario',
         self::TIPO_CARGO_PAGO => 'Pago',
+        self::TIPO_CARGO_PAGO => 'Pago por reservacion',
+        
     );
 
     public function getStringTipoCargo(){
         return self::$sTipoCargo[$this->getTipoCargo()];
     }
     
-    static function getArrayTipoCargo(){
-        return self::$sTipoCargo;
+    static function getArrayTipoCargo($is_super_admin=false){
+        if($is_super_admin){
+            $sTipoCargo = self::$sTipoCargo;
+        }else{
+            $sTipoCargo = array(
+                self::TIPO_CARGO_NORMAL => 'Normal',
+                self::TIPO_CARGO_ADEUDO => 'Por adeudo',
+                self::TIPO_CARGO_MULTA => 'Multa',
+                self::TIPO_CARGO_MTTO => 'Mantenimiento',
+                self::TIPO_CARGO_EXTRAORDINARIO => 'Extraordinario',
+            );
+        }
+        return $sTipoCargo;
     }
     
     static function getPreferedTipoCargo(){

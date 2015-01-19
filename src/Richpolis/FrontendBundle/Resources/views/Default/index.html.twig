@@ -42,30 +42,38 @@
                                                 <th colspan="6">Cargos pendientes de pago</th>
                                             </tr>
                                             <tr>
-                                                <th>Fecha</th>
-                                                <th>Cargo</th>
+                                                <th>$</th>
+                                                <th>Fecha - Cargo</th>
                                                 <th>Monto</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% set monto = 0 %}
                                             {% for entity in cargos %}
+                                                {% if entity.tipoCargo != constant('Richpolis\\FrontendBundle\\Entity\\EstadoCuenta::TIPO_CARGO_RESERVACION') and entity.tipoCargo != constant('Richpolis\\FrontendBundle\\Entity\\EstadoCuenta::TIPO_CARGO_PAGO_RESERVACION') %}
                                                 <tr>
-                                                    <td>{{ entity.createdAt|date('d-m-Y') }}</td>
                                                     <td>
-                                                        <div class="tipo-cargo">{{ entity.stringTipoCargo }}</div>
+                                                        {% if entity.monto > 0 %}
+                                                        <input type="checkbox" data-cargo="{{entity.monto}}" id="cargo-{{entity.id}}" name="cargo" class="cargoPagar" value="{{entity.id}}" checked>
+                                                        {% else %}
+                                                        <input type="hidden" data-cargo="{{entity.monto}}" id="cargo-{{entity.id}}" name="cargo" class="cargoPagado" value="{{entity.id}}">    
+                                                        {% endif %}    
+                                                    </td>
+                                                    <td>
+                                                        <div class="tipo-cargo">{{ entity.createdAt|date('d-m-Y') }} - {{ entity.stringTipoCargo }}</div>
                                                         <div class="descripcion-cargo">{{ entity.cargo }}</div>
                                                     </td>
                                                     <td>$ {{ entity.monto | number_format(2,".",",") }}</td>
                                                 </tr>
                                                 {% set monto = monto + entity.monto %}
                                                 <!-- {{monto}} -->
+                                                {% endif %}
                                             {% endfor %}
                                         <tfoot>
                                             <tr>
                                                 <th colspan="6">
                                                     {% if monto > 0 %}
-                                                        <button class="btn btn-success" onclick="addPago();">Realizar pago $ {{monto|number_format(2,".",",")}}</button>
+                                                        <button class="btn btn-success" id="botonPagoCargos" onclick="addPago();">Realizar pago $ {{monto|number_format(2,".",",")}}</button>
                                                     {% else %}
                                                         Sin saldo pendiente
                                                     {% endif %}
@@ -128,17 +136,7 @@
     {{ parent() }}
 
     <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> <!-- jQuery UI -->
-    <script src="{{asset('js/fullcalendar.min.js')}}"></script> <!-- Full Google Calendar - Calendar -->
-    <script src="{{asset('js/jquery.rateit.min.js')}}"></script> <!-- RateIt - Star rating -->
-    <script src="{{asset('js/jquery.prettyPhoto.js')}}"></script> <!-- prettyPhoto -->
-
-    <!-- jQuery Flot -->
-    <script src="{{asset('js/excanvas.min.js')}}"></script>
-    <script src="{{asset('js/jquery.flot.js')}}"></script>
-    <script src="{{asset('js/jquery.flot.resize.js')}}"></script>
-    <script src="{{asset('js/jquery.flot.pie.js')}}"></script>
-    <script src="{{asset('js/jquery.flot.stack.js')}}"></script>
-
+    
     <!-- jQuery Notification - Noty -->
     <script src="{{asset('js/jquery.noty.js')}}"></script> <!-- jQuery Notify -->
     <script src="{{asset('js/themes/default.js')}}"></script> <!-- jQuery Notify -->
@@ -147,15 +145,7 @@
     <script src="{{asset('js/layouts/top.js')}}"></script> <!-- jQuery Notify -->
     <!-- jQuery Notification ends -->
 
-    <script src="{{asset('js/datatables/js/jquery.dataTables.js')}}"></script>
-
-    <script src="{{asset('js/sparklines.js')}}"></script> <!-- Sparklines -->
-    <script src="{{asset('js/jquery.cleditor.min.js')}}"></script> <!-- CLEditor -->
-    <script src="{{asset('js/bootstrap-datetimepicker.min.js')}}"></script> <!-- Date picker -->
     <script src="{{asset('js/jquery.uniform.min.html')}}"></script> <!-- jQuery Uniform -->
-    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script> <!-- jQuery SlimScroll -->
-    <script src="{{asset('js/bootstrap-switch.min.js')}}"></script> <!-- Bootstrap Toggle -->
-    <script src="{{asset('js/filter.js')}}"></script> <!-- Filter for support page -->
     <script src="{{asset('js/custom.js')}}"></script> <!-- Custom codes -->
     <script src="{{asset('js/sfrichpolis.js')}}"></script>
     <script src="{{asset('js/jquery.formdata.serialize.js')}}"></script> <!-- Custom codes -->
@@ -178,7 +168,20 @@
             return "#" + this.string + "-" + this.valor;
         },
     };
-    $(document).ready(function(){
+    $(document).on("ready",function(){
+       var $cargos=$(".cargoPagar");
+       var $reservaciones = $(".reservacionPagar");
+       var $cargosPagados = $(".cargoPagado");
+       var montoCargo =0;
+       $.each($cargos,function(index,objeto){
+          montoCargo += $(objeto).data('cargo'); 
+       });
+       $.each($cargosPagados,function(index,objeto){
+          montoCargo += $(objeto).data('cargo'); 
+       });
+       
+       
+       $("#botonPagoCargos").text("Saldo por pagar "+montoCargo);
        
     });
     function addPagoReservacion(reservacion){

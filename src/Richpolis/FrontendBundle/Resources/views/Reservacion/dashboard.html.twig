@@ -8,7 +8,9 @@
             <div class="padd">
                 {% include 'FrontendBundle:Reservacion:lista.html.twig' with {'reservaciones': reservaciones } %}
                 <br/>
-                <a href="{{path('reservaciones_calendario_select_recurso')}}" class="btn btn-success" id="crearReservacion">Crear reservación</a>
+                <button class="btn btn-success pull-left" id="botonPagoReservacion">Subir comprobante</button>
+                <a href="{{path('reservaciones_calendario_select_recurso')}}" class="btn btn-primary pull-right" id="crearReservacion">Crear reservación</a>
+                <div class="clearfix"></div>
             </div>
         </div>
     </div>

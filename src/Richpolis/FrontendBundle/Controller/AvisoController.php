@@ -411,8 +411,9 @@ class AvisoController extends BaseController
         if($entity->getEnviarEmail()){
             switch($entity->getTipoAcceso()){
                 case Aviso::TIPO_ACCESO_RESIDENCIAL:
-                    $usuarios = $this->getDoctrine()->getRepository('BackendBundle:Usuario')
-                                    ->findBy(array('residencial'=>$entity->getResidencial()));
+                    $edificios = $this->getDoctrine()->getRepository('BackendBundle:Edificio')
+                                     ->findBy(array('residencial'=>$entity->getResidencial()));
+                    $usuarios = $this->getUsuariosPorEdificios($entity->getEdificios());
                     break;
                 case Aviso::TIPO_ACCESO_EDIFICIO:
                     $usuarios = $this->getUsuariosPorEdificios($entity->getEdificios());
@@ -429,7 +430,7 @@ class AvisoController extends BaseController
         $asunto = $entity->getTitulo();
         $message = \Swift_Message::newInstance()
                 ->setSubject($asunto)
-                ->setFrom('noreply@mosaicors.com')
+                ->setFrom($this->container->getParameter('richpolis.emails.to_email'))
                 ->setTo($this->getArregloUsuarios($usuarios))
                 ->setBody(
                 $this->renderView('FrontendBundle:Default:enviarAviso.html.twig', 

@@ -193,8 +193,8 @@ class DefaultController extends BaseController {
         }
 
         return $this->render('FrontendBundle:Default:residencialName.html.twig', array(
-                    'objeto' => $residencial,
-                    'residenciales' => $entities,
+            'objeto' => $residencial,
+            'residenciales' => $entities,
         ));
     }
 

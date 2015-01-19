@@ -1,23 +1,23 @@
 <li class="item item-aviso row" id="reservacion-{{registro.id}}">
-    <div class="col-md-10">
+    <div class="col-md-10 col-sm-10 col-xs-10">
         <div class="item-aviso-fecha">
             {{ registro.fechaEvento | date('d-M-Y') }} - {{ registro.desde | date('g:ia')}} - {{ registro.hasta | date('g:ia')}}
         </div>
         <div class="item-titulo item-aviso-titulo"> {{ registro.stringStatus }} - {{registro.recurso}} - $ {{ registro.monto|number_format(2,".",",") }} </div>
         <div class="item-descripcion item-aviso-descripcion"></div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-2 col-xs-2">
         {% if registro.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_SOLICITUD') %}
-            {% if registro.monto>0 and registro.pago is null %}    
-                <button onclick="addPagoReservacion({{registro.id}});" data-monto="{{registro.monto}}" class="btn btn-success"><i class="fa fa-cloud-upload"></i></button>
-                {% elseif registro.monto>0 %}
-                <span class="label label-info"><i class="fa fa-cogs"></i></span>
-                {% endif %}
-            {% elseif registro.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
                 {% if registro.monto>0 and registro.pago is null %}    
-                <button onclick="addPagoReservacion({{registro.id}});" data-monto="{{registro.monto}}" class="btn btn-success"><i class="fa fa-cloud-upload"></i></button>
+                    <input type="checkbox" data-cargo="{{registro.monto}}" id="reservacion-{{registro.id}}" name="cargo" class="reservacionPagar" value="{{registro.id}}" checked>
+                {% elseif registro.monto>0 %}
+                <span class="label label-info">en proceso</span>
+                {% endif %}
+        {% elseif registro.status == constant('Richpolis\\FrontendBundle\\Entity\\Reservacion::STATUS_APROBADA') %}
+                {% if registro.monto>0 and registro.pago is null %}    
+                    <input type="checkbox" data-cargo="{{registro.monto}}" id="reservacion-{{registro.id}}" name="cargo" class="reservacionPagar" value="{{registro.id}}" checked>
                 {% endif %}
             <a href="{{path('reservaciones_recibo',{'reservacion': registro.id,'_format':'pdf'})}}" target="_blank" class="btn btn-info"><i class="fa fa-eye"></i></a>
-            {% endif %}  
+        {% endif %}  
     </div>
 </li>

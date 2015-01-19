@@ -542,7 +542,8 @@
 			display:block !important;
 		}
 
-}</style></head>
+}</style>
+    </head>
     <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
         <center>
             <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
@@ -560,25 +561,35 @@
         <tr>
             <td valign="top" class="mcnTextBlockInner">
                 
-                <table align="left" border="0" cellpadding="0" cellspacing="0" width="366" class="mcnTextContentContainer">
-                    <tbody><tr>
-                        
-                        <td valign="top" class="mcnTextContent" style="padding-top:9px; padding-left:18px; padding-bottom:9px; padding-right:0;">
-                        
-                            {{"now"|date('d-m-Y')}}
-                        </td>
-                    </tr>
-                </tbody></table>
-                
-                <table align="right" border="0" cellpadding="0" cellspacing="0" width="197" class="mcnTextContentContainer">
-                    <tbody><tr>
+                 <table align="left" border="0" cellpadding="0" cellspacing="0" width="100" class="mcnTextContentContainer">
+                    <tbody>
+                        <tr>
+                            <td valign="top" class="mcnTextContent" style="padding-top:9px; padding-left:18px; padding-bottom:9px; padding-right:0;">
+                                {{"now"|date('d-m-Y')}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table align="left" border="0" cellpadding="0" cellspacing="0" width="250" class="mcnTextContentContainer">
+                    <tbody>
+                        <tr>
+                            <td valign="top" class="mcnTextContent" style="padding-top:9px; padding-left:18px; padding-bottom:9px; padding-right:0;text-transform: uppercase; font-size: 24px;">
+                                {{usuario.edificio.residencial.nombre}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table align="right" border="0" cellpadding="0" cellspacing="0" width="200" class="mcnTextContentContainer">
+                    <tbody>
+                        <tr>
                         
                         <td valign="top" class="mcnTextContent" style="padding-top:9px; padding-right:18px; padding-bottom:9px; padding-left:0;">
                         
                             Mosaico Real Estate Management
                         </td>
                     </tr>
-                </tbody></table>
+                </tbody>
+                </table>
                 
             </td>
         </tr>
@@ -651,6 +662,7 @@
 <h3>{{asunto}}</h3>
 
 <p>
+    Nombre: {{usuario.nombre}}<br/>
     Usuario: {{sUsuario}}<br/>
     {% if sPassword | length < 32%}
     Password: {{sPassword}}<br/>
@@ -721,6 +733,9 @@
                             <div style="text-align: center;"><a href="http://www.mosaicors.com" target="_blank">www.mosaicors.com</a><br>
 Mosaico Real Estate Management | Los Cormoran 102, Lomas de las Águilas, Álvaro Obregón C.P. 01730,<br>
 México DF | 63 78 99 05</div>
+                            <div style="text-align: center; font-size: 10px; color: gray;margin-top: 10px;">
+                                Por favor de no responder a este correo.
+                            </div>
 
                         </td>
                     </tr>

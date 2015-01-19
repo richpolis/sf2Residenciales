@@ -105,8 +105,8 @@ $(document).ready(function(){
         $(".sidebar #nav").slideUp(350);
       }
   });
-  $('.sscroll').slimScroll({wheelStep: 1,opacity:0.3});
-  $(".slimScrollBar").hide();
+  //$('.sscroll').slimScroll({wheelStep: 1,opacity:0.3});
+  //$(".slimScrollBar").hide();
   
 });
 
