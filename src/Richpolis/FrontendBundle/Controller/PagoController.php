@@ -460,17 +460,26 @@ class PagoController extends BaseController {
     public function realizarPagoAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
+        $filtros = $this->getFilters();
         //solo cargos por pagar
         if($request->query->has('cargos')){
-            
-        }else{
-            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                         ->getCargosAdeudoPorUsuario($usuario->getId(), false);
-        }
+            $filtros['cargos']= $request->query->get('cargos');
+        }   
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosAdeudoPorUsuario($usuario->getId(), false);
         $monto = 0;
-        foreach ($cargos as $cargo) {
-            $monto += $cargo->getMonto();
+        $filtroCargos = array();
+        foreach($filtros['cargos'] as $filtro){
+            $resp = false;
+            foreach($cargos as $cargo){
+                if($cargo->getId()==$filtro){
+                    $resp=true;
+                    $monto += $cargo->getMonto();
+                    $filtroCargos[]=$cargo;
+                }
+            }
         }
+        
         $entity = new Pago();
         $entity->setUsuario($usuario);
         $entity->setMonto($monto);
@@ -488,7 +497,7 @@ class PagoController extends BaseController {
                 $entity->setIsAproved(false);
                 $em->persist($entity);
                 $em->flush();
-                foreach ($cargos as $cargo) {
+                foreach ($filtroCargos as $cargo) {
                     $cargo->setPago($entity);
                     $em->persist($cargo);
                     $em->flush();
@@ -560,11 +569,28 @@ class PagoController extends BaseController {
     public function realizarPagoReservacionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
-        $reservacionId = $request->query->get('reservacion');
-        $reservacion = $em->getRepository('FrontendBundle:Reservacion')->find($reservacionId);
+        $filtros = $this->getFilters();
+        //solo cargos por pagar
+        if($request->query->has('cargos')){
+            $filtros['cargos']= $request->query->get('cargos');
+        }   
+        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                     ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+        $monto = 0;
+        $filtroCargos = array();
+        foreach($filtros['cargos'] as $filtro){
+            $resp = false;
+            foreach($cargos as $cargo){
+                if($cargo->getId()==$filtro){
+                    $resp=true;
+                    $monto += $cargo->getMonto();
+                    $filtroCargos[]=$cargo;
+                }
+            }
+        }
         $entity = new Pago();
         $entity->setUsuario($usuario);
-        $entity->setMonto($reservacion->getMonto());
+        $entity->setMonto($monto);
         $entity->setIsAproved(false);
         $entity->setReferencia($usuario->getFolioDePago());
         $form = $this->createForm(new PagoFrontendType(), $entity, array(
