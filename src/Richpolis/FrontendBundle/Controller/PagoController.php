@@ -461,8 +461,12 @@ class PagoController extends BaseController {
         $em = $this->getDoctrine()->getManager();
         $usuario = $this->getUsuarioActual();
         //solo cargos por pagar
-        $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                     ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+        if($request->query->has('cargos')){
+            
+        }else{
+            $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
+                         ->getCargosAdeudoPorUsuario($usuario->getId(), false);
+        }
         $monto = 0;
         foreach ($cargos as $cargo) {
             $monto += $cargo->getMonto();

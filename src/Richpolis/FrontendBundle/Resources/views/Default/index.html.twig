@@ -73,7 +73,7 @@
                                             <tr>
                                                 <th colspan="6">
                                                     {% if monto > 0 %}
-                                                        <button class="btn btn-success" id="botonPagoCargos" onclick="addPago();">Realizar pago $ {{monto|number_format(2,".",",")}}</button>
+                                                        <button class="btn btn-success" id="botonPagoCargos">Realizar pago $ {{monto|number_format(2,".",",")}}</button>
                                                     {% else %}
                                                         Sin saldo pendiente
                                                     {% endif %}
@@ -168,11 +168,14 @@
             return "#" + this.string + "-" + this.valor;
         },
     };
+    var montoCargo = 0, montoReservacion = 0, $cargos = null, $reservaciones = null,$cargosPagados;
     $(document).on("ready",function(){
-       var $cargos=$(".cargoPagar");
-       var $reservaciones = $(".reservacionPagar");
-       var $cargosPagados = $(".cargoPagado");
-       var montoCargo =0;
+       $cargos=$(".cargoPagar");
+       $reservaciones = $(".reservacionPagar");
+       $cargosPagados = $(".cargoPagado");
+       montoCargo =0;
+       montoReservacion = 0;
+       
        $.each($cargos,function(index,objeto){
           montoCargo += $(objeto).data('cargo'); 
        });
@@ -180,19 +183,68 @@
           montoCargo += $(objeto).data('cargo'); 
        });
        
+       $.each($reservaciones,function(index,objeto){
+          montoReservacion += $(objeto).data('cargo'); 
+       });
        
-       $("#botonPagoCargos").text("Saldo por pagar "+montoCargo);
+       $cargos.on('click',function(){
+           if(this.checked == true){
+               montoCargo += $(this).data('cargo');
+           }else{
+               montoCargo -= $(this).data('cargo');
+           }
+           showBotonCargoPagar();
+       });
        
+       $reservaciones.on('click',function(){
+           if(this.checked == true){
+               montoReservacion += $(this).data('cargo');
+           }else{
+               montoReservacion -= $(this).data('cargo');
+           }
+           showBotonReservacionPagar();
+       });
+       
+       $("#botonPagoReservacion").on("click",function(){
+           var data = {
+               cargos: [],
+               reservacion: true,
+               cargo: false,
+           };
+           $.each($reservaciones,function(index,objeto){
+            if(objeto.checked == true)
+                data.cargos.push(objeto.value); 
+            });
+            addPagoReservacion(data);
+       });
+       
+       $("#botonPagoCargos").on("click",function(){
+           var data = {
+               cargos: [],
+               reservacion: false,
+               cargo: true,
+           };
+           $.each($cargos,function(index,objeto){
+            if(objeto.checked == true)
+                data.cargos.push(objeto.value); 
+            });
+            addPago(data);
+       });
+       
+       showBotonCargoPagar(); 
+       showBotonReservacionPagar();
     });
-    function addPagoReservacion(reservacion){
+    function addPagoReservacion(data){
         mostrarFormulario("Realizar pago de reservacion");
-        objPago.valor = reservacion;
+        objPago.data = data
+        objPago.valor = 0;
         objPago.string = "reservacion";
         objPago.ruta  =  '{{path('pagos_realizar_pago_reservacion')}}';
-        getFormulario();
+        getFormulario(data);
     }
-    function addPago(){
+    function addPago(data){
         mostrarFormulario("Realizar pago");
+        objPago.data = data;
         objPago.valor = 0;
         objPago.string = "pago";
         objPago.ruta  =  '{{path('pagos_realizar_pago')}}';
@@ -240,12 +292,12 @@
         });
     }
     
-    function getFormulario(){
+    function getFormulario(data){
         debugger;
         $.ajax({
             url: objPago.ruta,
             type: 'GET',
-            data: objPago.getData(),
+            data: data,
             dataType: 'json',
         }).done(function(data, textStatus,jqXHR){
             data = JSON.parse(data);
@@ -256,7 +308,46 @@
         }).fail(function(data){
             alert("Error");
             console.log(data);
-        });;
+        });
+    }
+    
+    function formato_numero(numero, decimales, separador_decimal, separador_miles){ // v2007-08-06
+        numero=parseFloat(numero);
+        if(isNaN(numero)){
+            return "";
+        }
+
+        if(decimales!==undefined){
+            // Redondeamos
+            numero=numero.toFixed(decimales);
+        }
+
+        // Convertimos el punto en separador_decimal
+        numero=numero.toString().replace(".", separador_decimal!==undefined ? separador_decimal : ",");
+
+        if(separador_miles){
+            // Añadimos los separadores de miles
+            var miles=new RegExp("(-?[0-9]+)([0-9]{3})");
+            while(miles.test(numero)) {
+                numero=numero.replace(miles, "$1" + separador_miles + "$2");
+            }
+        }
+
+        return numero;
+    }
+    function showBotonCargoPagar(){
+        if(montoCargo>0){
+            $("#botonPagoCargos").show('fast').text("Saldo por pagar $ "+formato_numero(montoCargo,2,".",","));
+        }else{
+            $("#botonPagoCargos").hide('fast');
+        }
+    }
+    function showBotonReservacionPagar(){
+        if(montoReservacion>0){
+            $("#botonPagoReservacion").show('fast').text("Subir comprobante");
+        }else{
+            $("#botonPagoReservacion").hide('fast');
+        }
     }
 </script>
 {% endblock %}

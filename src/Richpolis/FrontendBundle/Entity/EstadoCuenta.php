@@ -134,7 +134,7 @@ class EstadoCuenta
         self::TIPO_CARGO_MTTO => 'Mantenimiento',
         self::TIPO_CARGO_EXTRAORDINARIO => 'Extraordinario',
         self::TIPO_CARGO_PAGO => 'Pago',
-        self::TIPO_CARGO_PAGO => 'Pago por reservacion',
+        self::TIPO_CARGO_PAGO_RESERVACION => 'Pago por reservacion',
         
     );
 
@@ -157,27 +157,40 @@ class EstadoCuenta
         return $sTipoCargo;
     }
     
-    static function getPreferedTipoCargo(){
+    static function getPreferedTipoCargo()
+    {
         return array(self::TIPO_CARGO_NORMAL);
+    }
+
+    public function isTipoCargoReservacion(){
+        if($this->getTipoCargo()!=self::TIPO_CARGO_RESERVACION 
+            && $this->getTipoCargo()!=self::TIPO_CARGO_PAGO_RESERVACION){
+            return false;
+        }else{
+            return true;
+        }
     }
     
     /*
      * Constructor
      */
-    public function __construct() {
-        $this->isPaid       = false;
-        $this->isAcumulable = true;
-	$this->avisoEnviado = false;
+    public function __construct() 
+    {
+            $this->isPaid       = false;
+            $this->isAcumulable = true;
+	       $this->avisoEnviado = false;
     }
 	
     private $edificios = array();
     
-    public function getEdificios(){
-	return $this->edificios;
+    public function getEdificios()
+    {
+	   return $this->edificios;
     }
     
-    public function setEdificios($edificios){
-	$this->edificios = $edificios;
+    public function setEdificios($edificios)
+    {
+	   $this->edificios = $edificios;
     }
 
     /**

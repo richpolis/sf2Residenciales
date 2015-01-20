@@ -334,16 +334,18 @@
                     timeFormat: 'HH:00',
                     stepHour: 1,
                     minute: 0,
-					hourMin: {{recurso.desde|date('G')}},
-					hourMax: {{recurso.hasta|date('G')}}
+                    controlType: 'select',
+                    hourMin: {{recurso.desde|date('G')}},
+                    hourMax: {{recurso.hasta|date('G')}}
             });
             
             $('#richpolis_frontendbundle_reservacion_hasta').timepicker({
                     timeFormat: 'HH:00',
                     stepHour: 1,
                     minute: 0,
-					hourMin: {{recurso.desde|date('G')}},
-					hourMax: {{recurso.hasta|date('G')}}
+                    controlType: 'select',
+                    hourMin: {{recurso.desde|date('G')}},
+                    hourMax: {{recurso.hasta|date('G')}}
             });
   }
 </script>
