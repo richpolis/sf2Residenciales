@@ -659,17 +659,17 @@
                         <td valign="top" class="mcnTextContent" style="padding-top:9px; padding-right: 18px; padding-bottom: 9px; padding-left: 18px;">
                     
 
-<h3>{{asunto}}</h3>
+                        <h3>{{asunto}}</h3>
+                        {{ cuerpo | raw }}
+                        <p>
+                            Nombre: {{usuario.nombre}}<br/>
+                            Usuario: {{sUsuario}}<br/>
+                            {% if sPassword | length < 32 %}
+                            Password: {{sPassword}}<br/>
+                            {% endif %}
+                        </p>
 
-<p>
-    Nombre: {{usuario.nombre}}<br/>
-    Usuario: {{sUsuario}}<br/>
-    {% if sPassword | length < 32%}
-    Password: {{sPassword}}<br/>
-    {% endif %}
-</p>
-
-<p>&nbsp;</p>
+                        <p>&nbsp;</p>
 
                         </td>
                     </tr>

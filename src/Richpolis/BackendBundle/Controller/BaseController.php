@@ -81,9 +81,14 @@ class BaseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $filters = $this->getFilters();
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
-            $usuarioId = $filters['usuario'];
-            $usuario = $em->getRepository('BackendBundle:Usuario')->find($usuarioId);
-            return $usuario;
+            if(isset($filters['usuario'])){
+                $usuarioId = $filters['usuario'];
+                $usuario = $em->getRepository('BackendBundle:Usuario')->find($usuarioId);
+                return $usuario;
+            }else{
+                return $this->getUser();
+            }
+            
         } else {
             return $this->getUser();
         }
@@ -162,6 +167,9 @@ class BaseController extends Controller
     
     protected function enviarUsuarioCreado($sUsuario, $sPassword, $usuario) {
         $asunto = 'Usuario creado';
+        $cuerpo = '<p>Agradecemos su preferencia por elegir a Mosaico Real Estate Management.<br/>
+                    Usted puede acceder al sistema por medio del sitio <a href="http://www.mosaicors.com" target="_blank">www.mosaicors.com</a><br/>
+                    Con las siguientes credenciales:</p>';
         $isNew = true;
         $message = \Swift_Message::newInstance()
                 ->setSubject($asunto)
@@ -169,7 +177,7 @@ class BaseController extends Controller
                 ->setTo($usuario->getEmail())
                 ->setBody(
                 $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
-                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto','cuerpo')), 
                 'text/html'
                 );
         $this->get('mailer')->send($message);
@@ -177,6 +185,9 @@ class BaseController extends Controller
     
     protected function enviarUsuarioUpdate($sUsuario, $sPassword, $usuario) {
         $asunto = 'Usuario actualizado';
+        $cuerpo = '<p>Su usuario ha sido actualizado.<br/>
+                    Cualquier duda por favor dirigirse al sitio <a href="http://www.mosaicors.com" target="_blank">www.mosaicors.com.</a><br/>
+                    Con los siguientes datos para accesar a su cuenta:</p>';
         $isNew = false;
         $message = \Swift_Message::newInstance()
                 ->setSubject($asunto)
@@ -184,7 +195,7 @@ class BaseController extends Controller
                 ->setTo($usuario->getEmail())
                 ->setBody(
                 $this->renderView('FrontendBundle:Default:enviarCorreo.html.twig', 
-                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto')), 
+                        compact('usuario', 'sUsuario', 'sPassword', 'isNew', 'asunto', 'cuerpo')), 
                 'text/html'
         );
         $this->get('mailer')->send($message);

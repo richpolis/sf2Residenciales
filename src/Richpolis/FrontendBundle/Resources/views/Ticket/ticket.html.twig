@@ -83,7 +83,7 @@
                 dataType: 'json',
             }).done(function(data, textStatus,jqXHR){
                 debugger;
-                data = JSON.parse(data);
+                //data = JSON.parse(data);
                 if(data.respuesta=='creado'){
                     $("ul.chats").append(data.html);
                 }

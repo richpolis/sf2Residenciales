@@ -443,7 +443,16 @@ class ForoController extends BaseController
             }
         }
         if ($request->isXmlHttpRequest()) {
-            return $this->render('FrontendBundle:Comentario:form.html.twig', array('form' => $form->createView()));
+            $html = $this->renderView('FrontendBundle:Comentario:item.html.twig', array('comentario' => $comentario));
+            $response = new JsonResponse(array(
+                        'form' => $this->renderView('FrontendBundle:Comentario:formComentario.html.twig', array(
+                            'rutaAction' => $this->generateUrl('foros_foro',array('id'=>$foro->getId())),
+                            'form' => $form->createView(),
+                        )),
+                        'respuesta' => 'creado',
+                        'html' => $html,
+            ));
+            return $response;
         }
         $comentarios = $em->getRepository('FrontendBundle:Comentario')
                           ->findBy(array('foro' => $foro), array('createdAt' => 'ASC'));

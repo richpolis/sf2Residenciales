@@ -222,17 +222,18 @@ class UsuarioController extends BaseController
         //obtiene la contraseña actual
         $current_pass = $entity->getPassword();
         $editForm->handleRequest($request);
-        
+        $password_nuevo = $entity->getPassword();
         if ($editForm->isValid()) {
             if (null == $entity->getPassword()) {
                 // El usuario no cambia su contraseña.
                 $entity->setPassword($current_pass);
+                $password_nuevo = $current_pass;
             } else {
                 // actualizamos la contraseña.
                 $this->setSecurePassword($entity);
             }
             $em->flush();
-            $this->enviarUsuarioUpdate($entity->getEmail(), $current_pass, $entity);
+            $this->enviarUsuarioUpdate($entity->getEmail(), $password_nuevo, $entity);
             return $this->redirect($this->generateUrl('usuarios_show', array('id' => $id)));
         }
 

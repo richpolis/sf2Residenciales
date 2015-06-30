@@ -416,14 +416,14 @@ class TicketController extends BaseController
         }
         if ($request->isXmlHttpRequest()) {
             $html = $this->renderView('FrontendBundle:Comentario:item.html.twig', array('comentario' => $comentario));
-            $response = new JsonResponse(json_encode(array(
+            $response = new JsonResponse(array(
                         'form' => $this->renderView('FrontendBundle:Comentario:formComentario.html.twig', array(
                             'rutaAction' => $this->generateUrl('tickets_ticket',array('id'=>$foro->getId())),
                             'form' => $form->createView(),
                         )),
                         'respuesta' => 'creado',
                         'html' => $html,
-            )));
+            ));
             return $response;
         }
         $comentarios = $em->getRepository('FrontendBundle:Comentario')
