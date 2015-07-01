@@ -1,0 +1,8 @@
+<form onsubmit="return false;"  action="{{ rutaAction }}" class="validate form-inline" id="formComentarios" method="post" {{ form_enctype(form)}}  role="form">
+    {{form_errors(form)}}
+    <div class="form-group col-lg-10">
+        {{form_widget(form.comentario)}}
+    </div>
+    {{form_rest(form)}}
+    <input class="btn btn-success" id="enviarComentario" type="submit" value="Enviar"/>
+</form>

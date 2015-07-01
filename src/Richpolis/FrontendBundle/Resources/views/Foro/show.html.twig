@@ -136,16 +136,10 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="widget-foot">
+                                <div class="widget-foot" id="contenedorFormComentarios">
                                     {% if entity.isCerrado == false %}
-                                    <form onsubmit="return false;"  action="{{ path('foros_foro',{'id': entity.id}) }}" class="validate form-inline" id="formComentarios" method="post" {{ form_enctype(form)}}  role="form">
-                                        {{form_errors(form)}}
-                                        <div class="form-group col-lg-10">
-                                            {{form_widget(form.comentario)}}
-                                        </div>
-                                        {{form_rest(form)}}
-                                        <input class="btn btn-success" id="enviarComentario" type="submit" value="Enviar"/>
-                                    </form>
+                                        {# formulario de comentarios #}
+                                        {{ form | raw }} 
                                     {% else %}
                                         <br/>
                                     {% endif %}    
@@ -209,29 +203,7 @@ var eliminarRegistro = function(){
 };
 
 </script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $("input#enviarComentario").on("click",function(e){
-            var $formComentarios = $("#formComentarios");
-            var data = $formComentarios.serialize();
-            $.ajax({
-                url: $formComentarios.attr('action'),
-                type: 'POST',
-                data: data,
-                dataType: 'json',
-            }).done(function(data, textStatus,jqXHR){
-                debugger;
-                //data = JSON.parse(data);
-                if(data.respuesta=='creado'){
-                    $("ul.chats").append(data.html);
-                    $formComentarios.reset();
-                }
-            }).fail(function(data){
-                console.log(data);
-            });
-        });
-    });
-</script>
-    
+
+{% include 'FrontendBundle:Foro:foro.js.twig' %}    
 {% endblock %}
 

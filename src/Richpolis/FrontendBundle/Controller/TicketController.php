@@ -396,6 +396,7 @@ class TicketController extends BaseController
         $comentario->setUsuario($this->getUser());
         $comentario->setNivel(0);
         $form = $this->createForm(new ComentarioType(), $comentario, array('em' => $em));
+        $comentarioHtml = '';
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -403,6 +404,7 @@ class TicketController extends BaseController
                 $foro->setContComentarios($foro->getContComentarios() + 1);
                 $foro->setComentario($this->getUser()->getNombre().": ". $comentario->getComentario());
                 $em->flush();
+                $comentarioHtml = $this->renderView('FrontendBundle:Comentario:item.html.twig', array('comentario' => $comentario));
                 /*if($this->get('security.context')->isGranted('ROLE_ADMIN')){
                     return $this->redirect($this->generateUrl('tickets_show',array('id'=>$foro->getId())));
                 }*/
@@ -414,15 +416,15 @@ class TicketController extends BaseController
                 $foro = $em->getRepository('FrontendBundle:Foro')->find($id);
             }
         }
+        $formComentarios = $this->renderView('FrontendBundle:Comentario:form.html.twig', array(
+            'rutaAction' => $this->generateUrl('tickets_ticket',array('id'=>$foro->getId())),
+            'form' => $form->createView(),
+        ));
         if ($request->isXmlHttpRequest()) {
-            $html = $this->renderView('FrontendBundle:Comentario:item.html.twig', array('comentario' => $comentario));
             $response = new JsonResponse(array(
-                        'form' => $this->renderView('FrontendBundle:Comentario:formComentario.html.twig', array(
-                            'rutaAction' => $this->generateUrl('tickets_ticket',array('id'=>$foro->getId())),
-                            'form' => $form->createView(),
-                        )),
-                        'respuesta' => 'creado',
-                        'html' => $html,
+                'form' => $formComentarios,
+                'respuesta' => 'creado',
+                'html' => $comentarioHtml,
             ));
             return $response;
         }
@@ -431,7 +433,7 @@ class TicketController extends BaseController
         return array(
             'ticket'=>$foro,
             'comentarios'=>$comentarios,
-            'form'=>$form->createView(),
+            'form'=>$formComentarios,
         );
     }
     

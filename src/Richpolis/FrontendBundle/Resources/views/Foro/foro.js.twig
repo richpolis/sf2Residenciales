@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        botonEnviarComentario();
+    });
+    function botonEnviarComentario(){
+        $("input#enviarComentario").on("click",function(e){
+            var $formComentarios = $("#formComentarios");
+            var data = $formComentarios.serialize();
+            $(this).val("Enviando...").attr('disable','disable');
+            $.ajax({
+                url: $formComentarios.attr('action'),
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                success: function(data){
+                   debugger;
+                    //data = JSON.parse(data);
+                    if(data.respuesta=='creado'){
+                        $("ul.chats").append(data.html);
+                        $("#contenedorFormComentarios").html(data.form);
+                        botonEnviarComentario();
+                    }
+                }, 
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        });
+    }
+</script>
