@@ -97,9 +97,10 @@
                                                     <button id="botonEditar" class="btn btn-info" onclick="javascript:editarRegistro('{{path('administradores_edit',{id: entity.id})}}')">Editar</button>
                                                     <div style="float: left; margin-right: 3px;">
                                                         <form id="formEliminar" action="{{ path('administradores_delete', { 'id': entity.id }) }}" method="post">
-                                                            {{ form_widget(delete_form) }}
+                                                            <input type="hidden" name="_method" value="DELETE" />
+															{{ form_widget(delete_form) }}
                                                         </form>
-							<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
+														<button class="btn btn-danger " onclick="eliminarRegistro();">Eliminar</button>
                                                     </div>        
                                                 </div>
                                             </div>  
