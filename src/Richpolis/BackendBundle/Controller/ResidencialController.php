@@ -231,6 +231,23 @@ class ResidencialController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Residencial entity.');
             }
+			
+			$edificios= $entity->getEdificios();
+			foreach($edificios as $edificio){
+				$usuarios = $edificio->getUsuarios();
+				foreach($usuarios as $usuario){
+					$edificio->removeUsuario($usuario);
+					$em->remove($usuario);
+				}
+				$recursos = $edificio->getRecursos();
+				foreach($recursos as $recurso){
+					$edificio->removeRecurso($recurso);
+					$em->remove($recurso);
+				}
+				
+				$entity->removeEdificio($edificio);
+				$em->remove($edificio);
+			}
 
             $em->remove($entity);
             $em->flush();
