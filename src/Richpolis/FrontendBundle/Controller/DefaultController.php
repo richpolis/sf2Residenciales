@@ -21,7 +21,6 @@ class DefaultController extends BaseController {
      * @Template()
      */
     public function indexAction(Request $request) {
-
         $context = $this->get('security.context');
         $filtros = $this->getFilters();
         if (true === $context->isGranted('ROLE_SUPER_ADMIN')) {

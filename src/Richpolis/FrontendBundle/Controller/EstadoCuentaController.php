@@ -97,12 +97,13 @@ class EstadoCuentaController extends BaseController
         $month = $request->query->get('month', $fecha->format('m'));
         $nombreMes = $this->getNombreMes($month);
         $actual = false;
+        
         if ($fecha->format('Y') == $year && $fecha->format('m') == $month) {
             $actual = true;
         }
 
         $cargos = $em->getRepository('FrontendBundle:EstadoCuenta')
-                ->getCargosEnMes($month, $year, $usuario);
+                     ->getCargosEnMes($month, $year, $usuario);
 
         return $this->render("FrontendBundle:EstadoCuenta:estadodecuentas.html.twig", array(
                     'entities' => $cargos,
@@ -432,7 +433,7 @@ class EstadoCuentaController extends BaseController
         $residencial = $this->getResidencialActual($this->getResidencialDefault());
         $edificio = $this->getEdificioActual();
         $usuarios = $em->getRepository('BackendBundle:Usuario')
-                ->findBy(array('edificio' => $edificio));
+                       ->findBy(array('edificio' => $edificio));
         $fecha = new \DateTime();
         $mes = $fecha->format("m");
         $year = $fecha->format("Y");
@@ -460,7 +461,7 @@ class EstadoCuentaController extends BaseController
                         //aplicando el cargo anterior.
                         $anterior = new EstadoCuenta();
                         $anterior->setCargo("Cargo anterior");
-                        $anterior->setMonto($$monto);
+                        $anterior->setMonto($monto);
                         $anterior->setUsuario($usuario);
                         //$anterior->setResidencial($residencial);
                         $anterior->setTipoCargo(EstadoCuenta::TIPO_CARGO_ANTERIOR);
